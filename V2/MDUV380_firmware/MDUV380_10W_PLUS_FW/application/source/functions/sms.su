@@ -1,0 +1,14 @@
+../application/source/functions/sms.c:125:13:smsResetRxAssembly	0	static
+../application/source/functions/sms.c:130:17:smsCrc16Ccitt.constprop	12	static
+../application/source/functions/sms.c:224:17:smsPackMessage	40	static
+../application/source/functions/sms.c:280:17:smsQueueMessage	8	static
+../application/source/functions/sms.c:287:6:smsHasQueuedMessage	0	static
+../application/source/functions/sms.c:292:29:smsGetQueuedMessage	0	static
+../application/source/functions/sms.c:297:6:smsClearQueuedMessage	0	static
+../application/source/functions/sms.c:303:6:smsHandleReceivedDataFrame	96	static
+../application/source/functions/sms.c:363:9:smsGetInboxCount	0	static
+../application/source/functions/sms.c:368:6:smsGetInboxMessage	8	static
+../application/source/functions/sms.c:382:6:smsDeleteInboxMessage	40	static
+../application/source/functions/sms.c:410:6:smsClearInbox	8	static
+../application/source/functions/sms.c:418:6:smsHasRxNotification	0	static
+../application/source/functions/sms.c:423:6:smsConsumeRxNotification	0	static

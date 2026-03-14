@@ -1,0 +1,11 @@
+../application/source/functions/smsPersistentStorage.c:67:13:smsPersistReadSector	0	static
+../application/source/functions/smsPersistentStorage.c:57:13:smsPersistWriteBack	16	static
+../application/source/functions/smsPersistentStorage.c:72:6:smsPersistInit	24	static
+../application/source/functions/smsPersistentStorage.c:92:6:smsPersistAddInbox	32	static
+../application/source/functions/smsPersistentStorage.c:129:6:smsPersistAddSent	32	static
+../application/source/functions/smsPersistentStorage.c:164:9:smsPersistGetInboxCount	0	static
+../application/source/functions/smsPersistentStorage.c:169:9:smsPersistGetSentCount	0	static
+../application/source/functions/smsPersistentStorage.c:174:6:smsPersistGetInboxMsg	8	static
+../application/source/functions/smsPersistentStorage.c:187:6:smsPersistGetSentMsg	8	static
+../application/source/functions/smsPersistentStorage.c:200:6:smsPersistDeleteInboxMsg	24	static
+../application/source/functions/smsPersistentStorage.c:228:6:smsPersistDeleteSentMsg	24	static

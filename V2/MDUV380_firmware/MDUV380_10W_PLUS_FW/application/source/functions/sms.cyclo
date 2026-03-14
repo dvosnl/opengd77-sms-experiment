@@ -1,0 +1,14 @@
+../application/source/functions/sms.c:125:13:smsResetRxAssembly	1
+../application/source/functions/sms.c:130:17:smsCrc16Ccitt.constprop	4
+../application/source/functions/sms.c:224:17:smsPackMessage	13
+../application/source/functions/sms.c:280:17:smsQueueMessage	1
+../application/source/functions/sms.c:287:6:smsHasQueuedMessage	1
+../application/source/functions/sms.c:292:29:smsGetQueuedMessage	1
+../application/source/functions/sms.c:297:6:smsClearQueuedMessage	1
+../application/source/functions/sms.c:303:6:smsHandleReceivedDataFrame	24
+../application/source/functions/sms.c:363:9:smsGetInboxCount	1
+../application/source/functions/sms.c:368:6:smsGetInboxMessage	3
+../application/source/functions/sms.c:382:6:smsDeleteInboxMessage	4
+../application/source/functions/sms.c:410:6:smsClearInbox	1
+../application/source/functions/sms.c:418:6:smsHasRxNotification	1
+../application/source/functions/sms.c:423:6:smsConsumeRxNotification	1

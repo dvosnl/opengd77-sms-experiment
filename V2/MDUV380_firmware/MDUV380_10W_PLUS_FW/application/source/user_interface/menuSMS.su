@@ -1,0 +1,17 @@
+../application/source/user_interface/menuSMS.c:168:13:smsMenuRender	48	static
+../application/source/user_interface/menuSMS.c:193:13:smsRxPopupRender	72	static
+../application/source/user_interface/menuSMS.c:431:13:smsComposeInsertChar	24	static
+../application/source/user_interface/menuSMS.c:221:13:smsViewRender	72	static
+../application/source/user_interface/menuSMS.c:245:13:smsInboxRender	136	static
+../application/source/user_interface/menuSMS.c:295:13:smsSentRender	136	static
+../application/source/user_interface/menuSMS.c:115:13:smsGetDestinationText.constprop	8	static
+../application/source/user_interface/menuSMS.c:393:13:smsComposeRender	64	static
+../application/source/user_interface/menuSMS.c:74:13:smsGetSourceDisplayText.part.0.constprop	48	static
+../application/source/user_interface/menuSMS.c:345:13:smsDetailRender	96	static
+../application/source/user_interface/menuSMS.c:493:14:menuSMSMenu	8	static
+../application/source/user_interface/menuSMS.c:544:14:menuSMSCompose	56	static
+../application/source/user_interface/menuSMS.c:635:14:menuSMSInbox	16	static
+../application/source/user_interface/menuSMS.c:698:14:menuSMSRxPopup	16	static
+../application/source/user_interface/menuSMS.c:783:14:menuSMSView	8	static
+../application/source/user_interface/menuSMS.c:806:14:menuSMSSent	16	static
+../application/source/user_interface/menuSMS.c:869:14:menuSMSDetail	8	static

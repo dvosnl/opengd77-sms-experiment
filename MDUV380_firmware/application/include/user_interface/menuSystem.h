@@ -323,6 +323,8 @@ enum MENU_SCREENS
 	UI_LOCK_SCREEN,
 	UI_PRIVATE_CALL,
 	MENU_CONTACT_NEW,
+	MENU_SMS_MENU,
+	MENU_SMS_COMPOSE,
 #if defined(HAS_COLOURS)
 	MENU_THEME_ITEMS_BROWSER,
 	MENU_COLOUR_PICKER,
@@ -454,6 +456,8 @@ menuStatus_t menuContactListSubMenu(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuContactDetails(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuLanguage(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuPrivateCall(uiEvent_t *event, bool isFirstRun);
+menuStatus_t menuSMSMenu(uiEvent_t *event, bool isFirstRun);
+menuStatus_t menuSMSCompose(uiEvent_t *event, bool isFirstRun);
 menuStatus_t uiMessageBox(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuSatelliteScreen(uiEvent_t *ev, bool isFirstRun);
 #if defined(HAS_GPS)

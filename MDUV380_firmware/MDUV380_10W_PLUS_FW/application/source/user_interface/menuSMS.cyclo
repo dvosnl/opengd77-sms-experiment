@@ -1,0 +1,5 @@
+../application/source/user_interface/menuSMS.c:86:13:smsMenuRender	3
+../application/source/user_interface/menuSMS.c:143:13:smsComposeInsertChar	4
+../application/source/user_interface/menuSMS.c:105:13:smsComposeRender	5
+../application/source/user_interface/menuSMS.c:203:14:menuSMSMenu	8
+../application/source/user_interface/menuSMS.c:231:14:menuSMSCompose	29

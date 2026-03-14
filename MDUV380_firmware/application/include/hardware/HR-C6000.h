@@ -101,6 +101,8 @@ void HRC6000ClearTimecodeSynchronisation(void);
 void HRC6000ClearColorCodeSynchronisation(void);
 void HRC6000SetTalkerAlias(const char *text);
 void HRC6000SetTalkerAliasLocation(uint32_t Lat, uint32_t Lon);
+bool HRC6000StartQueuedSMS(void);
+bool HRC6000IsSendingSMS(void);
 bool HRC6000IRQHandlerIsRunning(void);
 bool HRC6000HasGotSync(void);
 bool HRC6000CCIsHeld(void);

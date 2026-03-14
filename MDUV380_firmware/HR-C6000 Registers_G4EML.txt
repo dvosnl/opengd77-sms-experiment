@@ -1,0 +1,81 @@
+﻿8 Register description
+
+Table 8.1 System Parameter Table
+
+TypeAddR/WNameDefault DefinitionDescriptionReset0x00WDMRnRst0x00Bit70=Reset DMR protocolPHYnRstBit60=Reset the physical layerCodernRstBit50=Reset codecFMnRstBit40=Reset FMVoCoderRstBit30=Reset vocoder interfaceMSKRstBit20=Reset MSK moduleIISRstBit10=Reset I2S interface CodeCRstBit00=Reset Built-in CodeC H/W Config0x01R/WRFTransIQMode Bit70=Normal
+1=Swap I and Q outputsRFRecvIQMode Bit60=Normal
+1=Swap I and Q InputsRFTransMode Bit5-Bit400=IF 
+01=IF IQ 
+10=Baseband IQ
+11=Two Point ModRFRecvModeBit3-Bit200=IF
+01=IF IQ
+10=BasebandBit10=Normal IQ
+1=IQ Balance TestBit0ADC and DAC Clock Phase select0x02R/WTransIsigCenter 0x00Bit7-Bit0Offset for transmit I Signal or Mod1 Output
+The adjustment range is about ± 422mV
+Adjustment step is 3.3mV.0x03R/WRecvIsigCenter 0x00Bit7-Bit0Offset for received I signal0x04R/WTransQsigCenter 0x00Bit7-Bit0Offset for Transmit Q Signal or Mod2 Output0x05R/WRecvQsigCenter0x00Bit7-Bit0Offset for received Q signal0x06R/WVocoder0x40Bit7-Bit600=V_SPI vocoder
+01=AMBE3000
+11=AMBE1000DMRFromBit50=Use AMBE Vocoder
+1=Use V_SPI VocoderVocoderFromBit40=Use DMR received packets
+1=Use Direct Voice Packets  (?) SPIFromBit30=V_SPI from DMR Core
+1=V_SPI from VocoderCodeCModeBit20=Built in
+1=ExternalOpenMusicBit10=off
+1=Play Boot Sound or Call Prompts etc.LocalVocoderControlBit00=System Controlled
+1=MCU Controlled0x07R/WIFFreq20x0BBit7-Bit0IF Frequency High 8 Bits
+IF Frequency =(value/2^24)  * 9.8304Mhz
+(default=450Khz)0x08R/WIFFreq10xB8Bit7-Bit0IF Frequency Mid 8 Bits0x09R/WIFFreq00x00Bit7-Bit0IF Frequency Low 8 bits0x0AR/WClk_enb0x81Bit71=Internal Clock Direct 
+0=Internal Clock from PLLBit6-Bit1ReservedBit0CLKOUT Pin Enable0x0BR/WPLLM0x28Bit7-Bit0PLL M Register0x0CR/WPLLBP0xB3Bit70=Use PLL
+1=Bypass PLLPLL SLEEPBit6ReservedBit5-Bit4PLL Output DividerBit3-Bit0PLL Input Divider0x0DR/WVoice_superframe 0x02Bit7-Bit4ReservedBit3-Bit0Voice Superframe error Timeout Value
+=(Value+1)*360ms0x0ER/WReserved0x0FR/WFSKErro
+Bit7-Bit0Count FSK errors or EVM Values
+When Timeslot InterruptedSystem Parameters0x10R/WModulatorMode0x73Bit70=DMR
+1=FMTierModeBit60=Tier1
+1=Tier2ContinueModeBit50=Continue (Needed to receive CACH)
+1=TimeslotLayerModeBit4-Bit300=Physical Layer
+01=Layer2
+10=Layer3ISRepeaterBit20=Not a repeater
+1=RepeaterISAlignedBit10=Offset
+1=Aligned (Single Frequency Repeat)RepeaterSlotBit00=Slot 1
+1=Slot 2
+Must be =1 in Layer 30x11R/WLocalChanMode0x80Bit70=Direct Simplex
+1=Repeated Simplex (?)Bit60=Direct Duplex (?)
+1=Repeated Duplex Bit5Bit4Bit3Bit2Bit1Bit01=Simultaneous Receive
+0=Only Numbers or Modes (?)0x12R/Wrf_pre_on 0x00Bit7"Slot boundary signal strength rises smoothly and peace sliding down enable"  (something to do with rise and fall times?)Bit62 Point Mod Test Enable. Output 40Hz Sine Wave.Bit5-Bit0RF Switching advance. Receive to Transmit. 100US per step. 0x13WCend_band0x00Bit7 -Bit4Rf_Tx_En and Rf_Rx_En advance rising edgeBit3-Bit0Rf_Tx_En and Rf_Rx_En advance falling edge0x14R/WLocalSreAdrressL 0x01Bit7-Bit0Local Source Address Low 8 bits0x15R/WLocalSreAdrressM 0x00Bit7-Bit0Local Source Address Mid 8 bits0x16R/WLocalSreAdrressH 0x00Bit7-Bit0Local Source Address High 8 bits0x17R/WLocalGroupAdrressL 0x33Bit7-Bit0Local Group Address Low 8 bits0x18R/WLocalGroupAdrresM 0xEfBit7-Bit0Local Group Address Mid 8 bits0x19R/WLocalGroupAdrressH 0x00Bit7-Bit0Local Group Address High 8 bits0x1AR/WLocalBSAdrressL 0xFFBit7-Bit0Local BS Address Low 8 bits0x1BR/WLocalBSAdrresM 0xFFBit7-Bit0Local BS Address Mid 8 bits0x1CR/WLocalBSAdrressH 0xFFBit7-Bit0Local BSAddress High 8 bits0x1DR/WLocal Unaddress0xFFBit7-Bit4"No address Call Receiving Address" (?)MaskUnaddrBit3-Bit0Mask for above 1=Compare 0=Ignore0x1ER/WLocalBroadCast0xFFBit7-Bit4Broadcast Receiving Address MaskBroadCastBit3-Bit0Mask for above 1=Compare 0=Ignore0x1FR/WLocalEMB0x10Bit7-Bit4Local Color CodeBit3Local PI BitBit2Bit1-Bit0PI Encryption Mode0x20R/WLocalAccessPolicy0xAABit7-Bit600=Impolite
+01=Polite to all
+10=Polite to Color CodeBit5-Bit4As for Bit7-Bit6Bit3-Bit2As for Bit7-Bit6Bit1-Bit0As for Bit7-Bit60x21R/WLocalAccessPolicy10xA0Bit7-Bit6As AboveBit5-Bit4As AboveBit30=Impolite
+1=PoliteBit2ReservedBit1Clear Vocoder Encoding Buffer (Auto resets to 0)Bit0Clear Vocoder Decoding Buffer (Auto resets to 0)0x22R/WEncodeStart0x01Bit71=Start Vocoder EncodeEncodeStopBit61=Stop Vocoder EncodeDecodeStartBit51=Start Vocoder DecodeDecodeStopBit41=Stop Vocoder DecodeBit3Reservedsel_I2S_modeBit21=Select Vocoder to I2SselI2StoI2SBit10=SPI 1=I2SAmbe1000_noise_enbBit00=AMBE1000 Squelch enabled0x23R/WReserved0x24R/W0xF8Bit7-Bit2ReservedAMBE1000FrameReptBit1AMBE10000 Frame RepeatAMBE1000ForceSilenBit0AMBE1000 Force Decoder Mute0x2AR/Wspi_clk_cnt0x0BBit7-Bit0SPI Clock=Codec Clock/(value+1)FM0x2BRSql_l0x00Bit7-Bit0Low 8 bits of Squelch Signal in FM0x2CRSql_h0x00Bit7-Bit0High 8 bits of Squelch Signal in FM0x2DR/Wshift_radix0x0BBit7-Bit4FM Decompression 0dB pointBit3-Bit0FM Compression 0dB point0x2ER/Wtx_pre_onBit7-Bit5ReservedBit4-Bit0DMR Transmission advance 100us incrementsCodec0x2FR/W0x00Bit7-Bit0Set I2S Clock Frequency0x32R/WLRCK_CNT_H0x02Bit7-Bit0Set Codec Operating Frequency High Byte0x33R/WLRCK_CNT_L0xFFBit7-Bit0Set Codec Operating Frequency Low ByteFM0x34R/WFMBpfOn0xBEBit71=FM Bandpass Filter onFMCompressorOnBit61=FM Compressor onFMPreEmphasisOnBit51=FM PreEmphasis onFMBandwidthBit4Tx Bandwidth 0=12.5KHz 1=25KHzFMBandwidth_adjBit3IQ Bandwidth 0=12.5KHz 1=25KHzFMBandWidth_rBit2Rx Bandwidth 0=12.5KHz 1=25KHzFMBandWidth_ctcBit1CTCSS Rx Bandwidth 0=12.5KHz 1=25KHzBit0Reserved0x35R/W FM_dev_coef_t0x14Bit7-Bit0FM Modulation Coefficient0x36R/Wmcu_alc_clk_down 0x00Bit7External Codec Clock Disablemcu_vspi_clk_dow
+mcu_vspi_cs_downBit6-Bit5Vocoder Clock Configuremcu_pkt_clk_downBit4Vocoder Packet Clock Disablemcu_ctr_rst1000Bit3AMBE1000 MCU Control Selectmcu_val_rst1000Bit2AMBE1000 MCU ResetBit1Open FM Voice ChannelBit0Reserved0x37R/Wmcu_control_shift0x00Bit7MCU Control Codec enablezoomBit60=Smaller 1=LargerBit50shift_sizeBit4-Bit0DAC Data Shift 1.5dB StepsFM0x3ER/WFM_dev_coef_r0x08Bit7-Bit0FM Modulation Frequency Offset0x3FR/WTR_SIG_LIM0x10Bit7-Bit0FM Modulation Limiter FactorPHY/DLL0x40R/WTxEn0x03Bit7Enable DMR TransmitRxEnBit6Enable DMR ReceiveMasterModeBit50=Passive Timing 1=Active Timing Layer2SlotBit40=current slot inactive 1=current slot activeCRC_MCU_ControlBit31=MCU checks CRC 0=HRC6000 Checks CRCBit2ReservedDecode ModeBit1-Bit000=Test Mode  11=Normal Mode0x41R/WTxNxtSlotEn0x00Bit7Transmit during the next timeslotRxNxtSlotEnBit6Receive during the next timeslotSyncFailBit51=out of syncbegin_v_layer2Bit41=Layer 2 access successCC_Match_CtrlBit3 0=CC decode off   1=CC decode onBit2ReservedBit1ReservedAutoTestBit0Physical Layer Test Enable0x42RTransSlotBit7Current Timeslot SentRecvSlotBit6Current Timeslot ReceivedUsedSlotBit5Current Timeslot activeBit4-Bit0Reserved0x43RRSSILevelHBit7-Bit0RSSI High Byte0x44RRSSILevelLBit7-Bit0RSSI Low Byte0x45R/WSig_Reduce0x00Bit7-Bit0Adjust IQ Amplitude or Mod2 Amplitude0x46R/WPhase_ReduceBit7-Bit0Adjust Mod1 Amplitude0x47R/WTwo_Point_BiasBit7-Bit0Two Point Modulation Offset Low 8 Bits0x48R/WTwo_Point_BiasBit7FSK Error Output EnableBit6-Bit2ReservedBit1-Bit0High 2 bits of Modulation Offset0x49WDEV_LIMITERH0xFFBit7-Bit0Deviation limiter High Byte0x4AWDEV_LIMITERL0x00Bit7-Bit0Deviation Limiter Low Byte0x4BR/WCode_Type10x00Bit7-Bit6Data Type 1011 Frame
+00=BPTC96 codec
+01=Convolution 3/4 Codec
+10=No Codec
+11=BPTC72 CodecBit5-Bit4Data Type 1100 Frame 
+00=BPTC96 codec
+01=Convolution 3/4 Codec
+10=No Codec
+11=BPTC72 CodecBit3-Bit2Data Type 1101 Frame 
+00=BPTC96 codec
+01=Convolution 3/4 Codec
+10=No Codec
+11=BPTC72 CodecBit1-Bit0Data Type 1110 Frame 
+00=BPTC96 codec
+01=Convolution 3/4 Codec
+10=No Codec
+11=BPTC72 Codec0x4CR/WCode_Type2Bit7-Bit6Data Type 1111 Frame 
+00=BPTC96 codec
+01=Convolution 3/4 Codec
+10=No Codec
+11=BPTC72 CodecBit5-Bit3Reserveddata_embrc_ctrlBit2Internal RC controldata_embrc_enBit1Sync embedded in RCvoice_burstF_emb_ctrBit0Voice Burst F Embedded data internal select0x4ERAD_BiasIBit7-Bit0ADC DC Offset Detection I channel0x4FRAD_BiasQBit7-Bit0ADC DC Offset Detection Q channel0x50R/WLocalDataTypeBit7-Bit4Data Slot Type 4 bit codeLocalVoDBit30=Data 1=Voice or RCBit21=Data Type is Data Frame HeaderLocalLCSSBit1-Bit0LCSS for each Transmit Slot0x51RDLLRecvDataTypeBit7-Bit4Data Type or Voice Frame sequence numberDLLRecvPIBit3Received PIDLLRecvCRCBit20=CRC good 1=CRC BadSyncClassBit1-Bit000=Sync Header
+01=Voice
+10=Data
+11=RC0x52RDLLCCBut7-Bit4Received Color CodeR/WCACHBit3Received AT  (Busy Bit) or Tx AT when acting as BSR/WBit2Received TC  (Timeslot) or Tx TC when acting as BSBit1-Bit0Received LCSS0x5FR/WSync_Detect_CtrlBit7Allow Detection of  MS SyncBit6Allow Detection of  BS SyncBit5Allow Detection of  TDMA1 SyncBit4Allow Detection of  TDMA2 SyncBit3ReservedBit2ReservedRRecv_Sync_typeBit1-Bit0Received Sync Type
+00=MS
+01=BS
+10=TDMA1
+11=TDMA20x81WInterClass1MaskBit7-Bit0Interrupt mask bits for reg 0x820x82RInterRequestDenyBit7Request RejectedInterSendStartBit6Start of TransmissionInterSendStopBit5End of TransmissionInterLateEntryBit4Late EntryInterRecvDataBit3Data ReceivedInterRecvMessageBit2Message ReceivedInterQuitBit1Voice Unusual ExitInterPHYOnlyBit0Physical Layer receive.0x83WInterClearBit7-Bit0Interrpt clear bits for Reg 0x820x85WSendStartMaskBit7-Bit0Mask Bits for Reg 0x860x86RTx_finishedBit7Send Complete Voice and dataTx_complet_dataBit6Fragment sent completeTx_denied_overtime_oBit5Voice OACSU wait Timeoutrdy_1st_interpBit4Layer 2 Interrupt tx_complet_confirmedBit3Confirmation packet receivedShortLCBit2Short LC Receivedtx_denied_overtime_bsBit1BS Activation timeoutlost_gps_ppsBit0GPS Pulse Lost0x87WSendStopMaskBit7-Bit0Mask Bits for Reg 0x860xB9R/WSys_clk_Reg0x04Bit7-Bit0Configure System Clock Frequency0xC0R/Wrf_pre_on_rx0x00Bit7-Bit6ReservedBit5-Bit0Rf Signall advance 100us increments0xC2R/WCodec_AGC_CTRL0x00Bit7Mic Gain AGC EnableBit6-Bit0ReservedCODEC0xE0R/WBit71=Codec Under MCU ControlBit6Linein1 EnableBit5Linein2 EnableBit4LineOut1 EnableBit3LineOut2 EnableBit2Mic_n EnableBit1Mic_p EnableBit01=I2S Slave Mode 0xE2R/WBit7Default 0Bit6DAC Switch EnableBit5CODEC Bias Switch EnableBit4CODEC ADC EnableBit3CODEC ADC Mic Amplification EnableBit2Anti Pop EnabledBit1DAC Output enabledBit0CODEC Power Down0xE3R/WBit7-Bit6Default 01Bit5-Bit4Default 01Bit3-Bit1Default 001Bit0CODEC Internal Passthrough0xE4R/WBit7-Bit6LineOut Gain
+00=0dB
+01=2dB
+10=4dB
+11=6dBBit5-Bit4Mic 1st Stage Gain
+00=0dB
+01=-6dB
+10=-12dBBit3-Bit0Mic Second Stage Gain
+3dB Steps0xE5R/WBit7-Bit0Default 00001010

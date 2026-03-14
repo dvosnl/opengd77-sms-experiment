@@ -61,7 +61,9 @@ void codecDecode(uint8_t *indata_ptr, int numbBlocks)
 			"STR R1, [SP, #0x00]\n"
 			"LDR R3, =0\n"
 			"LDR R1, =80\n"
-			"BL " QU(AMBE_DECODE)
+			"LDR R4, =" QU(AMBE_DECODE) "\n"
+			"ORR R4, R4, #1\n"
+			"BLX R4\n"
 			"ADD SP, SP, #0x10\n"
 			"POP {R4-R11}"
 		);
@@ -83,7 +85,9 @@ void codecDecode(uint8_t *indata_ptr, int numbBlocks)
 			"STR R1, [SP, #0x00]\n"
 			"LDR R3, =0\n"
 			"LDR R1, =80\n"
-			"BL " QU(AMBE_DECODE)
+			"LDR R4, =" QU(AMBE_DECODE) "\n"
+			"ORR R4, R4, #1\n"
+			"BLX R4\n"
 			"ADD SP, SP, #0x10\n"
 			"POP {R4-R11}"
 		);
@@ -120,7 +124,9 @@ void codecEncodeBlock(uint8_t *outdata_ptr)
 		"STR R1, [SP, #0x00]\n"
 		"LDR R3, =80\n"
 		"LDR R1, =0\n"
-		"BL " QU(AMBE_ENCODE)
+		"LDR R4, =" QU(AMBE_ENCODE) "\n"
+		"ORR R4, R4, #1\n"
+		"BLX R4\n"
 		"ADD SP, SP, #0x14\n"
 		"POP {R4-R11}"
 	);
@@ -143,7 +149,9 @@ void codecEncodeBlock(uint8_t *outdata_ptr)
 		"STR R1, [SP, #0x00]\n"
 		"LDR R3, =80\n"
 		"LDR R1, =0\n"
-		"BL " QU(AMBE_ENCODE)
+		"LDR R4, =" QU(AMBE_ENCODE) "\n"
+		"ORR R4, R4, #1\n"
+		"BLX R4\n"
 		"ADD SP, SP, #0x14\n"
 		"POP {R4-R11}"
 	);
@@ -157,7 +165,9 @@ void codecEncodeBlock(uint8_t *outdata_ptr)
 		"MOV R3, R1\n"
 		"LDR R2, =0\n"
 		"MOV R1, R0\n"
-		"BL " QU(AMBE_ENCODE_ECC)
+		"LDR R4, =" QU(AMBE_ENCODE_ECC) "\n"
+		"ORR R4, R4, #1\n"
+		"BLX R4\n"
 		"ADD SP, SP, #0x14\n"
 		"POP {R4-R11}"
 	);

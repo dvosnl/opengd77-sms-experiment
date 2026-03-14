@@ -1056,6 +1056,19 @@ static void handleEvent(uiEvent_t *ev)
 
 	if (ev->events & KEY_EVENT)
 	{
+	#if !defined(PLATFORM_MD9600)
+		if (KEYCHECK_LONGDOWN(ev->keys, KEY_GREEN))
+		{
+			if (uiDataGlobal.Scan.active)
+			{
+				uiChannelModeStopScanning();
+			}
+
+			menuSystemPushNewMenu(MENU_SMS_MENU);
+			return;
+		}
+	#endif
+
 #if defined(PLATFORM_MD9600)
 		if (KEYCHECK_LONGDOWN(ev->keys, KEY_GREEN))
 		{

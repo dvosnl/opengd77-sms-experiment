@@ -1,0 +1,215 @@
+DMR SMS TECHNISCHE DOCUMENTATIE (UITGEBREIDE VERSIE) Focus:
+Implementatie van SMS via DMR voor STM32 radio’s zoals TYT UV380 / UV390
+Doel: Firmware implementatie in bijvoorbeeld OpenGD77
+
+  ------------------
+  1. BASIS VAN DMR
+  ------------------
+
+DMR (Digital Mobile Radio) gebruikt 4FSK modulatie met een symbol rate
+van 4800 symbolen per seconde. De effectieve bitrate is 9600 bit/s.
+
+DMR gebruikt TDMA met twee timeslots.
+
+Belangrijke parameters:
+
+Symbol rate: 4800 sym/s Bitrate: 9600 bit/s Timeslot duur: 30 ms Slots
+per frame: 2
+
+Elke transmissie bestaat uit bursts met foutcorrectie.
+
+Belangrijke burst types:
+
+Voice frame Control signalling block (CSBK) Data header Rate 1 data Rate
+3/4 data Rate 1/2 data
+
+SMS gebruikt meestal:
+
+CSBK Data header Rate 1/2 data blocks
+
+  -------------------
+  2. CSBK STRUCTUUR
+  -------------------
+
+Een CSBK (Control Signalling Block) is 96 bits.
+
+Structuur:
+
+Last Block flag 1 bit Protect flag 1 bit Opcode 6 bits Feature ID 8 bits
+Data 64 bits CRC 16 bits
+
+CRC gebruikt CCITT polynomial 0x1021.
+
+  --------------------------
+  3. DATA HEADER STRUCTUUR
+  --------------------------
+
+De Data Header definieert een datapakket.
+
+Velden:
+
+Group flag Response request Reserved Format Service Access Point Pad
+octet count Destination ID Source ID Full message flag Blocks to follow
+Resync flag Sequence number Fragment sequence number Header CRC
+
+SAP waarde bepaalt protocol bovenop DMR.
+
+Belangrijke SAP waarden:
+
+1 = proprietary 2 = compressed TCP/IP 4 = compressed UDP/IP
+
+SMS implementaties gebruiken vaak SAP 4.
+
+  -------------------------
+  4. DATA BLOCK STRUCTUUR
+  -------------------------
+
+Na de header volgen datablocks.
+
+Een Rate 1/2 datablock bevat:
+
+96 data bits 100 foutcorrectie bits
+
+Encoding gebruikt:
+
+BPTC (196,96)
+
+Dit betekent dat 96 bits payload worden uitgebreid naar 196 bits voor
+foutcorrectie.
+
+  -----------------
+  5. FRAGMENTATIE
+  -----------------
+
+Een SMS past niet in één datablock.
+
+Daarom wordt het bericht opgesplitst.
+
+Voorbeeld:
+
+Data header Block 1 Block 2 Block 3 Block 4 Block 5
+
+Het veld “Blocks to follow” in de header geeft het aantal blocks.
+
+  ----------------------
+  6. PAYLOAD STRUCTUUR
+  ----------------------
+
+Veel radio’s gebruiken pseudo IP encapsulation.
+
+Structuur:
+
+IP header UDP header tekstpayload
+
+Tekst encoding:
+
+UTF‑16BE
+
+Voorbeeld tekst:
+
+HELLO
+
+hex:
+
+00 48 00 45 00 4C 00 4C 00 4F
+
+  -----------------------------
+  7. COMPLETE SMS TRANSMISSIE
+  -----------------------------
+
+Typische volgorde:
+
+CSBK preamble Data header Data block Data block Data block
+
+Totale airtime ongeveer 150 tot 300 milliseconden.
+
+  -------------------------
+  8. CRC EN FOUTCORRECTIE
+  -------------------------
+
+DMR gebruikt meerdere CRC systemen:
+
+CRC16 CCITT CRC9 CRC5
+
+Foutcorrectie:
+
+Golay Hamming BPTC Trellis
+
+Voor data wordt vooral BPTC gebruikt.
+
+  --------------------------
+  9. IMPLEMENTATIE STAPPEN
+  --------------------------
+
+Stap 1 ASCII tekst converteren naar UTF16
+
+Stap 2 UDP pakket maken
+
+Stap 3 IP header toevoegen
+
+Stap 4 payload fragmenteren in 96 bit blokken
+
+Stap 5 Data header maken
+
+Stap 6 CSBK preamble genereren
+
+Stap 7 BPTC encoding uitvoeren
+
+Stap 8 bursts verzenden in juiste TDMA slots
+
+  ----------------------------------------
+  10. MOTOROLA STYLE SMS FRAME VOORBEELD
+  ----------------------------------------
+
+Onderstaand voorbeeld is een vereenvoudigde Motorola-achtige SMS
+transmissie.
+
+CSBK Preamble (hex voorbeeld)
+
+BD 80 03 00 12 34 00 56 78 AA BB
+
+Uitleg:
+
+BD = CSBK opcode 80 = data follow flag 03 = aantal datablocks 001234 =
+destination radio ID 005678 = source radio ID AABB = CRC
+
+Data Header voorbeeld
+
+02 40 00 12 34 00 56 78 83 00 CC DD
+
+Uitleg:
+
+02 = unconfirmed data 40 = SAP = UDP/IP 001234 = destination ID 005678 =
+source ID 83 = full message flag + block count 00 = fragment nummer CCDD
+= CRC
+
+Payload voorbeeld (HELLO)
+
+00 48 00 45 00 4C 00 4C 00 4F
+
+Deze payload wordt in meerdere datablocks verdeeld.
+
+  ---------------------------------------
+  11. PRAKTISCHE IMPLEMENTATIEPROBLEMEN
+  ---------------------------------------
+
+Veel voorkomende fouten:
+
+CRC fout verkeerd block aantal fragment nummer fout verkeerde SAP waarde
+padding vergeten foute TDMA timing
+
+  ------------------
+  12. SAMENVATTING
+  ------------------
+
+DMR SMS in Tier II is niet volledig gestandaardiseerd.
+
+De meeste radio’s gebruiken vendor-specifieke implementaties gebaseerd
+op:
+
+CSBK signalling Data headers fragmentatie van datablocks UDP/IP
+encapsulation
+
+Implementatie in STM32 firmware is mogelijk maar vereist:
+
+correcte frame structuur CRC berekeningen BPTC encoding TDMA timing

@@ -1,0 +1,214 @@
+DMR SMS-overzicht
+DMR Tier II (conventioneel) kent in de standaard geen expliciete SMS-faciliteit. De ETSI DMRspecificatie beschrijft wél een Short Data Service in algemene termen 1 , maar concrete SMS-berichten
+zijn vooral gedefinieerd in Tier III (trunking) en in Motorola’s eigen protocol. In de praktijk gebruiken
+veel Chinese merken (TYT/Baofeng e.d.) een eigen variant gebaseerd op DMR Control Signalling Blocks
+(CSBK’s) om tekstberichten te versturen. Zoals een ontwikkelaar opmerkt: “Message sending is not part
+of DMR standard. Messages are transmitted in CSBKs (Control Signalling Blocks)” 2 . Met andere
+woorden: bij eenvoudige Tier II-talkgroep- of individueel-oproep setup bestaat geen
+gestandaardiseerde SMS-layer; fabrikanten steken hun eigen frame-indelingen in de datapakketten.
+Tier III DMR (trunked) heeft wél een Short Data Message procedure volgens ETSI TS 102 361-4 3 , maar
+dat betreft complexe trunk-endes en is voor gewoon repeatergebruik niet direct toepasbaar op
+eenvoudige UV380/390-radio’s.
+Motorola’s DMR Standard SMS (plasmaanduiding via UDP) is beschreven als UTF-16BE platte tekst over
+UDP-poort 5016 4 . Motorola’s alternatieve TMS-protocol gebruikt UDP/4007 met ACKs 5 . Veel
+Chinese radio’s ondersteunen (zonder duidelijke uitleg) een “Moto-compatibele” modus en vaak geen
+volledige DMR-standaard SMS. De achterliggende DMR-specificatie (ETSI TS 102 361) geeft voor Tier II
+wél de basiselementen van DMR PDUs (zoals CSBK en “Defined Data” kaders) maar definieert geen SMSberichten op applicatieniveau.
+
+Relevante ETSI-specificatie (TS 102 361)
+De ETSI TS 102 361-serie regelt DMR. Part 1 (luchtinterface) en Part 2 (spraak/generic services)
+definiëren o.m. de Control Signalling Blocks (CSBK) 6 . In Part 2 staan gedetailleerde beschrijvingen van
+CSBK-PDUs (bijv. “Unit to Unit request/answer”) 7 , maar geen SMS-service. Er is wel sprake van een
+“Short Message Service (SMS)” als algemene service 8 , maar geen invulling voor Tier II beyond CSBK.
+TS 102 361-4 beschrijft Tier III (trunking) inclusief Short Data Message procedures 3 , gebruikt voor
+bijvoorbeeld data- en alarmberichten tussen station en centrale. Tier II (direct/BS mode) zou volgens
+spec in principe Data CSBK of Data Service kunnen gebruiken, maar dit is niet uitgewerkt als
+eindgebruikers-SMS. Samengevat: ETSI noemt SMS als dienst, maar laat over Tier II vrij – SMS in de
+praktijk hangt af van fabrikantimplementaties.
+
+Open source implementaties
+De open firmware OpenGD77 ondersteunt officieel nog geen SMS. Zo vermeldt de release-readme (mei
+2021) dat “sending and receiving of text/SMS messages” niet is geïmplementeerd 9 . Er zijn wel
+pogingen: ontwikkelaars in het OpenGD77-forum bespraken experimenten. Een voorbeeld is het werk
+van KY4YI, die een DMR SMS-implementatie in Moto- (Motorola-) formaat beschreef. Daarbij wordt voor
+verzending eerst een preambule-CSBK verzonden, daarna een “Data Header PDU” en vervolgens één of
+meer datablokken (fragmenten van een IP/UDP-bericht) 10 11 . In dit schema gebruikt men bijv. UDP-
+
+1
+
+poort 4007 (Moto SMS) en UTF-16BE-tekst, en wordt elke 12-byte datablok met CRC beschermd. KY4YI’s
+code (en een bijbehorende specificatie) toont concreet:
+• Preambule-CSBK (12 bytes): OpCode 0xBD ( BD hex) met het “data follow” bit (0x80) en het
+aantal volgende blokken 12 . Vervolgbits geven aan of het groeps- of individueel adres is.
+Vervolgens volgt bestemming (3 bytes) en bron-ID (3 bytes) en een CRC (XOR-masker 0xA5A5)
+12 .
+• Data Header PDU (12 bytes): Eerste byte bevat bit7=group-flag, bits1-0 = 0x02 (unconfirmed)
+11 . Tweede byte = 0x4<<4 (SAP=4, staat voor IP/UDP data) plus eventuele opvulbits. Daarna 3byte bestemmings-ID en 3-byte bron-ID. Byte 8 heeft 0x80|nBlokken (MSB ‘full packet’ flag
+gezet) en byte 9 is fragmentnummer (0 voor eerste fragment) 11 . De laatste 2 bytes zijn een
+CRC16 met mask 0xCCCC 13 .
+• Datablokken: De daadwerkelijke tekst (UTF-16BE, 2 bytes per karakter) wordt verpakt in IP/UDP,
+gefragmenteerd op 12-byte blokken. (In KY4YI’s voorbeeld begint de tekst in byte 38 van het IP/
+UDP-payload 14 15 .) De code berekent checksum en IP-ID etc.
+Deze benadering is een voorbeelden van “Moto-format SMS”. Voor DMR Standard (ETSI) zou men UDP/
+5016 en een ander headerformaat gebruiken, maar dat is niet gedocumenteerd in ETSI. De OpenGD77gemeenschap heeft geen kant-en-klare firmwaremod voor sms, maar de geschetste implementatie in
+de forumcode laat zien hoe dat eruit kan zien. MMDVMHost geeft geen ingebouwde SMS-functie: er is
+discussie waarin opgemerkt wordt dat “no standard for SMS in DMR” bestaat, en dat wat er verzonden
+moet worden sterk van radio afhankelijk is 2 . Ook DMRGateway (BrandMeister-gateway) ondersteunt
+SMS via internet en netwerkinstellingen, maar dat verplaatst het probleem naar netwerk-naar-radio
+(eventueel via de Hub/RMS).
+
+TYT UV-380/UV-390 beperkingen
+De TYT UV-380/UV-390 gebruiken de STM32H7 MCU met Hytera HR-C6000 DMR-chips. Hardwarematig
+kunnen zij alle officiële DMR-kanalen uitzenden en ontvangen, inclusief de mogelijkheid van
+datapakketten. Er is geen bekende hardware-barrière tegen SMS: de chipsets kunnen ook CSBK- en
+datapakketten moduleren. Beperkingen zijn vooral firmware-matig: de open firmware heeft geen SMSUI, en opslag voor extra code is beperkt. Zo merkte de ontwikkelaar op dat SMS-support “heel veel extra
+code” vereist, en mogelijk niet in het kleien MK22 ROM (GD-77) past 16 . De STM32-versies (UV-380/390)
+hebben meer flash en zouden het wellicht kunnen herbergen. Andere issues: er bestaat weinig publieke
+documentatie van het HR-C6000/D6 chipsetgedrag voor SMS. OpenGD77-ontwikkelaars stellen dat “we
+do not have enough documentation [about SMS in the chip]” 17 . Praktisch betekent dit dat men vaak
+via trial-&-error of reverse-engineering de juiste frames moet vormen, zoals in de voorbeelden
+hierboven. Samenvattend: de hardware kan het technisch, maar de firmware (OpenGD77 of stock CPS)
+ondersteunt SMS (nog) niet volledig, behalve door het injecteren van zelfgemaakte datapakketten.
+
+PDU-structuren en protocollagen
+Belangrijke protocolelementen voor SMS in DMR Tier II (praktijk Moto-formaat) zijn dus: CSBKpreambule, Data Header PDU, en Datablokken. In de DMR luchtinterface worden CSBKs en “Data2”frames op een datakanaal verstuurd, telkens gecodeerd (Half Rate of Full Rate) met blokcode en FEC. De
+fragmentatie loopt typisch over meerdere timeslots. Adressering: de ID’s in header en CSBK komen
+overeen met DMR-ID’s (3 bytes). Er is onderscheid tussen groepsberichten (group bit) en individueel
+(unit). Omdat er meestal geen ACK-protocol op radio zit (unconfirmed SMS), wordt enkel de datavereiste
+overgedragen. Aandachtspunten: platte ASCII-tekst moet naar UTF-16BE (2 bytes per teken)
+
+2
+
+geconverteerd worden, bitorder en CRC-maskers (XOR-mask) correct gebruikt worden, en soms
+padding toegevoegd zodat de lengte op 12 bytes uitkomt (halfrate PDU-lengte). Na samenstellen van de
+bytes zoals hierboven, moet de hardware de PDUs in 28-ms slots uitzenden (een half-rate frame van 144
+bits payload per slot).
+Kaderstructuren (voor Moto-formaat) samengevat:
+
+PDU-type
+
+Lengte
+(bytes)
+
+CSBK
+preamble
+
+12
+
+Voorbeeldvelden
+0xBD (CSBK-opcode), 0x80 (data-flag) + groepbit, blokken-aantal,
+bestemmings-ID (3b), bron-ID (3b), CRC16 (mask 0xA5A5) 12 .
+Bit7=group, bits1-0= 0x02 (unconfirmed); byte1= 0x40 (SAP=4 IP)
+
+Data Header
+PDU
+
+12
+
+11 ; dan bestemmings-ID (3b), bron-ID (3b);
+
+byte8= 0x80|nBlokken (MSB=full), byte9=fragmentno (0 voor
+eerste); CRC16 (mask 0xCCCC) 11 .
+
+Datablokken
+
+12 per
+stuk
+
+IP/UDP-header (+fragmentnrs) en data: voor Moto doorgaans UDP
+src/dst= 0x0FA7 (4007), length, te verzenden tekens (UTF-16BE),
+checksums 18
+
+19 . Elke 12-byte blok gaat in een half-rate slot.
+
+Voorbeeld: het Moto/IP-tekstartikel begint bij offset 38 in het IP-payload (de tekst zelf is msg[i] naar
+ret[38+i*2]) 19 , en de UDP-poort op 4007 is zichtbaar in ret[20..23] = 0x0F A7
+
+18 .
+
+Zoals
+
+voorgeschreven door het forumvoorbeeld wordt een IPv4-header geconstrueerd met checksum en
+sequence-veld 20 21 .
+
+Bronnen en implementaties
+In het OpenGD77-ontwikkelaarsforum staat de detaillering van dit Moto-sms-formaat en een proof-ofconcept code gepubliceerd door amateurontwikkelaars (bijv. KY4YI) 22 12 . Daarin wordt verwezen
+naar een uitgebreide specificatie (DMR Text/SMS Specification) en een implementatievoorbeeld in Ccode. Ook Hamfora en Reddit-discussies bevestigen dat Chinese DMR-radio’s verschillende SMSformaten (Moto, Hytera, custom) hanteren en vaak niet de ETSI-norm volgen 4 2 . De officiële ETSI
+specificaties zijn vrij beschikbaar, maar bevatten geen gebruiksgereed Tier II SMS-protocol. De
+onofficiële bronnen (forums, GitHub) zijn daarom essentieel om SMS op deze radio’s na te bootsen.
+Bronnen: ETSI TS 102 361-2/4 (DMR-spec’s); OpenGD77-firmware readme 9 en forums 22 ; GitHubproject DMRText (SMS-specificatie); Amateur-implementaties in OpenGD77/MMDVM 11 4 . Deze
+beschrijving volgt de verzamelde specificaties en implementatievoorbeelden om SMS via DMR (Tier II)
+technisch te doorgronden.
+
+TS 102 361-2 - V2.3.1 - Electromagnetic compatibility and Radio spectrum Matters (ERM);
+Digital Mobile Radio (DMR) Systems; Part 2: DMR voice and generic services and facilities
+1
+
+6
+
+7
+
+8
+
+https://www.etsi.org/deliver/etsi_ts/102300_102399/10236102/02.03.01_60/ts_10236102v020301p.pdf
+
+software defined radio - How to send DMR SMS using MMDVM modem or hackrf? - Amateur Radio
+Stack Exchange
+2
+
+https://ham.stackexchange.com/questions/15967/how-to-send-dmr-sms-using-mmdvm-modem-or-hackrf
+
+3
+
+3 TS 102 361-4 - V1.8.1 - Electromagnetic compatibility and Radio spectrum Matters (ERM); Digital
+Mobile Radio (DMR) Systems; Part 4: DMR trunking protocol
+
+https://www.etsi.org/deliver/etsi_ts/102300_102399/10236104/01.08.01_60/ts_10236104v010801p.pdf
+4
+
+5
+
+DMR Standard Message Compatibility : r/DMR
+
+https://www.reddit.com/r/DMR/comments/1fu7u6u/dmr_standard_message_compatibility/
+9
+
+www.opengd77.com
+
+https://www.opengd77.com/downloads/releases/MK22/R20210529/readme.txt
+10
+
+11
+
+12
+
+13
+
+14
+
+15
+
+18
+
+19
+
+20
+
+21
+
+22
+
+Speficiation for DMR SMS Formats - OpenGD77
+
+https://www.opengd77.com/archive/viewtopicc1cb.html?f=16&t=4079&
+16
+
+17
+
+Enhancing MMDVM mode with Text/Data - OpenGD77
+
+https://www.opengd77.com/archive/viewtopicf522.html?f=16&t=4030&
+
+4
+
+

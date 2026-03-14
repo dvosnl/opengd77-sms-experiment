@@ -29,6 +29,7 @@
 
 #include "hardware/HR-C6000.h"
 #include "functions/settings.h"
+#include "functions/sms.h"
 #if defined(USING_EXTERNAL_DEBUGGER)
 #include "SeggerRTT/RTT/SEGGER_RTT.h"
 #endif
@@ -246,11 +247,15 @@ static struct
 	volatile int lastRxColorCodeCount;
 	volatile uint32_t lastRxColorCodeTime;
 	volatile bool ccHold;
+	volatile bool smsActive;
+	volatile uint8_t smsFrameCount;
+	volatile uint8_t smsFrameIndex;
 	uint8_t bufferLimitReachedCount;
 	volatile int ccHoldTimer;
 	volatile uint32_t ccHoldReleaseTickTime;
 	int wakeTriesCount;
 	int hotspotPostponedFrameHandling;
+	uint8_t smsFrames[SMS_MAX_DATA_BLOCKS + 2][LC_DATA_LENGTH];
 	char talkAliasText[33];
 	uint8_t talkAliasLocation[7];
 } hrc = {
@@ -292,6 +297,9 @@ static struct
 		.lastRxColorCode = 0xFF,
 		.lastRxColorCodeCount = 0,
 		.lastRxColorCodeTime = 0,
+		.smsActive = false,
+		.smsFrameCount = 0,
+		.smsFrameIndex = 0,
 		.bufferLimitReachedCount = 0,
 		.ccHold = true,
 		.ccHoldTimer = 0,
@@ -319,6 +327,8 @@ static inline void hrc6000RxInterruptHandler(void);
 static void hrc6000TransitionToTx(void);
 static void hrc6000InitDigitalState(void);
 static void hrc6000TriggerPrivateCallQSODataDisplay(void);
+static void hrc6000SendSMSFrame(void);
+static uint8_t hrc6000GetSmsDataType(void);
 
 static HRC6000_Tone1Config_t savedTone1Config = { .Mode = 0, .Dev = 0, .D1 = 0 };
 
@@ -1712,9 +1722,17 @@ void hrc6000TimeslotInterruptHandler(void)
 
 		case DMR_STATE_TX_START_1: // Start TX (second step)
 			LedWrite(LED_RED, 1); // for repeater wakeup
-			hrc6000SendPcOrTgLCHeader();
-			SPI0WritePageRegByte(0x04, 0x41, 0x80);    // Transmit during next Timeslot
-			SPI0WritePageRegByte(0x04, 0x50, 0x10);    // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			if (hrc.smsActive)
+			{
+				hrc6000SendSMSFrame();
+				SPI0WritePageRegByte(0x04, 0x41, 0x80);    // Transmit during next Timeslot
+			}
+			else
+			{
+				hrc6000SendPcOrTgLCHeader();
+				SPI0WritePageRegByte(0x04, 0x41, 0x80);    // Transmit during next Timeslot
+				SPI0WritePageRegByte(0x04, 0x50, 0x10);    // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			}
 			trxIsTransmitting = true;
 			slotState = DMR_STATE_TX_START_2;
 			break;
@@ -1726,7 +1744,14 @@ void hrc6000TimeslotInterruptHandler(void)
 
 		case DMR_STATE_TX_START_3: // Start TX (fourth step)
 			SPI0WritePageRegByte(0x04, 0x41, 0x80);     // Transmit during Next Timeslot
-			SPI0WritePageRegByte(0x04, 0x50, 0x10);     // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			if (hrc.smsActive)
+			{
+				hrc6000SendSMSFrame();
+			}
+			else
+			{
+				SPI0WritePageRegByte(0x04, 0x50, 0x10);     // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			}
 			slotState = DMR_STATE_TX_START_4;
 			break;
 
@@ -1734,7 +1759,7 @@ void hrc6000TimeslotInterruptHandler(void)
 			SPI0WritePageRegByte(0x04, 0x41, 0x00); 	// Do nothing on the next TS
 			slotState = DMR_STATE_TX_START_5;
 
-			if (settingsUsbMode != USB_MODE_HOTSPOT)
+			if ((hrc.smsActive == false) && (settingsUsbMode != USB_MODE_HOTSPOT))
 			{
 				hrc.ambeBufferCount = 0;
 				hrc.deferredUpdateBufferOutPtr = deferredUpdateBuffer;
@@ -1745,8 +1770,15 @@ void hrc6000TimeslotInterruptHandler(void)
 
 		case DMR_STATE_TX_START_5: // Start TX (sixth step)
 			SPI0WritePageRegByte(0x04, 0x41, 0x80);     // Transmit during next Timeslot
-			SPI0WritePageRegByte(0x04, 0x50, 0x10);     // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
-			hrc.TAPhase = 0;
+			if (hrc.smsActive)
+			{
+				hrc6000SendSMSFrame();
+			}
+			else
+			{
+				SPI0WritePageRegByte(0x04, 0x50, 0x10);     // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+				hrc.TAPhase = 0;
+			}
 			slotState = DMR_STATE_TX_1;
 			break;
 
@@ -1763,6 +1795,22 @@ void hrc6000TimeslotInterruptHandler(void)
 			break;
 
 		case DMR_STATE_TX_2: // Ongoing TX (active timeslot)
+			if (hrc.smsActive)
+			{
+				if (hrc.smsFrameIndex < hrc.smsFrameCount)
+				{
+					hrc6000SendSMSFrame();
+					SPI0WritePageRegByte(0x04, 0x41, 0x80);                      // Transmit during next Timeslot
+				}
+				else
+				{
+					SPI0WritePageRegByte(0x04, 0x41, 0x00);
+				}
+
+				slotState = DMR_STATE_TX_1;
+				break;
+			}
+
 			if (hrc.transmissionEnabled)
 			{
 				if (settingsUsbMode == USB_MODE_HOTSPOT)
@@ -1826,6 +1874,14 @@ void hrc6000TimeslotInterruptHandler(void)
 			break;
 
 		case DMR_STATE_TX_END_1: // Stop TX (first step)
+			if (hrc.smsActive)
+			{
+				hrc.smsActive = false;
+				SPI0WritePageRegByte(0x04, 0x41, 0x00);
+				slotState = DMR_STATE_TX_END_2;
+				break;
+			}
+
 			if (getCurrentTATxFlag() != TA_TX_OFF)
 			{
 				hrc6000SendPcOrTgLCHeader();
@@ -2029,9 +2085,45 @@ static void hrc6000InitDigitalState(void)
 	hrc.hasAudioData = false;
 	hrc.qsoDataTimeout = 0;
 	hrc.skipOneTS = false;
+	hrc.smsActive = false;
+	hrc.smsFrameCount = 0;
+	hrc.smsFrameIndex = 0;
 	hrc.lastRxColorCode = 0xFF;
 	hrc.lastRxColorCodeCount = 0;
 	monitorModeData.dmrIsValid = false;
+}
+
+static uint8_t hrc6000GetSmsDataType(void)
+{
+	if (hrc.smsFrameIndex == 0)
+	{
+		return 0x30U;
+	}
+
+	if (hrc.smsFrameIndex == 1)
+	{
+		return 0x64U;
+	}
+
+	return 0x70U;
+}
+
+static void hrc6000SendSMSFrame(void)
+{
+	if ((hrc.smsActive == false) || (hrc.smsFrameIndex >= hrc.smsFrameCount))
+	{
+		return;
+	}
+
+	SPI0WritePageRegByteArray(0x02, 0x00, hrc.smsFrames[hrc.smsFrameIndex], LC_DATA_LENGTH);
+	SPI0WritePageRegByte(0x04, 0x50, hrc6000GetSmsDataType());
+	hrc.smsFrameIndex++;
+
+	if (hrc.smsFrameIndex >= hrc.smsFrameCount)
+	{
+		trxTransmissionEnabled = false;
+		hrc.transmissionEnabled = false;
+	}
 }
 
 void HRC6000InitInterrupts(void)
@@ -2754,6 +2846,36 @@ void HRC6000SetTalkerAliasLocation(uint32_t Lat, uint32_t Lon)
 	hrc.talkAliasLocation[4] = (intLat >> 16) & 0xFF;
 	hrc.talkAliasLocation[5] = (intLat >> 8) & 0xFF;
 	hrc.talkAliasLocation[6] = (intLat >> 0) & 0xFF;
+}
+
+bool HRC6000StartQueuedSMS(void)
+{
+	const smsPreparedMessage_t *message = smsGetQueuedMessage();
+
+	if ((message == NULL) || (trxGetMode() != RADIO_MODE_DIGITAL) || trxTransmissionEnabled || trxIsTransmitting || (slotState != DMR_STATE_IDLE))
+	{
+		return false;
+	}
+
+	memcpy(hrc.smsFrames[0], message->csbk, LC_DATA_LENGTH);
+	memcpy(hrc.smsFrames[1], message->dataHeader, LC_DATA_LENGTH);
+	for (uint8_t block = 0U; block < message->blockCount; block++)
+	{
+		memcpy(hrc.smsFrames[block + 2U], message->blocks[block], LC_DATA_LENGTH);
+	}
+
+	hrc.smsFrameCount = (uint8_t)(message->blockCount + 2U);
+	hrc.smsFrameIndex = 0U;
+	hrc.smsActive = true;
+	smsClearQueuedMessage();
+	HRC6000ClearIsWakingState();
+	trxEnableTransmission();
+	return true;
+}
+
+bool HRC6000IsSendingSMS(void)
+{
+	return hrc.smsActive;
 }
 
 bool HRC6000IRQHandlerIsRunning(void)

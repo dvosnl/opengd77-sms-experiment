@@ -103,6 +103,8 @@ menuDataGlobal_t menuDataGlobal =
 				NULL,// Lock screen
 				NULL,// Private Call
 				NULL,// New Contact
+				NULL,// SMS menu
+				NULL,// SMS compose
 #if defined(HAS_COLOURS)
 				NULL,// Theme items browser
 				NULL,// Colour picker
@@ -161,6 +163,8 @@ static menuFunctionData_t menuFunctions[] =
 		{ menuLockScreen,           NULL, NULL, 0 },
 		{ menuPrivateCall,          NULL, NULL, 0 },
 		{ menuContactDetails,       NULL, NULL, 0 }, // Contact New
+		{ menuSMSMenu,              NULL, NULL, 0 },
+		{ menuSMSCompose,           NULL, NULL, 0 },
 #if defined(HAS_COLOURS)
 		{ menuThemeItemsBrowser,    NULL, NULL, 0 },
 		{ menuColourPicker,         NULL, NULL, 0 },
