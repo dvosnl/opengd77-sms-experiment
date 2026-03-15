@@ -51,7 +51,7 @@
 #include "interfaces/settingsStorage.h"
 #include "interfaces/adc.h"
 #include "functions/rxPowerSaving.h"
-#include "functions/smsPersistentStorage.h"
+#include "functions/sms.h"
 
 #if defined(USING_EXTERNAL_DEBUGGER)
 #include "SeggerRTT/RTT/SEGGER_RTT.h"
@@ -482,7 +482,7 @@ void applicationMainTask(void)
 
 	lastHeardInitList();
 	codeplugInitCaches();
-	smsPersistInit();
+	smsInit();
 	dmrIDCacheInit();
 	voicePromptsCacheInit();
 
@@ -1372,6 +1372,7 @@ void applicationMainTask(void)
 		voxTick();
 		gpsTick();
 		aprsBeaconingTick(&ev);
+		smsInboxStorageTick();
 		settingsSaveIfNeeded(false);
 
 		if (settingsIsOptionBitSet(BIT_DISPLAY_TIME_IN_HEADER))

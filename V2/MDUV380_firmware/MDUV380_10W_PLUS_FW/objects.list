@@ -75,7 +75,6 @@
 "./application/source/functions/satellite.o"
 "./application/source/functions/settings.o"
 "./application/source/functions/sms.o"
-"./application/source/functions/smsPersistentStorage.o"
 "./application/source/functions/sound.o"
 "./application/source/functions/ticks.o"
 "./application/source/functions/trx.o"

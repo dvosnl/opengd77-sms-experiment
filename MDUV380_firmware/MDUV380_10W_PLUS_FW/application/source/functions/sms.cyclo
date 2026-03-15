@@ -1,6 +1,0 @@
-../application/source/functions/sms.c:34:17:smsCrc16Ccitt.constprop	4
-../application/source/functions/sms.c:128:17:smsPackMessage	13
-../application/source/functions/sms.c:184:17:smsQueueMessage	1
-../application/source/functions/sms.c:191:6:smsHasQueuedMessage	1
-../application/source/functions/sms.c:196:29:smsGetQueuedMessage	1
-../application/source/functions/sms.c:201:6:smsClearQueuedMessage	1

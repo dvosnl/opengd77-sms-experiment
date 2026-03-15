@@ -172,7 +172,6 @@ static menuFunctionData_t menuFunctions[] =
 		{ menuSMSRxPopup,           NULL, NULL, 0 },
 		{ menuSMSView,              NULL, NULL, 0 },
 		{ menuSMSSent,              NULL, NULL, 0 },
-		{ menuSMSDetail,            NULL, NULL, 0 },
 #if defined(HAS_COLOURS)
 		{ menuThemeItemsBrowser,    NULL, NULL, 0 },
 		{ menuColourPicker,         NULL, NULL, 0 },

@@ -339,7 +339,6 @@ enum MENU_SCREENS
 	MENU_SMS_RX_POPUP,
 	MENU_SMS_VIEW,
 	MENU_SMS_SENT,
-	MENU_SMS_DETAIL,
 #if defined(HAS_COLOURS)
 	MENU_THEME_ITEMS_BROWSER,
 	MENU_COLOUR_PICKER,
@@ -476,10 +475,9 @@ menuStatus_t menuPrivateCall(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuSMSMenu(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuSMSCompose(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuSMSInbox(uiEvent_t *event, bool isFirstRun);
+menuStatus_t menuSMSSent(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuSMSRxPopup(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuSMSView(uiEvent_t *event, bool isFirstRun);
-menuStatus_t menuSMSSent(uiEvent_t *event, bool isFirstRun);
-menuStatus_t menuSMSDetail(uiEvent_t *event, bool isFirstRun);
 menuStatus_t uiMessageBox(uiEvent_t *event, bool isFirstRun);
 menuStatus_t menuSatelliteScreen(uiEvent_t *ev, bool isFirstRun);
 #if defined(HAS_GPS)

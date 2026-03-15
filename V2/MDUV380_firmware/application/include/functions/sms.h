@@ -37,6 +37,7 @@
 #define SMS_PREAMBLE_CSBKS            8U
 #define SMS_MAX_TX_FRAMES            (SMS_PREAMBLE_CSBKS + 1U + SMS_MAX_DATA_BLOCKS)
 #define SMS_INBOX_MAX_MESSAGES         8U
+#define SMS_SENT_MAX_MESSAGES          8U
 
 typedef enum
 {
@@ -45,7 +46,8 @@ typedef enum
 	SMS_PACK_ERROR_TOO_LONG,
 	SMS_PACK_ERROR_INVALID_DEST,
 	SMS_PACK_ERROR_INVALID_SRC,
-	SMS_PACK_ERROR_UNSUPPORTED_CHAR
+	SMS_PACK_ERROR_UNSUPPORTED_CHAR,
+	SMS_PACK_ERROR_INVALID_INDEX
 } smsPackResult_t;
 
 typedef struct
@@ -67,6 +69,13 @@ typedef struct
 	char text[SMS_MAX_TEXT_LENGTH + 1U];
 } smsInboxMessage_t;
 
+typedef struct
+{
+	uint32_t destinationId;
+	char text[SMS_MAX_TEXT_LENGTH + 1U];
+} smsSentMessage_t;
+
+void smsInit(void);
 smsPackResult_t smsPackMessage(uint32_t destinationId, uint32_t sourceId, const char *text, smsPreparedMessage_t *message);
 smsPackResult_t smsQueueMessage(uint32_t destinationId, uint32_t sourceId, const char *text);
 bool smsHasQueuedMessage(void);
@@ -77,7 +86,14 @@ uint8_t smsGetInboxCount(void);
 bool smsGetInboxMessage(uint8_t index, smsInboxMessage_t *message);
 bool smsDeleteInboxMessage(uint8_t index);
 void smsClearInbox(void);
+uint8_t smsGetSentCount(void);
+bool smsGetSentMessage(uint8_t index, smsSentMessage_t *message);
+bool smsStoreSentMessage(uint32_t destinationId, const char *text);
+bool smsDeleteSentMessage(uint8_t index);
+void smsClearSent(void);
+smsPackResult_t smsQueueSentMessage(uint8_t index, uint32_t sourceId);
 bool smsHasRxNotification(void);
 bool smsConsumeRxNotification(void);
+void smsInboxStorageTick(void);
 
 #endif

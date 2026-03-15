@@ -25,9 +25,36 @@
  */
 
 #include <string.h>
+#include <stddef.h>
 
 #include "functions/sms.h"
-#include "functions/smsPersistentStorage.h"
+#include "functions/ticks.h"
+#include "hardware/EEPROM.h"
+
+#define SMS_STORAGE_ADDRESS                    0x0F0000
+#define SMS_STORAGE_MAGIC                      0x534D5349U
+#define SMS_STORAGE_VERSION                    2U
+#define SMS_STORAGE_DEBOUNCE_MS                1500U
+
+typedef struct
+{
+	uint32_t magic;
+	uint32_t version;
+	uint32_t inboxCount;
+	uint32_t sentCount;
+	uint32_t checksum;
+	smsInboxMessage_t inboxMessages[SMS_INBOX_MAX_MESSAGES];
+	smsSentMessage_t sentMessages[SMS_SENT_MAX_MESSAGES];
+} smsStorage_t;
+
+typedef struct
+{
+	uint32_t magic;
+	uint32_t version;
+	uint32_t messageCount;
+	uint32_t checksum;
+	smsInboxMessage_t messages[SMS_INBOX_MAX_MESSAGES];
+} smsLegacyInboxStorage_t;
 
 static smsPreparedMessage_t queuedMessage;
 static bool queuedMessageValid = false;
@@ -45,8 +72,191 @@ typedef struct
 static smsInboxMessage_t inboxMessages[SMS_INBOX_MAX_MESSAGES];
 static uint8_t inboxStart = 0U;
 static uint8_t inboxCount = 0U;
+static smsSentMessage_t sentMessages[SMS_SENT_MAX_MESSAGES];
+static uint8_t sentStart = 0U;
+static uint8_t sentCount = 0U;
 static bool inboxUnreadNotification = false;
 static smsRxAssembly_t rxAssembly = { 0 };
+static volatile bool smsStorageDirty = false;
+static uint32_t smsStorageDirtySinceTick = 0U;
+
+static void smsResetRxAssembly(void);
+static uint32_t smsStorageChecksum(const smsStorage_t *storage);
+static uint32_t smsLegacyInboxStorageChecksum(const smsLegacyInboxStorage_t *storage);
+static void smsStorageMarkDirty(void);
+static void smsStorageBuildSnapshot(smsStorage_t *storage);
+static bool smsStoragePersist(void);
+static void smsStorageLoad(void);
+
+void smsInit(void)
+{
+	memset(&queuedMessage, 0, sizeof(queuedMessage));
+	queuedMessageValid = false;
+	inboxStart = 0U;
+	inboxCount = 0U;
+	sentStart = 0U;
+	sentCount = 0U;
+	inboxUnreadNotification = false;
+	memset(inboxMessages, 0, sizeof(inboxMessages));
+	memset(sentMessages, 0, sizeof(sentMessages));
+	smsResetRxAssembly();
+	smsStorageDirty = false;
+	smsStorageDirtySinceTick = 0U;
+	smsStorageLoad();
+}
+
+static uint32_t smsStorageChecksum(const smsStorage_t *storage)
+{
+	const uint8_t *bytes = (const uint8_t *)storage;
+	const uint32_t checksumOffset = (uint32_t)offsetof(smsStorage_t, checksum);
+	uint32_t checksum = 2166136261UL;
+
+	for (uint32_t i = 0U; i < sizeof(smsStorage_t); i++)
+	{
+		if ((i >= checksumOffset) && (i < (checksumOffset + sizeof(storage->checksum))))
+		{
+			continue;
+		}
+
+		checksum ^= bytes[i];
+		checksum *= 16777619UL;
+	}
+
+	return checksum;
+}
+
+static uint32_t smsLegacyInboxStorageChecksum(const smsLegacyInboxStorage_t *storage)
+{
+	const uint8_t *bytes = (const uint8_t *)storage;
+	const uint32_t checksumOffset = (uint32_t)offsetof(smsLegacyInboxStorage_t, checksum);
+	uint32_t checksum = 2166136261UL;
+
+	for (uint32_t i = 0U; i < sizeof(smsLegacyInboxStorage_t); i++)
+	{
+		if ((i >= checksumOffset) && (i < (checksumOffset + sizeof(storage->checksum))))
+		{
+			continue;
+		}
+
+		checksum ^= bytes[i];
+		checksum *= 16777619UL;
+	}
+
+	return checksum;
+}
+
+static void smsStorageMarkDirty(void)
+{
+	smsStorageDirty = true;
+}
+
+static void smsStorageBuildSnapshot(smsStorage_t *storage)
+{
+	if (storage == NULL)
+	{
+		return;
+	}
+
+	memset(storage, 0, sizeof(*storage));
+	storage->magic = SMS_STORAGE_MAGIC;
+	storage->version = SMS_STORAGE_VERSION;
+	storage->inboxCount = inboxCount;
+	storage->sentCount = sentCount;
+
+	for (uint8_t i = 0U; i < inboxCount; i++)
+	{
+		smsInboxMessage_t message;
+
+		if (smsGetInboxMessage(i, &message))
+		{
+			storage->inboxMessages[i] = message;
+			storage->inboxMessages[i].text[SMS_MAX_TEXT_LENGTH] = 0;
+		}
+	}
+
+	for (uint8_t i = 0U; i < sentCount; i++)
+	{
+		smsSentMessage_t message;
+
+		if (smsGetSentMessage(i, &message))
+		{
+			storage->sentMessages[i] = message;
+			storage->sentMessages[i].text[SMS_MAX_TEXT_LENGTH] = 0;
+		}
+	}
+
+	storage->checksum = smsStorageChecksum(storage);
+}
+
+static bool smsStoragePersist(void)
+{
+	smsStorage_t storage;
+
+	smsStorageBuildSnapshot(&storage);
+	return EEPROM_Write(SMS_STORAGE_ADDRESS, (uint8_t *)&storage, (int)sizeof(storage));
+}
+
+static void smsStorageLoad(void)
+{
+	smsStorage_t storage;
+	smsLegacyInboxStorage_t legacyStorage;
+
+	if (EEPROM_Read(SMS_STORAGE_ADDRESS, (uint8_t *)&storage, (int)sizeof(storage)) &&
+		(storage.magic == SMS_STORAGE_MAGIC) &&
+		(storage.version == SMS_STORAGE_VERSION) &&
+		(storage.inboxCount <= SMS_INBOX_MAX_MESSAGES) &&
+		(storage.sentCount <= SMS_SENT_MAX_MESSAGES) &&
+		(storage.checksum == smsStorageChecksum(&storage)))
+	{
+		inboxStart = 0U;
+		inboxCount = (uint8_t)storage.inboxCount;
+		sentStart = 0U;
+		sentCount = (uint8_t)storage.sentCount;
+		inboxUnreadNotification = false;
+		memset(inboxMessages, 0, sizeof(inboxMessages));
+		memset(sentMessages, 0, sizeof(sentMessages));
+
+		for (uint8_t i = 0U; i < inboxCount; i++)
+		{
+			inboxMessages[i] = storage.inboxMessages[i];
+			inboxMessages[i].text[SMS_MAX_TEXT_LENGTH] = 0;
+		}
+
+		for (uint8_t i = 0U; i < sentCount; i++)
+		{
+			sentMessages[i] = storage.sentMessages[i];
+			sentMessages[i].text[SMS_MAX_TEXT_LENGTH] = 0;
+		}
+
+		return;
+	}
+
+	if (!EEPROM_Read(SMS_STORAGE_ADDRESS, (uint8_t *)&legacyStorage, (int)sizeof(legacyStorage)))
+	{
+		return;
+	}
+
+	if ((legacyStorage.magic != SMS_STORAGE_MAGIC) || (legacyStorage.version != 1U) ||
+		(legacyStorage.messageCount > SMS_INBOX_MAX_MESSAGES) ||
+		(legacyStorage.checksum != smsLegacyInboxStorageChecksum(&legacyStorage)))
+	{
+		return;
+	}
+
+	inboxStart = 0U;
+	inboxCount = (uint8_t)legacyStorage.messageCount;
+	sentStart = 0U;
+	sentCount = 0U;
+	inboxUnreadNotification = false;
+	memset(inboxMessages, 0, sizeof(inboxMessages));
+	memset(sentMessages, 0, sizeof(sentMessages));
+
+	for (uint8_t i = 0U; i < inboxCount; i++)
+	{
+		inboxMessages[i] = legacyStorage.messages[i];
+		inboxMessages[i].text[SMS_MAX_TEXT_LENGTH] = 0;
+	}
+}
 
 static bool smsIsPrintableCharacter(uint8_t c)
 {
@@ -77,8 +287,33 @@ static void smsStoreInboxMessage(uint32_t sourceId, const char *text)
 	strncpy(inboxMessages[writeIndex].text, text, SMS_MAX_TEXT_LENGTH);
 	inboxMessages[writeIndex].text[SMS_MAX_TEXT_LENGTH] = 0;
 	inboxUnreadNotification = true;
+	smsStorageMarkDirty();
+}
 
-	smsPersistAddInbox(sourceId, text);
+static void smsStoreSentMessageInternal(uint32_t destinationId, const char *text)
+{
+	uint8_t writeIndex;
+
+	if ((text == NULL) || (text[0] == 0) || (destinationId == 0U) || (destinationId > 0x00FFFFFFU))
+	{
+		return;
+	}
+
+	if (sentCount < SMS_SENT_MAX_MESSAGES)
+	{
+		writeIndex = (uint8_t)((sentStart + sentCount) % SMS_SENT_MAX_MESSAGES);
+		sentCount++;
+	}
+	else
+	{
+		writeIndex = sentStart;
+		sentStart = (uint8_t)((sentStart + 1U) % SMS_SENT_MAX_MESSAGES);
+	}
+
+	sentMessages[writeIndex].destinationId = destinationId;
+	strncpy(sentMessages[writeIndex].text, text, SMS_MAX_TEXT_LENGTH);
+	sentMessages[writeIndex].text[SMS_MAX_TEXT_LENGTH] = 0;
+	smsStorageMarkDirty();
 }
 
 static bool smsDecodeUtf16Payload(const uint8_t *payload, uint16_t payloadLength, char *textOut)
@@ -404,6 +639,8 @@ bool smsDeleteInboxMessage(uint8_t index)
 		inboxStart = 0U;
 	}
 
+	smsStorageMarkDirty();
+
 	return true;
 }
 
@@ -413,6 +650,87 @@ void smsClearInbox(void)
 	inboxCount = 0U;
 	memset(inboxMessages, 0, sizeof(inboxMessages));
 	smsResetRxAssembly();
+	smsStorageMarkDirty();
+}
+
+uint8_t smsGetSentCount(void)
+{
+	return sentCount;
+}
+
+bool smsGetSentMessage(uint8_t index, smsSentMessage_t *message)
+{
+	uint8_t absoluteIndex;
+
+	if ((message == NULL) || (index >= sentCount))
+	{
+		return false;
+	}
+
+	absoluteIndex = (uint8_t)((sentStart + index) % SMS_SENT_MAX_MESSAGES);
+	*message = sentMessages[absoluteIndex];
+	return true;
+}
+
+bool smsStoreSentMessage(uint32_t destinationId, const char *text)
+{
+	if ((text == NULL) || (text[0] == 0) || (destinationId == 0U) || (destinationId > 0x00FFFFFFU))
+	{
+		return false;
+	}
+
+	smsStoreSentMessageInternal(destinationId, text);
+	return true;
+}
+
+bool smsDeleteSentMessage(uint8_t index)
+{
+	uint8_t lastIndex;
+
+	if (index >= sentCount)
+	{
+		return false;
+	}
+
+	for (uint8_t i = index; i < (uint8_t)(sentCount - 1U); i++)
+	{
+		uint8_t from = (uint8_t)((sentStart + i + 1U) % SMS_SENT_MAX_MESSAGES);
+		uint8_t to = (uint8_t)((sentStart + i) % SMS_SENT_MAX_MESSAGES);
+		sentMessages[to] = sentMessages[from];
+	}
+
+	lastIndex = (uint8_t)((sentStart + sentCount - 1U) % SMS_SENT_MAX_MESSAGES);
+	memset(&sentMessages[lastIndex], 0, sizeof(smsSentMessage_t));
+	sentCount--;
+
+	if (sentCount == 0U)
+	{
+		sentStart = 0U;
+	}
+
+	smsStorageMarkDirty();
+
+	return true;
+}
+
+void smsClearSent(void)
+{
+	sentStart = 0U;
+	sentCount = 0U;
+	memset(sentMessages, 0, sizeof(sentMessages));
+	smsStorageMarkDirty();
+}
+
+smsPackResult_t smsQueueSentMessage(uint8_t index, uint32_t sourceId)
+{
+	smsSentMessage_t message;
+
+	if (smsGetSentMessage(index, &message) == false)
+	{
+		return SMS_PACK_ERROR_INVALID_INDEX;
+	}
+
+	return smsQueueMessage(message.destinationId, sourceId, message.text);
 }
 
 bool smsHasRxNotification(void)
@@ -425,4 +743,34 @@ bool smsConsumeRxNotification(void)
 	bool pending = inboxUnreadNotification;
 	inboxUnreadNotification = false;
 	return pending;
+}
+
+void smsInboxStorageTick(void)
+{
+	uint32_t now;
+
+	if (!smsStorageDirty)
+	{
+		smsStorageDirtySinceTick = 0U;
+		return;
+	}
+
+	now = ticksGetMillis();
+
+	if (smsStorageDirtySinceTick == 0U)
+	{
+		smsStorageDirtySinceTick = now;
+		return;
+	}
+
+	if ((now - smsStorageDirtySinceTick) < SMS_STORAGE_DEBOUNCE_MS)
+	{
+		return;
+	}
+
+	if (smsStoragePersist())
+	{
+		smsStorageDirty = false;
+		smsStorageDirtySinceTick = 0U;
+	}
 }

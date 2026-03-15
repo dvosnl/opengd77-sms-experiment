@@ -1,9 +1,0 @@
-../application/source/functions/ticks.c:49:17:ticksGetMillis	1
-../application/source/functions/ticks.c:138:6:cancelTimerCallback	5
-../application/source/functions/ticks.c:155:6:ticksTimerReset	1
-../application/source/functions/ticks.c:161:6:ticksTimerStart	1
-../application/source/functions/ticks.c:167:6:ticksTimerHasExpired	1
-../application/source/functions/ticks.c:58:6:handleTimerCallbacks	8
-../application/source/functions/ticks.c:95:6:addTimerCallback	7
-../application/source/functions/ticks.c:172:10:ticksTimerRemaining	3
-../application/source/functions/ticks.c:183:6:ticksTimerIsEnabled	2

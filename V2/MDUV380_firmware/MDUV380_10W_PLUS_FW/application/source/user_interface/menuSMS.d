@@ -85,8 +85,7 @@ application/source/user_interface/menuSMS.o: \
  ../application/include/functions/aprs.h \
  ../application/include/user_interface/menuSystem.h \
  ../application/include/functions/voicePrompts.h \
- ../application/include/functions/sms.h \
- ../application/include/functions/smsPersistentStorage.h
+ ../application/include/functions/sms.h
 ../application/include/user_interface/uiGlobals.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -175,4 +174,3 @@ application/source/user_interface/menuSMS.o: \
 ../application/include/user_interface/menuSystem.h:
 ../application/include/functions/voicePrompts.h:
 ../application/include/functions/sms.h:
-../application/include/functions/smsPersistentStorage.h:

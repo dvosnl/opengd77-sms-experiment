@@ -31,7 +31,6 @@
 #include "user_interface/menuSystem.h"
 #include "functions/sound.h"
 #include "functions/sms.h"
-#include "functions/smsPersistentStorage.h"
 #include "functions/codeplug.h"
 #include "functions/trx.h"
 #include "hardware/HR-C6000.h"
@@ -47,6 +46,13 @@ enum
 	SMS_MENU_ITEM_SENT,
 	SMS_MENU_ITEMS_COUNT
 };
+
+typedef enum
+{
+	SMS_VIEW_SOURCE_RX_POPUP = 0,
+	SMS_VIEW_SOURCE_INBOX,
+	SMS_VIEW_SOURCE_SENT
+} smsViewSource_t;
 
 enum
 {
@@ -64,12 +70,13 @@ static uint32_t smsReplyDestinationId = 0U;
 static smsInboxMessage_t smsPopupMessage;
 static uint8_t smsPopupMessageIndex = 0U;
 static char smsPopupSource[17];
+static smsViewSource_t smsViewSource = SMS_VIEW_SOURCE_RX_POPUP;
+static smsInboxMessage_t smsViewInboxMessage;
+static smsSentMessage_t smsViewSentMessage;
+static uint8_t smsViewMessageIndex = 0U;
+static char smsViewPeerText[24];
 
-// Detail view state (used by menuSMSInbox, menuSMSSent and menuSMSDetail)
-static smsPersistentMsg_t smsDetailMsg;
-static uint8_t            smsDetailIndex = 0U;
-static bool               smsDetailIsSent = false;       // false = inbox, true = sent
-static bool               smsDeleteConfirmActive = false; // true = awaiting delete confirmation
+static const char *smsPackResultMessage(smsPackResult_t result);
 
 static void smsGetSourceDisplayText(uint32_t sourceId, char *buffer, size_t bufferLength)
 {
@@ -109,6 +116,62 @@ static bool smsLoadPopupMessage(void)
 	}
 
 	smsGetSourceDisplayText(smsPopupMessage.sourceId, smsPopupSource, sizeof(smsPopupSource));
+	return true;
+}
+
+static bool smsLoadInboxViewMessage(uint8_t index)
+{
+	char source[17];
+
+	if (smsGetInboxMessage(index, &smsViewInboxMessage) == false)
+	{
+		return false;
+	}
+
+	smsViewSource = SMS_VIEW_SOURCE_INBOX;
+	smsViewMessageIndex = index;
+	smsGetSourceDisplayText(smsViewInboxMessage.sourceId, source, sizeof(source));
+	snprintf(smsViewPeerText, sizeof(smsViewPeerText), "From: %s", source);
+	return true;
+}
+
+static bool smsLoadSentViewMessage(uint8_t index)
+{
+	if (smsGetSentMessage(index, &smsViewSentMessage) == false)
+	{
+		return false;
+	}
+
+	smsViewSource = SMS_VIEW_SOURCE_SENT;
+	smsViewMessageIndex = index;
+	snprintf(smsViewPeerText, sizeof(smsViewPeerText), "To: %u", smsViewSentMessage.destinationId);
+	return true;
+}
+
+static bool smsTryResendSelectedSentMessage(void)
+{
+	smsPackResult_t result;
+
+	if (trxGetMode() != RADIO_MODE_DIGITAL)
+	{
+		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 2000, "DMR only", true);
+		return false;
+	}
+
+	result = smsQueueSentMessage(smsViewMessageIndex, trxDMRID);
+	if (result != SMS_PACK_OK)
+	{
+		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 2000, smsPackResultMessage(result), true);
+		return false;
+	}
+
+	if (HRC6000StartQueuedSMS() == false)
+	{
+		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 2000, "SMS busy", true);
+		return false;
+	}
+
+	uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1500, "SMS resent", true);
 	return true;
 }
 
@@ -160,6 +223,8 @@ static const char *smsPackResultMessage(smsPackResult_t result)
 			return "Invalid DMR ID";
 		case SMS_PACK_ERROR_UNSUPPORTED_CHAR:
 			return "ASCII only";
+		case SMS_PACK_ERROR_INVALID_INDEX:
+			return "Invalid message";
 		default:
 			return "SMS error";
 	}
@@ -220,24 +285,43 @@ static void smsRxPopupRender(void)
 
 static void smsViewRender(void)
 {
-	char line1[SCREEN_LINE_BUFFER_SIZE];
+	const char *messageText;
 	char line2[SMS_VISIBLE_CHARS + 1];
 	char line3[SMS_VISIBLE_CHARS + 1];
 
-	snprintf(line1, sizeof(line1), "From: %s", smsPopupSource);
-	strncpy(line2, smsPopupMessage.text, SMS_VISIBLE_CHARS);
+	if (smsViewSource == SMS_VIEW_SOURCE_SENT)
+	{
+		messageText = smsViewSentMessage.text;
+	}
+	else
+	{
+		messageText = smsViewInboxMessage.text;
+	}
+
+	strncpy(line2, messageText, SMS_VISIBLE_CHARS);
 	line2[SMS_VISIBLE_CHARS] = 0;
-	strncpy(line3, &smsPopupMessage.text[SMS_VISIBLE_CHARS], SMS_VISIBLE_CHARS);
+	strncpy(line3, &messageText[SMS_VISIBLE_CHARS], SMS_VISIBLE_CHARS);
 	line3[SMS_VISIBLE_CHARS] = 0;
 
 	displayClearBuf();
 	menuDisplayTitle("SMS VIEW");
 	displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
-	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START, line1, FONT_SIZE_1);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START, smsViewPeerText, FONT_SIZE_1);
 	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_1_HEIGHT + 2, line2, FONT_SIZE_2);
 	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_1_HEIGHT + FONT_SIZE_2_HEIGHT + 6, line3, FONT_SIZE_2);
 	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
-	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Red back", FONT_SIZE_1);
+	if (smsViewSource == SMS_VIEW_SOURCE_SENT)
+	{
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Hold 6 resend  # del", FONT_SIZE_1);
+	}
+	else if (smsViewSource == SMS_VIEW_SOURCE_INBOX)
+	{
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Red back  # del", FONT_SIZE_1);
+	}
+	else
+	{
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Red back", FONT_SIZE_1);
+	}
 	displayThemeResetToDefault();
 	displayRender();
 }
@@ -245,7 +329,7 @@ static void smsViewRender(void)
 static void smsInboxRender(void)
 {
 	char line[SCREEN_LINE_BUFFER_SIZE];
-	uint8_t count = smsPersistGetInboxCount();
+	uint8_t count = smsGetInboxCount();
 
 	displayClearBuf();
 	menuDisplayTitle("SMS Inbox");
@@ -255,7 +339,7 @@ static void smsInboxRender(void)
 		displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
 		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_2_HEIGHT, "No messages", FONT_SIZE_2);
 		displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
-		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Red back", FONT_SIZE_1);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Green view # del", FONT_SIZE_1);
 		displayThemeResetToDefault();
 		displayRender();
 		return;
@@ -274,11 +358,11 @@ static void smsInboxRender(void)
 			break;
 		}
 
-		smsPersistentMsg_t msg;
+		smsInboxMessage_t msg;
 
-		if (smsPersistGetInboxMsg((uint8_t)mNum, &msg))
+		if (smsGetInboxMessage((uint8_t)mNum, &msg))
 		{
-			snprintf(line, sizeof(line), "%u %.12s", msg.peerId, msg.text);
+			snprintf(line, sizeof(line), "%u %.14s", msg.sourceId, msg.text);
 		}
 		else
 		{
@@ -289,13 +373,17 @@ static void smsInboxRender(void)
 		menuDisplayEntry(i, mNum, line, 0, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_COLOUR_NONE, THEME_ITEM_BG);
 	}
 
+	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Green view # del", FONT_SIZE_1);
+	displayThemeResetToDefault();
+
 	displayRender();
 }
 
 static void smsSentRender(void)
 {
 	char line[SCREEN_LINE_BUFFER_SIZE];
-	uint8_t count = smsPersistGetSentCount();
+	uint8_t count = smsGetSentCount();
 
 	displayClearBuf();
 	menuDisplayTitle("SMS Sent");
@@ -305,7 +393,7 @@ static void smsSentRender(void)
 		displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
 		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_2_HEIGHT, "No messages", FONT_SIZE_2);
 		displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
-		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Red back", FONT_SIZE_1);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Green view # del", FONT_SIZE_1);
 		displayThemeResetToDefault();
 		displayRender();
 		return;
@@ -324,11 +412,11 @@ static void smsSentRender(void)
 			break;
 		}
 
-		smsPersistentMsg_t msg;
+		smsSentMessage_t msg;
 
-		if (smsPersistGetSentMsg((uint8_t)mNum, &msg))
+		if (smsGetSentMessage((uint8_t)mNum, &msg))
 		{
-			snprintf(line, sizeof(line), "To:%u %.10s", msg.peerId, msg.text);
+			snprintf(line, sizeof(line), "%u %.14s", msg.destinationId, msg.text);
 		}
 		else
 		{
@@ -339,53 +427,8 @@ static void smsSentRender(void)
 		menuDisplayEntry(i, mNum, line, 0, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_COLOUR_NONE, THEME_ITEM_BG);
 	}
 
-	displayRender();
-}
-
-static void smsDetailRender(void)
-{
-	char header[SCREEN_LINE_BUFFER_SIZE];
-	char line1[SMS_VISIBLE_CHARS + 1];
-	char line2[SMS_VISIBLE_CHARS + 1];
-	char line3[SMS_VISIBLE_CHARS + 1];
-
-	if (smsDetailIsSent)
-	{
-		snprintf(header, sizeof(header), "To: %u", smsDetailMsg.peerId);
-	}
-	else
-	{
-		char peerName[17];
-		smsGetSourceDisplayText(smsDetailMsg.peerId, peerName, sizeof(peerName));
-		snprintf(header, sizeof(header), "Fr: %s", peerName);
-	}
-
-	strncpy(line1, smsDetailMsg.text, SMS_VISIBLE_CHARS);
-	line1[SMS_VISIBLE_CHARS] = 0;
-
-	strncpy(line2, &smsDetailMsg.text[SMS_VISIBLE_CHARS], SMS_VISIBLE_CHARS);
-	line2[SMS_VISIBLE_CHARS] = 0;
-
-	strncpy(line3, &smsDetailMsg.text[SMS_VISIBLE_CHARS * 2], SMS_VISIBLE_CHARS);
-	line3[SMS_VISIBLE_CHARS] = 0;
-
-	displayClearBuf();
-	menuDisplayTitle(smsDetailIsSent ? "SMS SENT" : "SMS INBOX");
 	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
-	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START, header, FONT_SIZE_1);
-	displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
-	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_1_HEIGHT + 2, line1, FONT_SIZE_2);
-	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_1_HEIGHT + FONT_SIZE_2_HEIGHT + 4, line2, FONT_SIZE_2);
-	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_1_HEIGHT + (FONT_SIZE_2_HEIGHT * 2) + 6, line3, FONT_SIZE_2);
-	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
-	if (smsDeleteConfirmActive)
-	{
-		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "GREEN=del  RED=cancel", FONT_SIZE_1);
-	}
-	else
-	{
-		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "3=Delete  RED=back", FONT_SIZE_1);
-	}
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Green view # del", FONT_SIZE_1);
 	displayThemeResetToDefault();
 	displayRender();
 }
@@ -484,7 +527,7 @@ static bool smsSendBuffer(void)
 		return false;
 	}
 
-	smsPersistAddSent(destinationId, smsBuffer);
+	(void)smsStoreSentMessage(destinationId, smsBuffer);
 
 	uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1500, "SMS TX", true);
 	return true;
@@ -522,19 +565,17 @@ menuStatus_t menuSMSMenu(uiEvent_t *ev, bool isFirstRun)
 	}
 	else if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
 	{
-		switch (menuDataGlobal.currentItemIndex)
+		if (menuDataGlobal.currentItemIndex == SMS_MENU_ITEM_COMPOSE)
 		{
-			case SMS_MENU_ITEM_COMPOSE:
-				menuSystemPushNewMenu(MENU_SMS_COMPOSE);
-				break;
-			case SMS_MENU_ITEM_INBOX:
-				menuSystemPushNewMenu(MENU_SMS_INBOX);
-				break;
-			case SMS_MENU_ITEM_SENT:
-				menuSystemPushNewMenu(MENU_SMS_SENT);
-				break;
-			default:
-				break;
+			menuSystemPushNewMenu(MENU_SMS_COMPOSE);
+		}
+		else if (menuDataGlobal.currentItemIndex == SMS_MENU_ITEM_INBOX)
+		{
+			menuSystemPushNewMenu(MENU_SMS_INBOX);
+		}
+		else
+		{
+			menuSystemPushNewMenu(MENU_SMS_SENT);
 		}
 	}
 
@@ -634,12 +675,12 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 
 menuStatus_t menuSMSInbox(uiEvent_t *ev, bool isFirstRun)
 {
-	uint8_t count = smsPersistGetInboxCount();
+	uint8_t count = smsGetInboxCount();
 
 	if (isFirstRun)
 	{
 		menuDataGlobal.currentItemIndex = 0;
-		menuDataGlobal.numItems = (count > 0U) ? count : 1;
+		menuDataGlobal.numItems = count;
 		smsInboxRender();
 		return (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
 	}
@@ -658,6 +699,7 @@ menuStatus_t menuSMSInbox(uiEvent_t *ev, bool isFirstRun)
 
 	if (count == 0U)
 	{
+		smsInboxRender();
 		return MENU_STATUS_SUCCESS;
 	}
 
@@ -682,12 +724,108 @@ menuStatus_t menuSMSInbox(uiEvent_t *ev, bool isFirstRun)
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
 	{
-		if (smsPersistGetInboxMsg((uint8_t)menuDataGlobal.currentItemIndex, &smsDetailMsg))
+		if (smsLoadInboxViewMessage((uint8_t)menuDataGlobal.currentItemIndex))
 		{
-			smsDetailIndex   = (uint8_t)menuDataGlobal.currentItemIndex;
-			smsDetailIsSent  = false;
-			smsDeleteConfirmActive = false;
-			menuSystemPushNewMenu(MENU_SMS_DETAIL);
+			menuSystemPushNewMenu(MENU_SMS_VIEW);
+		}
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_HASH))
+	{
+		if (smsDeleteInboxMessage((uint8_t)menuDataGlobal.currentItemIndex))
+		{
+			uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Inbox deleted", true);
+			if ((menuDataGlobal.currentItemIndex > 0) && (menuDataGlobal.currentItemIndex >= smsGetInboxCount()))
+			{
+				menuDataGlobal.currentItemIndex--;
+			}
+		}
+		else
+		{
+			uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Delete failed", true);
+		}
+
+		smsInboxRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	return MENU_STATUS_SUCCESS;
+}
+
+menuStatus_t menuSMSSent(uiEvent_t *ev, bool isFirstRun)
+{
+	uint8_t count = smsGetSentCount();
+
+	if (isFirstRun)
+	{
+		menuDataGlobal.currentItemIndex = 0;
+		menuDataGlobal.numItems = count;
+		smsSentRender();
+		return (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
+	}
+
+	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
+	{
+		smsSentRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
+	{
+		menuSystemPopPreviousMenu();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (count == 0U)
+	{
+		smsSentRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (menuDataGlobal.currentItemIndex >= count)
+	{
+		menuDataGlobal.currentItemIndex = (count - 1U);
+	}
+
+	if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
+	{
+		menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, count);
+		smsSentRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_PRESS(ev->keys, KEY_UP))
+	{
+		menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, count);
+		smsSentRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_HASH))
+	{
+		if (smsDeleteSentMessage((uint8_t)menuDataGlobal.currentItemIndex))
+		{
+			uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Sent deleted", true);
+			if ((menuDataGlobal.currentItemIndex > 0) && (menuDataGlobal.currentItemIndex >= smsGetSentCount()))
+			{
+				menuDataGlobal.currentItemIndex--;
+			}
+		}
+		else
+		{
+			uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Delete failed", true);
+		}
+
+		smsSentRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
+	{
+		if (smsLoadSentViewMessage((uint8_t)menuDataGlobal.currentItemIndex))
+		{
+			menuSystemPushNewMenu(MENU_SMS_VIEW);
 		}
 		return MENU_STATUS_SUCCESS;
 	}
@@ -708,6 +846,11 @@ menuStatus_t menuSMSRxPopup(uiEvent_t *ev, bool isFirstRun)
 			menuSystemPopPreviousMenu();
 			return MENU_STATUS_SUCCESS;
 		}
+
+		smsViewSource = SMS_VIEW_SOURCE_RX_POPUP;
+		smsViewInboxMessage = smsPopupMessage;
+		smsViewMessageIndex = smsPopupMessageIndex;
+		snprintf(smsViewPeerText, sizeof(smsViewPeerText), "From: %s", smsPopupSource);
 
 		menuDataGlobal.currentItemIndex = 0;
 		menuDataGlobal.numItems = SMS_RX_POPUP_ITEMS_COUNT;
@@ -748,6 +891,10 @@ menuStatus_t menuSMSRxPopup(uiEvent_t *ev, bool isFirstRun)
 		switch (menuDataGlobal.currentItemIndex)
 		{
 			case SMS_RX_POPUP_ITEM_VIEW:
+					smsViewSource = SMS_VIEW_SOURCE_RX_POPUP;
+					smsViewInboxMessage = smsPopupMessage;
+					smsViewMessageIndex = smsPopupMessageIndex;
+					snprintf(smsViewPeerText, sizeof(smsViewPeerText), "From: %s", smsPopupSource);
 				menuSystemPushNewMenu(MENU_SMS_VIEW);
 				break;
 
@@ -800,125 +947,45 @@ menuStatus_t menuSMSView(uiEvent_t *ev, bool isFirstRun)
 		return MENU_STATUS_SUCCESS;
 	}
 
-	return MENU_STATUS_SUCCESS;
-}
-
-menuStatus_t menuSMSSent(uiEvent_t *ev, bool isFirstRun)
-{
-	uint8_t count = smsPersistGetSentCount();
-
-	if (isFirstRun)
+	if (smsViewSource == SMS_VIEW_SOURCE_SENT)
 	{
-		menuDataGlobal.currentItemIndex = 0;
-		menuDataGlobal.numItems = (count > 0U) ? count : 1;
-		smsSentRender();
-		return (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
-	}
-
-	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
-	{
-		smsSentRender();
-		return MENU_STATUS_SUCCESS;
-	}
-
-	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
-	{
-		menuSystemPopPreviousMenu();
-		return MENU_STATUS_SUCCESS;
-	}
-
-	if (count == 0U)
-	{
-		return MENU_STATUS_SUCCESS;
-	}
-
-	if (menuDataGlobal.currentItemIndex >= count)
-	{
-		menuDataGlobal.currentItemIndex = (count - 1U);
-	}
-
-	if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
-	{
-		menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, count);
-		smsSentRender();
-		return MENU_STATUS_SUCCESS;
-	}
-
-	if (KEYCHECK_PRESS(ev->keys, KEY_UP))
-	{
-		menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, count);
-		smsSentRender();
-		return MENU_STATUS_SUCCESS;
-	}
-
-	if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
-	{
-		if (smsPersistGetSentMsg((uint8_t)menuDataGlobal.currentItemIndex, &smsDetailMsg))
+		if (KEYCHECK_SHORTUP(ev->keys, KEY_HASH))
 		{
-			smsDetailIndex   = (uint8_t)menuDataGlobal.currentItemIndex;
-			smsDetailIsSent  = true;
-			smsDeleteConfirmActive = false;
-			menuSystemPushNewMenu(MENU_SMS_DETAIL);
-		}
-		return MENU_STATUS_SUCCESS;
-	}
-
-	return MENU_STATUS_SUCCESS;
-}
-
-menuStatus_t menuSMSDetail(uiEvent_t *ev, bool isFirstRun)
-{
-	if (isFirstRun)
-	{
-		smsDeleteConfirmActive = false;
-		smsDetailRender();
-		return MENU_STATUS_SUCCESS;
-	}
-
-	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
-	{
-		smsDetailRender();
-		return MENU_STATUS_SUCCESS;
-	}
-
-	if (smsDeleteConfirmActive)
-	{
-		if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
-		{
-			if (smsDetailIsSent)
+			if (smsDeleteSentMessage(smsViewMessageIndex))
 			{
-				smsPersistDeleteSentMsg(smsDetailIndex);
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Sent deleted", true);
 			}
 			else
 			{
-				smsPersistDeleteInboxMsg(smsDetailIndex);
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Delete failed", true);
 			}
-			smsDeleteConfirmActive = false;
+
 			menuSystemPopPreviousMenu();
 			return MENU_STATUS_SUCCESS;
 		}
 
-		if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
+		if (KEYCHECK_LONGDOWN(ev->keys, KEY_6) && (KEYCHECK_LONGDOWN_REPEAT(ev->keys, KEY_6) == false))
 		{
-			smsDeleteConfirmActive = false;
-			smsDetailRender();
+			(void)smsTryResendSelectedSentMessage();
 			return MENU_STATUS_SUCCESS;
 		}
-
-		return MENU_STATUS_SUCCESS;
 	}
-
-	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
+	else if (smsViewSource == SMS_VIEW_SOURCE_INBOX)
 	{
-		menuSystemPopPreviousMenu();
-		return MENU_STATUS_SUCCESS;
-	}
+		if (KEYCHECK_SHORTUP(ev->keys, KEY_HASH))
+		{
+			if (smsDeleteInboxMessage(smsViewMessageIndex))
+			{
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Inbox deleted", true);
+			}
+			else
+			{
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Delete failed", true);
+			}
 
-	if (KEYCHECK_SHORTUP(ev->keys, KEY_3))
-	{
-		smsDeleteConfirmActive = true;
-		smsDetailRender();
-		return MENU_STATUS_SUCCESS;
+			menuSystemPopPreviousMenu();
+			return MENU_STATUS_SUCCESS;
+		}
 	}
 
 	return MENU_STATUS_SUCCESS;
