@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?scdStore version="2"?><scannerInfo id="org.eclipse.cdt.make.core.discoveredScannerInfo">
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.547334273;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1967651531.1357605746;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.761776848">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -424,17 +442,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1640977102;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1967651531.254067944;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1616924110">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -853,17 +898,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1234994308;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1967651531.231295207;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.871893021">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -1282,17 +1354,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1177965285;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1967651531.735658774;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.580930965">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -1711,17 +1810,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.application/source/user_interface/menuFirmwareInfoScreen.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1130572656;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.280288477">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -2140,17 +2266,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.application/source/functions/hotspot.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1090445784;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.515485294">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -2569,17 +2722,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.application/source/usb/usb_com.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.169717360;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.566837543">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -2998,17 +3178,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.application/source/dmr_codec/codec_interface.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.246499113;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1086026976">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -3427,17 +3634,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.application/source/dmr_codec/codec_interface.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.703564412;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.2128805508">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -3856,17 +4090,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.application/source/usb/usb_com.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.2097083205;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1720255041">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -4285,17 +4546,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.application/source/user_interface/menuFirmwareInfoScreen.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.346127323;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1858975378">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -4714,17 +5002,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.application/source/functions/hotspot.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1223221430;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1665474759">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -5143,17 +5458,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.application/source/functions/hotspot.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.226550278;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1988838430">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -5572,17 +5914,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.application/source/dmr_codec/codec_interface.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1569232585;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1061589047">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -6001,17 +6370,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.application/source/usb/usb_com.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.945412761;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1482447170">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -6430,17 +6826,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.application/source/user_interface/menuFirmwareInfoScreen.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.2109816182;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.847872990">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -6859,17 +7282,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.207129014;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.207129014.application/source/usb/usb_com.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1876365082;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.838402631">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -7288,17 +7738,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.207129014;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.207129014.application/source/dmr_codec/codec_interface.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1232204664;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1449083681">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -7717,17 +8194,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.207129014;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.207129014.application/source/functions/hotspot.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.732590839;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1930996330">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -8146,17 +8650,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.207129014;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1835993710.207129014.application/source/user_interface/menuFirmwareInfoScreen.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.2031696460;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.2055843077">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -8575,17 +9106,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.2058928246;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.2058928246.application/source/dmr_codec/codec_interface.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.794688270;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.993155493">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -9004,17 +9562,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.2058928246;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.2058928246.application/source/functions/hotspot.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1384523714;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.364622854">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -9433,17 +10018,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.2058928246;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.2058928246.application/source/usb/usb_com.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.490696048;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1819218514">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -9862,17 +10474,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.2058928246;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.2113572109.2058928246.application/source/user_interface/menuFirmwareInfoScreen.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.357101137;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1757114296">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -10291,17 +10930,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.959135026;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.959135026.application/source/usb/usb_com.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1396452386;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1564320287">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -10720,17 +11386,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.959135026;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.959135026.application/source/dmr_codec/codec_interface.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1024405353;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1691132535">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -11149,17 +11842,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.959135026;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.959135026.application/source/functions/hotspot.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1092872043;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.248237387">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -11578,17 +12298,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.959135026;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.959135026.application/source/user_interface/menuFirmwareInfoScreen.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1860345574;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.877695462">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -12007,17 +12754,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.536960312;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.536960312.application/source/functions/hotspot.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.508950416;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.657777764">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -12436,17 +13210,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.536960312;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.536960312.application/source/dmr_codec/codec_interface.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.308251716;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.368467286">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -12865,17 +13666,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.536960312;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.536960312.application/source/user_interface/menuFirmwareInfoScreen.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.2034348332;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.333132690">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -13294,17 +14122,44 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                    
+                                                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.536960312;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.723733574.536960312.application/source/usb/usb_com.c;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1557337306;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.327196309">
-                                        
+                                                                                                                
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -13723,12 +14578,30 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                    
+                                                                                                            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
     </instance>
-                
+                                                    
+
+
+
+
+
+
+
+
+
 
 
 

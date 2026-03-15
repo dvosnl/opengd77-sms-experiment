@@ -85,6 +85,9 @@ application/source/user_interface/menuSMS.o: \
  ../application/include/functions/aprs.h \
  ../application/include/user_interface/menuSystem.h \
  ../application/include/functions/voicePrompts.h \
+ ../application/include/user_interface/uiLocalisation.h \
+ ../application/include/user_interface/languages/uiLanguage.h \
+ ../application/include/user_interface/uiUtilities.h \
  ../application/include/functions/sms.h
 ../application/include/user_interface/uiGlobals.h:
 ../Core/Inc/main.h:
@@ -173,4 +176,7 @@ application/source/user_interface/menuSMS.o: \
 ../application/include/functions/aprs.h:
 ../application/include/user_interface/menuSystem.h:
 ../application/include/functions/voicePrompts.h:
+../application/include/user_interface/uiLocalisation.h:
+../application/include/user_interface/languages/uiLanguage.h:
+../application/include/user_interface/uiUtilities.h:
 ../application/include/functions/sms.h:

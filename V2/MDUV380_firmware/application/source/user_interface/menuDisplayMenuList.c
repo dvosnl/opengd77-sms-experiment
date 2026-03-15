@@ -40,6 +40,7 @@ menuStatus_t menuDisplayMenuList(uiEvent_t *ev, bool isFirstRun)
 	if (isFirstRun)
 	{
 		const char *menuName = NULL;
+		const char *customMenuName = NULL;
 		int currentMenuNumber = menuSystemGetCurrentMenuNumber();
 
 		menuDataGlobal.currentMenuList = (menuItemNewData_t *)menuDataGlobal.data[currentMenuNumber]->items;
@@ -53,8 +54,18 @@ menuStatus_t menuDisplayMenuList(uiEvent_t *ev, bool isFirstRun)
 
 				if (lastIndex != -1)
 				{
-					menuName = (currentLanguage->LANGUAGE_NAME +
-							(menuDataGlobal.data[menuDataGlobal.controlData.stack[menuDataGlobal.controlData.stackPosition - 1]]->items[lastIndex].stringOffset * LANGUAGE_TEXTS_LENGTH));
+					const menuItemNewData_t *lastMenuItem =
+							&menuDataGlobal.data[menuDataGlobal.controlData.stack[menuDataGlobal.controlData.stackPosition - 1]]->items[lastIndex];
+
+					if (lastMenuItem->menuNum == MENU_SMS_OPTIONS)
+					{
+						customMenuName = "SMS options";
+					}
+					else
+					{
+						menuName = (currentLanguage->LANGUAGE_NAME +
+								(lastMenuItem->stringOffset * LANGUAGE_TEXTS_LENGTH));
+					}
 				}
 			}
 		}
@@ -64,6 +75,11 @@ menuStatus_t menuDisplayMenuList(uiEvent_t *ev, bool isFirstRun)
 		{
 			voicePromptsAppendPrompt(PROMPT_SILENCE);
 			voicePromptsAppendLanguageString((const char *)menuName);
+		}
+		else if (customMenuName)
+		{
+			voicePromptsAppendPrompt(PROMPT_SILENCE);
+			voicePromptsAppendString(customMenuName);
 		}
 		voicePromptsAppendLanguageString(currentLanguage->menu);
 		voicePromptsAppendPrompt(PROMPT_SILENCE);
@@ -121,6 +137,14 @@ static void updateScreen(bool isFirstRun)
 			if (menuDataGlobal.currentMenuList[mNum].stringOffset >= 0)
 			{
 				const char *menuName = (currentLanguage->LANGUAGE_NAME + (menuDataGlobal.currentMenuList[mNum].stringOffset * LANGUAGE_TEXTS_LENGTH));
+				bool customString = false;
+
+				if (menuDataGlobal.currentMenuList[mNum].menuNum == MENU_SMS_OPTIONS)
+				{
+					menuName = "SMS options";
+					customString = true;
+				}
+
 				menuDisplayEntry(i, mNum, menuName, 0, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_COLOUR_NONE, THEME_ITEM_BG);
 
 				if (i == 0)
@@ -130,7 +154,14 @@ static void updateScreen(bool isFirstRun)
 						voicePromptsInit();
 					}
 
-					voicePromptsAppendLanguageString(menuName);
+					if (customString)
+					{
+						voicePromptsAppendString(menuName);
+					}
+					else
+					{
+						voicePromptsAppendLanguageString(menuName);
+					}
 					promptsPlayNotAfterTx();
 				}
 			}

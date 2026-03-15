@@ -129,7 +129,7 @@ typedef enum
 {
 	BIT_INVERSE_VIDEO               = (SETTINGS_BITS_BANK_0 | (1 << 0)),
 	BIT_PTT_LATCH                   = (SETTINGS_BITS_BANK_0 | (1 << 1)),
-	BIT_UNUSED_2                    = (SETTINGS_BITS_BANK_0 | (1 << 2)),
+	BIT_SMS_FILTER_INCOMING_PC      = (SETTINGS_BITS_BANK_0 | (1 << 2)),
 	BIT_BATTERY_VOLTAGE_IN_HEADER   = (SETTINGS_BITS_BANK_0 | (1 << 3)),
 	BIT_SETTINGS_UPDATED            = (SETTINGS_BITS_BANK_0 | (1 << 4)),
 	BIT_TX_RX_FREQ_LOCK             = (SETTINGS_BITS_BANK_0 | (1 << 5)),
@@ -139,7 +139,7 @@ typedef enum
 	BIT_POWEROFF_SUSPEND            = (SETTINGS_BITS_BANK_0 | (1 << 8)),
 #endif
 	BIT_SATELLITE_MANUAL_AUTO       = (SETTINGS_BITS_BANK_0 | (1 << 9)),
-	BIT_UNUSED_1                    = (SETTINGS_BITS_BANK_0 | (1 << 10)),
+	BIT_SMS_ACK_WAIT                = (SETTINGS_BITS_BANK_0 | (1 << 10)),
 #if defined(PLATFORM_MD9600)
 	BIT_SPEAKER_CLICK_SUPPRESS      = (SETTINGS_BITS_BANK_0 | (1 << 11)),
 #endif
@@ -153,7 +153,7 @@ typedef enum
 	BIT_VISUAL_VOLUME               = (SETTINGS_BITS_BANK_0 | (1 << 18)),
 #endif
 	BIT_SECONDARY_LANGUAGE          = (SETTINGS_BITS_BANK_0 | (1 << 19)),
-	BIT_UNUSED_3                    = (SETTINGS_BITS_BANK_0 | (1 << 20)),
+	BIT_SMS_ACK_WAIT_INITIALIZED    = (SETTINGS_BITS_BANK_0 | (1 << 20)),
 	BIT_DISPLAY_CHANNEL_DISTANCE    = (SETTINGS_BITS_BANK_0 | (1 << 21)),
 #if defined(PLATFORM_MD2017)
 	BIT_TRACKBALL_ENABLED           = (SETTINGS_BITS_BANK_0 | (1 << 22)),
@@ -168,6 +168,7 @@ typedef enum
 #endif
 	BIT_CHANNELS_ARE_READ_ONLY      = (SETTINGS_BITS_BANK_0 | (1 << 27)),
 	BIT_UI_USES_DOUBLE_HEIGHT       = (SETTINGS_BITS_BANK_0 | (1 << 28)),
+	BIT_SMS_FILTER_INCOMING_INITIALIZED = (SETTINGS_BITS_BANK_0 | (1 << 29)),
 
 	// Last usable bit is 29
 	//BIT_xxxxxxx_xxxxxxxxxxxx      = (SETTINGS_BITS_BANK_1 | (1 << 0)),

@@ -193,6 +193,22 @@ bool settingsLoadSettings(bool reset)
 		settingsDirty = false;
 	}
 
+	// One-time migration: old settings used this bit as unused.
+	if (!settingsIsOptionBitSet(BIT_SMS_ACK_WAIT_INITIALIZED))
+	{
+		settingsSetOptionBit(BIT_SMS_ACK_WAIT, true);
+		settingsSetOptionBit(BIT_SMS_ACK_WAIT_INITIALIZED, true);
+		settingsSetDirty();
+	}
+
+	// One-time migration for incoming SMS filter option.
+	if (!settingsIsOptionBitSet(BIT_SMS_FILTER_INCOMING_INITIALIZED))
+	{
+		settingsSetOptionBit(BIT_SMS_FILTER_INCOMING_PC, false);
+		settingsSetOptionBit(BIT_SMS_FILTER_INCOMING_INITIALIZED, true);
+		settingsSetDirty();
+	}
+
 	currentLanguage = &languages[(settingsIsOptionBitSet(BIT_SECONDARY_LANGUAGE) ? 1 : 0)];
 
 	soundBeepVolumeDivider = nonVolatileSettings.beepVolumeDivider;
@@ -329,6 +345,10 @@ bool settingsRestoreDefaultSettings(void)
 #if defined(HAS_COLOURS)
 	settingsSetOptionBit(BIT_UI_USES_DOUBLE_HEIGHT, false); // Enable double height for color devices
 #endif
+	settingsSetOptionBit(BIT_SMS_ACK_WAIT, true);
+	settingsSetOptionBit(BIT_SMS_ACK_WAIT_INITIALIZED, true);
+	settingsSetOptionBit(BIT_SMS_FILTER_INCOMING_PC, false);
+	settingsSetOptionBit(BIT_SMS_FILTER_INCOMING_INITIALIZED, true);
 	settingsSetOptionBit(BIT_SETTINGS_UPDATED, true);// we need to keep track if the user has been notified about settings update.
 #endif
 

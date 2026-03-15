@@ -742,9 +742,16 @@ void smsTick(void)
 {
 	if (ackResponseTracking.active && (trxDMRID != 0U) && !smsHasQueuedMessage() && !HRC6000IsSendingSMS() && !HRC6000IRQHandlerIsRunning())
 	{
-		if (smsQueueAckResponseMessage(ackResponseTracking.destinationId, trxDMRID) && HRC6000StartQueuedSMS())
+		if (smsQueueAckResponseMessage(ackResponseTracking.destinationId, trxDMRID))
 		{
-			ackResponseTracking.active = false;
+			if (HRC6000StartQueuedSMS())
+			{
+				ackResponseTracking.active = false;
+			}
+			else
+			{
+				smsClearQueuedMessage();
+			}
 		}
 	}
 

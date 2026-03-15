@@ -108,6 +108,8 @@ menuDataGlobal_t menuDataGlobal =
 				NULL,// SMS inbox
 				NULL,// SMS rx popup
 				NULL,// SMS view
+				NULL,// SMS sent
+				NULL,// SMS options
 #if defined(HAS_COLOURS)
 				NULL,// Theme items browser
 				NULL,// Colour picker
@@ -172,6 +174,7 @@ static menuFunctionData_t menuFunctions[] =
 		{ menuSMSRxPopup,           NULL, NULL, 0 },
 		{ menuSMSView,              NULL, NULL, 0 },
 		{ menuSMSSent,              NULL, NULL, 0 },
+		{ menuSMSOptions,           NULL, NULL, 0 },
 #if defined(HAS_COLOURS)
 		{ menuThemeItemsBrowser,    NULL, NULL, 0 },
 		{ menuColourPicker,         NULL, NULL, 0 },
@@ -697,6 +700,7 @@ static const menuItemNewData_t optionsMenuItems[] =
 	{ 191, MENU_RADIO           },
 	{  10, MENU_DISPLAY         },
 	{  11, MENU_SOUND           },
+	{   9, MENU_SMS_OPTIONS     },
 	{  13, MENU_LANGUAGE        },
 	{ 206, MENU_CALIBRATION     },
 #if defined(HAS_COLOURS)

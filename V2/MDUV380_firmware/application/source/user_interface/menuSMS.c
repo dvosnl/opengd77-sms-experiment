@@ -29,8 +29,11 @@
 
 #include "user_interface/uiGlobals.h"
 #include "user_interface/menuSystem.h"
+#include "user_interface/uiLocalisation.h"
+#include "user_interface/uiUtilities.h"
 #include "functions/sound.h"
 #include "functions/sms.h"
+#include "functions/settings.h"
 #include "functions/codeplug.h"
 #include "functions/trx.h"
 #include "hardware/HR-C6000.h"
@@ -77,6 +80,7 @@ static uint8_t smsViewMessageIndex = 0U;
 static char smsViewPeerText[24];
 
 static const char *smsPackResultMessage(smsPackResult_t result);
+static void smsOptionsRender(void);
 
 static void smsGetSourceDisplayText(uint32_t sourceId, char *buffer, size_t bufferLength)
 {
@@ -151,6 +155,7 @@ static bool smsLoadSentViewMessage(uint8_t index)
 static bool smsTryResendSelectedSentMessage(void)
 {
 	smsPackResult_t result;
+	bool waitForAckEnabled = settingsIsOptionBitSet(BIT_SMS_ACK_WAIT);
 
 	if (trxGetMode() != RADIO_MODE_DIGITAL)
 	{
@@ -172,6 +177,10 @@ static bool smsTryResendSelectedSentMessage(void)
 	}
 
 	smsRegisterOutgoingMessage(smsViewSentMessage.destinationId, trxDMRID, smsViewSentMessage.text);
+	if (!waitForAckEnabled)
+	{
+		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1800, "Sending SMS, ignoring ACK", true);
+	}
 	return true;
 }
 
@@ -465,10 +474,12 @@ static void smsComposeRender(bool fullRedraw, bool cursorMoved)
 		displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
 		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Green send  Red back", FONT_SIZE_1);
 		displayThemeResetToDefault();
+		displayRender();
 	}
 
-	menuUpdateCursor((smsCursorPos - start), cursorMoved, false);
-	displayRender();
+	displayThemeApply(THEME_ITEM_BG, THEME_ITEM_BG_MENU_ITEM_SELECTED);
+	menuUpdateCursor((smsCursorPos - start), cursorMoved, true);
+	displayThemeResetToDefault();
 }
 
 static void smsComposeInsertChar(char c, bool advance)
@@ -490,7 +501,7 @@ static void smsComposeInsertChar(char c, bool advance)
 		smsBuffer[smsCursorPos] = c;
 	}
 
-	if (advance && (smsCursorPos < SMS_MAX_LEN))
+	if (advance && (smsCursorPos < (int)strlen(smsBuffer)) && (smsCursorPos < SMS_MAX_LEN - 1))
 	{
 		smsCursorPos++;
 	}
@@ -501,6 +512,7 @@ static bool smsSendBuffer(void)
 	uint32_t destinationId;
 	char destination[SCREEN_LINE_BUFFER_SIZE];
 	smsPackResult_t result;
+	bool waitForAckEnabled = settingsIsOptionBitSet(BIT_SMS_ACK_WAIT);
 
 	if (trxGetMode() != RADIO_MODE_DIGITAL)
 	{
@@ -529,6 +541,10 @@ static bool smsSendBuffer(void)
 
 	(void)smsStoreSentMessage(destinationId, smsBuffer);
 	smsRegisterOutgoingMessage(destinationId, trxDMRID, smsBuffer);
+	if (!waitForAckEnabled)
+	{
+		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1800, "Sending SMS, ignoring ACK", true);
+	}
 	return true;
 }
 
@@ -657,6 +673,7 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 	if ((ev->keys.event == KEY_MOD_PREVIEW) && (ev->keys.key >= 32) && (ev->keys.key <= 126))
 	{
 		smsComposeInsertChar(ev->keys.key, false);
+		announceChar(ev->keys.key);
 		smsComposeRender(true, true);
 		return MENU_STATUS_SUCCESS;
 	}
@@ -664,6 +681,7 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 	if ((ev->keys.event == KEY_MOD_PRESS) && (ev->keys.key >= 32) && (ev->keys.key <= 126))
 	{
 		smsComposeInsertChar(ev->keys.key, true);
+		announceChar(ev->keys.key);
 		smsComposeRender(true, true);
 		return MENU_STATUS_SUCCESS;
 	}
@@ -985,6 +1003,98 @@ menuStatus_t menuSMSView(uiEvent_t *ev, bool isFirstRun)
 			menuSystemPopPreviousMenu();
 			return MENU_STATUS_SUCCESS;
 		}
+	}
+
+	return MENU_STATUS_SUCCESS;
+}
+
+static void smsOptionsRender(void)
+{
+	char line[SCREEN_LINE_BUFFER_SIZE];
+	int mNum = 0;
+	const char *ackValue = (settingsIsOptionBitSet(BIT_SMS_ACK_WAIT) ? currentLanguage->on : currentLanguage->off);
+	const char *filterValue = (settingsIsOptionBitSet(BIT_SMS_FILTER_INCOMING_PC) ? "PC" : "None");
+
+	displayClearBuf();
+	menuDisplayTitle("SMS options");
+
+	for (int i = MENU_START_ITERATION_VALUE; i < MENU_END_ITERATION_VALUE; i++)
+	{
+		mNum = menuGetMenuOffset(menuDataGlobal.numItems, i);
+
+		if (mNum == MENU_OFFSET_BEFORE_FIRST_ENTRY)
+		{
+			continue;
+		}
+		if (mNum == MENU_OFFSET_AFTER_LAST_ENTRY)
+		{
+			break;
+		}
+
+		if (mNum == 0)
+		{
+			snprintf(line, sizeof(line), "Wait for ACK:%s", ackValue);
+			menuDisplayEntry(i, mNum, line, 13, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+		}
+		else
+		{
+			snprintf(line, sizeof(line), "In filter:%s", filterValue);
+			menuDisplayEntry(i, mNum, line, 10, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+		}
+	}
+
+	displayRender();
+}
+
+menuStatus_t menuSMSOptions(uiEvent_t *ev, bool isFirstRun)
+{
+	if (isFirstRun)
+	{
+		menuDataGlobal.currentItemIndex = 0;
+		menuDataGlobal.numItems = 2;
+		smsOptionsRender();
+		return (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
+	}
+
+	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
+	{
+		smsOptionsRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
+	{
+		menuSystemPopPreviousMenu();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
+	{
+		menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, menuDataGlobal.numItems);
+		smsOptionsRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_PRESS(ev->keys, KEY_UP))
+	{
+		menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, menuDataGlobal.numItems);
+		smsOptionsRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_LEFT) || KEYCHECK_SHORTUP(ev->keys, KEY_RIGHT))
+	{
+		if (menuDataGlobal.currentItemIndex == 0)
+		{
+			settingsSetOptionBit(BIT_SMS_ACK_WAIT, !settingsIsOptionBitSet(BIT_SMS_ACK_WAIT));
+		}
+		else
+		{
+			settingsSetOptionBit(BIT_SMS_FILTER_INCOMING_PC, !settingsIsOptionBitSet(BIT_SMS_FILTER_INCOMING_PC));
+		}
+
+		smsOptionsRender();
+		return MENU_STATUS_SUCCESS;
 	}
 
 	return MENU_STATUS_SUCCESS;
