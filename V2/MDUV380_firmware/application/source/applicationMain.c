@@ -58,6 +58,7 @@
 #endif
 
 #define VOLUME_UPDATE_TIMEOUT      5U
+#define NOTIFICATION_ID_SMS_TX     ((uiNotificationID_t)(NOTIFICATION_ID_USER + 1))
 
 // Couldn't declare into aprs.h, due to header cross-dependence.
 void aprsBeaconingTick(uiEvent_t *ev);
@@ -1372,7 +1373,39 @@ void applicationMainTask(void)
 		voxTick();
 		gpsTick();
 		aprsBeaconingTick(&ev);
+		smsTick();
 		smsInboxStorageTick();
+
+		switch (smsConsumeTxEvent())
+		{
+			case SMS_TX_EVENT_SENDING:
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 10000U, "Sending SMS", true);
+				break;
+
+			case SMS_TX_EVENT_RETRYING:
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 10000U, "Retrying SMS", true);
+				break;
+
+			case SMS_TX_EVENT_ACK:
+				soundSetMelody(MELODY_ACK_BEEP);
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 1500U, "SMS ACK", true);
+				break;
+
+			case SMS_TX_EVENT_TIMEOUT:
+				soundSetMelody(MELODY_NACK_BEEP);
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 2000U, "SMS timeout", true);
+				break;
+
+			case SMS_TX_EVENT_REJECTED:
+				soundSetMelody(MELODY_NACK_BEEP);
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 2000U, "SMS busy", true);
+				break;
+
+			case SMS_TX_EVENT_NONE:
+			default:
+				break;
+		}
+
 		settingsSaveIfNeeded(false);
 
 		if (settingsIsOptionBitSet(BIT_DISPLAY_TIME_IN_HEADER))

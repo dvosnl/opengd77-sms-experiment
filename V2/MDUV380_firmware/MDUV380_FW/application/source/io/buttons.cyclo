@@ -1,0 +1,6 @@
+../application/source/io/buttons.c:63:13:isMButtonLong	1
+../application/source/io/buttons.c:73:13:setMButtonsStateAndClearLong	3
+../application/source/io/buttons.c:229:13:checkMButtons	11
+../application/source/io/buttons.c:52:6:buttonsInit	1
+../application/source/io/buttons.c:110:10:buttonsRead	9
+../application/source/io/buttons.c:305:6:buttonsCheckButtonsEvent	6

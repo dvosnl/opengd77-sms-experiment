@@ -1,0 +1,10 @@
+../application/source/user_interface/menuSatelliteScreen.c:1515:13:exitCallback	3
+../application/source/user_interface/menuSatelliteScreen.c:1370:13:loadKeps	4
+../application/source/user_interface/menuSatelliteScreen.c:1537:13:calculateActiveSatelliteData	6
+../application/source/user_interface/menuSatelliteScreen.c:1458:13:selectSatellite	2
+../application/source/user_interface/menuSatelliteScreen.c:271:13:updateScreen	74
+../application/source/user_interface/menuSatelliteScreen.c:103:14:menuSatelliteScreen	117
+../application/source/user_interface/menuSatelliteScreen.c:1414:6:menuSatelliteScreenClearPredictions	3
+../application/source/user_interface/menuSatelliteScreen.c:1480:6:menuSatelliteIsDisplayingHeader	1
+../application/source/user_interface/menuSatelliteScreen.c:1485:6:menuSatelliteTxScreen	1
+../application/source/user_interface/menuSatelliteScreen.c:1508:6:menuSatelliteSetFullReload	1

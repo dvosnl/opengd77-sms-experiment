@@ -171,7 +171,7 @@ static bool smsTryResendSelectedSentMessage(void)
 		return false;
 	}
 
-	uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1500, "SMS resent", true);
+	smsRegisterOutgoingMessage(smsViewSentMessage.destinationId, trxDMRID, smsViewSentMessage.text);
 	return true;
 }
 
@@ -528,8 +528,7 @@ static bool smsSendBuffer(void)
 	}
 
 	(void)smsStoreSentMessage(destinationId, smsBuffer);
-
-	uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1500, "SMS TX", true);
+	smsRegisterOutgoingMessage(destinationId, trxDMRID, smsBuffer);
 	return true;
 }
 

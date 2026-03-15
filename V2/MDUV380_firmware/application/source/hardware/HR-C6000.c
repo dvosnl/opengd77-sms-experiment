@@ -839,6 +839,7 @@ void PORTC_IRQHandler(void)
 #endif
 static inline void hrc6000SysSendRejectedInt(void)
 {
+	smsNotifyOutgoingRejected();
 }
 
 static inline void hrc6000SysSendStartInt(void)
@@ -875,6 +876,11 @@ static inline void hrc6000SysSendStartInt(void)
 static inline void hrc6000SysSendEndInt(void)
 {
 	SPI0ReadPageRegByte(0x04, 0x86, &reg_0x86);  //Read Interrupt Flag Register2
+
+	if (reg_0x86 & 0x08U)
+	{
+		smsNotifyOutgoingAckReceived();
+	}
 
 	/*
 		In DMR mode, there is a sub-status register 0x86 at the end of the transmission, and the

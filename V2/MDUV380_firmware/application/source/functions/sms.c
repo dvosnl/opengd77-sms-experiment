@@ -29,12 +29,17 @@
 
 #include "functions/sms.h"
 #include "functions/ticks.h"
+#include "functions/trx.h"
+#include "hardware/HR-C6000.h"
 #include "hardware/EEPROM.h"
 
 #define SMS_STORAGE_ADDRESS                    0x0F0000
 #define SMS_STORAGE_MAGIC                      0x534D5349U
 #define SMS_STORAGE_VERSION                    2U
 #define SMS_STORAGE_DEBOUNCE_MS                1500U
+#define SMS_TX_ACK_TIMEOUT_MS                  3000U
+#define SMS_TX_RETRY_BACKOFF_MS                 250U
+#define SMS_TX_MAX_RETRIES                        2U
 
 typedef struct
 {
@@ -65,9 +70,26 @@ typedef struct
 	uint8_t expectedBlocks;
 	uint8_t receivedBlocks;
 	uint8_t padOctets;
+	bool responseRequested;
 	uint32_t sourceId;
 	uint8_t payload[SMS_MAX_DATA_BLOCKS * SMS_BLOCK_DATA_BYTES];
 } smsRxAssembly_t;
+
+typedef struct
+{
+	bool active;
+	uint32_t destinationId;
+} smsAckResponseTracking_t;
+
+typedef struct
+{
+	bool active;
+	uint32_t destinationId;
+	uint32_t sourceId;
+	uint8_t retriesRemaining;
+	ticksTimer_t ackTimer;
+	char text[SMS_MAX_TEXT_LENGTH + 1U];
+} smsOutgoingTracking_t;
 
 static smsInboxMessage_t inboxMessages[SMS_INBOX_MAX_MESSAGES];
 static uint8_t inboxStart = 0U;
@@ -77,10 +99,19 @@ static uint8_t sentStart = 0U;
 static uint8_t sentCount = 0U;
 static bool inboxUnreadNotification = false;
 static smsRxAssembly_t rxAssembly = { 0 };
+static smsAckResponseTracking_t ackResponseTracking = { 0 };
+static smsOutgoingTracking_t outgoingTracking = { 0 };
+static smsTxEvent_t pendingTxEvent = SMS_TX_EVENT_NONE;
 static volatile bool smsStorageDirty = false;
 static uint32_t smsStorageDirtySinceTick = 0U;
 
 static void smsResetRxAssembly(void);
+static void smsScheduleAckResponse(uint32_t destinationId);
+static bool smsQueueAckResponseMessage(uint32_t destinationId, uint32_t sourceId);
+static uint16_t smsCrc16Ccitt(const uint8_t *data, uint8_t length);
+static void smsResetOutgoingTracking(void);
+static void smsSetPendingTxEvent(smsTxEvent_t event);
+static bool smsRetryOutgoingMessage(void);
 static uint32_t smsStorageChecksum(const smsStorage_t *storage);
 static uint32_t smsLegacyInboxStorageChecksum(const smsLegacyInboxStorage_t *storage);
 static void smsStorageMarkDirty(void);
@@ -100,9 +131,21 @@ void smsInit(void)
 	memset(inboxMessages, 0, sizeof(inboxMessages));
 	memset(sentMessages, 0, sizeof(sentMessages));
 	smsResetRxAssembly();
+	smsResetOutgoingTracking();
+	pendingTxEvent = SMS_TX_EVENT_NONE;
 	smsStorageDirty = false;
 	smsStorageDirtySinceTick = 0U;
 	smsStorageLoad();
+}
+
+static void smsResetOutgoingTracking(void)
+{
+	memset(&outgoingTracking, 0, sizeof(outgoingTracking));
+}
+
+static void smsSetPendingTxEvent(smsTxEvent_t event)
+{
+	pendingTxEvent = event;
 }
 
 static uint32_t smsStorageChecksum(const smsStorage_t *storage)
@@ -362,6 +405,93 @@ static void smsResetRxAssembly(void)
 	memset(&rxAssembly, 0, sizeof(rxAssembly));
 }
 
+static void smsScheduleAckResponse(uint32_t destinationId)
+{
+	if ((destinationId == 0U) || (destinationId > 0x00FFFFFFU))
+	{
+		return;
+	}
+
+	ackResponseTracking.active = true;
+	ackResponseTracking.destinationId = destinationId;
+}
+
+static bool smsQueueAckResponseMessage(uint32_t destinationId, uint32_t sourceId)
+{
+	uint16_t crc;
+
+	if ((destinationId == 0U) || (destinationId > 0x00FFFFFFU) || (sourceId == 0U) || (sourceId > 0x00FFFFFFU))
+	{
+		return false;
+	}
+
+	memset(&queuedMessage, 0, sizeof(queuedMessage));
+	queuedMessage.destinationId = destinationId;
+	queuedMessage.sourceId = sourceId;
+	queuedMessage.requestAck = false;
+
+	memset(queuedMessage.csbk, 0, sizeof(queuedMessage.csbk));
+	queuedMessage.csbk[0] = 0xBDU;
+	queuedMessage.csbk[1] = 0x00U;
+	queuedMessage.csbk[2] = 0x80U;
+	queuedMessage.csbk[3] = 1U;
+	queuedMessage.csbk[4] = (uint8_t)((destinationId >> 16) & 0xFFU);
+	queuedMessage.csbk[5] = (uint8_t)((destinationId >> 8) & 0xFFU);
+	queuedMessage.csbk[6] = (uint8_t)(destinationId & 0xFFU);
+	queuedMessage.csbk[7] = (uint8_t)((sourceId >> 16) & 0xFFU);
+	queuedMessage.csbk[8] = (uint8_t)((sourceId >> 8) & 0xFFU);
+	queuedMessage.csbk[9] = (uint8_t)(sourceId & 0xFFU);
+	crc = smsCrc16Ccitt(queuedMessage.csbk, 10U);
+	queuedMessage.csbk[10] = (uint8_t)((crc >> 8) & 0xFFU) ^ 0xA5U;
+	queuedMessage.csbk[11] = (uint8_t)(crc & 0xFFU) ^ 0xA5U;
+
+	memset(queuedMessage.dataHeader, 0, sizeof(queuedMessage.dataHeader));
+	queuedMessage.dataHeader[0] = 0x01U; // Data Response PDU
+	queuedMessage.dataHeader[2] = (uint8_t)((destinationId >> 16) & 0xFFU);
+	queuedMessage.dataHeader[3] = (uint8_t)((destinationId >> 8) & 0xFFU);
+	queuedMessage.dataHeader[4] = (uint8_t)(destinationId & 0xFFU);
+	queuedMessage.dataHeader[5] = (uint8_t)((sourceId >> 16) & 0xFFU);
+	queuedMessage.dataHeader[6] = (uint8_t)((sourceId >> 8) & 0xFFU);
+	queuedMessage.dataHeader[7] = (uint8_t)(sourceId & 0xFFU);
+	queuedMessage.dataHeader[8] = 0x00U;
+	queuedMessage.dataHeader[9] = 0x00U;
+	crc = smsCrc16Ccitt(queuedMessage.dataHeader, 10U);
+	queuedMessage.dataHeader[10] = (uint8_t)((crc >> 8) & 0xFFU) ^ 0xCCU;
+	queuedMessage.dataHeader[11] = (uint8_t)(crc & 0xFFU) ^ 0xCCU;
+
+	queuedMessageValid = true;
+	return true;
+}
+
+static bool smsHandleIncomingResponsePdu(const uint8_t *frame)
+{
+	uint8_t dataPacketFormat;
+	uint32_t destinationId;
+	uint32_t sourceId;
+
+	if ((frame == NULL) || (!outgoingTracking.active))
+	{
+		return false;
+	}
+
+	dataPacketFormat = (uint8_t)(frame[0] & 0x0FU);
+	if (dataPacketFormat != 0x01U)
+	{
+		return false;
+	}
+
+	destinationId = (((uint32_t)frame[2] << 16) | ((uint32_t)frame[3] << 8) | frame[4]);
+	sourceId = (((uint32_t)frame[5] << 16) | ((uint32_t)frame[6] << 8) | frame[7]);
+
+	if ((destinationId == outgoingTracking.sourceId) && (sourceId == outgoingTracking.destinationId))
+	{
+		smsNotifyOutgoingAckReceived();
+		return true;
+	}
+
+	return false;
+}
+
 static uint16_t smsCrc16Ccitt(const uint8_t *data, uint8_t length)
 {
 	uint16_t crc = 0x0000U;
@@ -411,7 +541,7 @@ static void smsBuildDataHeader(smsPreparedMessage_t *message)
 	uint16_t crc;
 
 	memset(message->dataHeader, 0, sizeof(message->dataHeader));
-	message->dataHeader[0] = 0x02U | (uint8_t)(message->padOctetCount & 0x10U);  // Unconfirmed UDT + pad[4]
+	message->dataHeader[0] = (message->requestAck ? 0x42U : 0x02U) | (uint8_t)(message->padOctetCount & 0x10U);
 	message->dataHeader[1] = 0x40U | (uint8_t)(message->padOctetCount & 0x0FU);  // SAP=IP(0x04) + pad[3:0]
 	message->dataHeader[2] = (uint8_t)((message->destinationId >> 16) & 0xFFU);
 	message->dataHeader[3] = (uint8_t)((message->destinationId >> 8) & 0xFFU);
@@ -481,6 +611,7 @@ smsPackResult_t smsPackMessage(uint32_t destinationId, uint32_t sourceId, const 
 	memset(message, 0, sizeof(*message));
 	message->destinationId = destinationId;
 	message->sourceId = sourceId;
+	message->requestAck = true;
 
 	result = smsConvertTextToUtf16Be(text, message->payload, &payloadLength);
 	if (result != SMS_PACK_OK)
@@ -535,6 +666,118 @@ void smsClearQueuedMessage(void)
 	memset(&queuedMessage, 0, sizeof(queuedMessage));
 }
 
+void smsRegisterOutgoingMessage(uint32_t destinationId, uint32_t sourceId, const char *text)
+{
+	if ((text == NULL) || (text[0] == 0) || (destinationId == 0U) || (sourceId == 0U))
+	{
+		return;
+	}
+
+	outgoingTracking.active = true;
+	outgoingTracking.destinationId = destinationId;
+	outgoingTracking.sourceId = sourceId;
+	outgoingTracking.retriesRemaining = SMS_TX_MAX_RETRIES;
+	strncpy(outgoingTracking.text, text, SMS_MAX_TEXT_LENGTH);
+	outgoingTracking.text[SMS_MAX_TEXT_LENGTH] = 0;
+	ticksTimerStart(&outgoingTracking.ackTimer, SMS_TX_ACK_TIMEOUT_MS);
+	smsSetPendingTxEvent(SMS_TX_EVENT_SENDING);
+}
+
+void smsNotifyOutgoingAckReceived(void)
+{
+	if (!outgoingTracking.active)
+	{
+		return;
+	}
+
+	outgoingTracking.active = false;
+	smsSetPendingTxEvent(SMS_TX_EVENT_ACK);
+}
+
+void smsNotifyOutgoingRejected(void)
+{
+	if (!outgoingTracking.active)
+	{
+		return;
+	}
+
+	outgoingTracking.active = false;
+	smsSetPendingTxEvent(SMS_TX_EVENT_REJECTED);
+}
+
+static bool smsRetryOutgoingMessage(void)
+{
+	smsPackResult_t result;
+
+	result = smsQueueMessage(outgoingTracking.destinationId, outgoingTracking.sourceId, outgoingTracking.text);
+	if (result != SMS_PACK_OK)
+	{
+		return false;
+	}
+
+	if (HRC6000StartQueuedSMS() == false)
+	{
+		smsClearQueuedMessage();
+		return false;
+	}
+
+	if (outgoingTracking.retriesRemaining > 0U)
+	{
+		outgoingTracking.retriesRemaining--;
+	}
+
+	ticksTimerStart(&outgoingTracking.ackTimer, SMS_TX_ACK_TIMEOUT_MS);
+	smsSetPendingTxEvent(SMS_TX_EVENT_RETRYING);
+	return true;
+}
+
+smsTxEvent_t smsConsumeTxEvent(void)
+{
+	smsTxEvent_t event = pendingTxEvent;
+	pendingTxEvent = SMS_TX_EVENT_NONE;
+	return event;
+}
+
+void smsTick(void)
+{
+	if (ackResponseTracking.active && (trxDMRID != 0U) && !smsHasQueuedMessage() && !HRC6000IsSendingSMS() && !HRC6000IRQHandlerIsRunning())
+	{
+		if (smsQueueAckResponseMessage(ackResponseTracking.destinationId, trxDMRID) && HRC6000StartQueuedSMS())
+		{
+			ackResponseTracking.active = false;
+		}
+	}
+
+	if (!outgoingTracking.active)
+	{
+		return;
+	}
+
+	if (!ticksTimerHasExpired(&outgoingTracking.ackTimer))
+	{
+		return;
+	}
+
+	if (HRC6000IsSendingSMS() || HRC6000IRQHandlerIsRunning())
+	{
+		return;
+	}
+
+	if (outgoingTracking.retriesRemaining > 0U)
+	{
+		if (smsRetryOutgoingMessage())
+		{
+			return;
+		}
+
+		ticksTimerStart(&outgoingTracking.ackTimer, SMS_TX_RETRY_BACKOFF_MS);
+		return;
+	}
+
+	outgoingTracking.active = false;
+	smsSetPendingTxEvent(SMS_TX_EVENT_TIMEOUT);
+}
+
 bool smsHandleReceivedDataFrame(uint8_t dataType, const uint8_t *frame)
 {
 	if (frame == NULL)
@@ -544,6 +787,14 @@ bool smsHandleReceivedDataFrame(uint8_t dataType, const uint8_t *frame)
 
 	if (dataType == 0x06U)
 	{
+		uint8_t dataPacketFormat = (uint8_t)(frame[0] & 0x0FU);
+		bool responseRequested = (((frame[0] & 0x40U) != 0U) || (dataPacketFormat == 0x03U));
+
+		if (smsHandleIncomingResponsePdu(frame))
+		{
+			return true;
+		}
+
 		uint8_t sapType = (uint8_t)(frame[1] & 0xF0U);
 		uint8_t blocks = (uint8_t)(frame[8] & 0x7FU);
 		uint8_t pad = (uint8_t)((frame[0] & 0x10U) | (frame[1] & 0x0FU));
@@ -558,6 +809,7 @@ bool smsHandleReceivedDataFrame(uint8_t dataType, const uint8_t *frame)
 		rxAssembly.expectedBlocks = blocks;
 		rxAssembly.receivedBlocks = 0U;
 		rxAssembly.padOctets = pad;
+		rxAssembly.responseRequested = responseRequested;
 		rxAssembly.sourceId = (((uint32_t)frame[5] << 16) | ((uint32_t)frame[6] << 8) | frame[7]);
 		memset(rxAssembly.payload, 0, sizeof(rxAssembly.payload));
 		return true;
@@ -584,6 +836,11 @@ bool smsHandleReceivedDataFrame(uint8_t dataType, const uint8_t *frame)
 				smsDecodeUtf16Payload(rxAssembly.payload, payloadLength, decodedText))
 			{
 				smsStoreInboxMessage(rxAssembly.sourceId, decodedText);
+
+				if (rxAssembly.responseRequested && (rxAssembly.sourceId != trxDMRID))
+				{
+					smsScheduleAckResponse(rxAssembly.sourceId);
+				}
 			}
 
 			smsResetRxAssembly();

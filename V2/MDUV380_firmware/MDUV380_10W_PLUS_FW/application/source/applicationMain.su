@@ -1,7 +1,7 @@
-../application/source/applicationMain.c:200:13:rxBeepsCarrierEndCallback	0	static
-../application/source/applicationMain.c:193:13:rxBeepsMustPlayMelody	8	static
-../application/source/applicationMain.c:205:13:rxBeepsHandler	16	static
-../application/source/applicationMain.c:287:13:settingsUpdateAudioAlert	8	static
-../application/source/applicationMain.c:275:13:validateUpdateCallback	8	static
-../application/source/applicationMain.c:301:13:updateVolumeGain	24	static
-../application/source/applicationMain.c:317:6:applicationMainTask	128	static
+../application/source/applicationMain.c:201:13:rxBeepsCarrierEndCallback	0	static
+../application/source/applicationMain.c:194:13:rxBeepsMustPlayMelody	8	static
+../application/source/applicationMain.c:206:13:rxBeepsHandler	16	static
+../application/source/applicationMain.c:288:13:settingsUpdateAudioAlert	8	static
+../application/source/applicationMain.c:276:13:validateUpdateCallback	8	static
+../application/source/applicationMain.c:302:13:updateVolumeGain	24	static
+../application/source/applicationMain.c:318:6:applicationMainTask	128	static

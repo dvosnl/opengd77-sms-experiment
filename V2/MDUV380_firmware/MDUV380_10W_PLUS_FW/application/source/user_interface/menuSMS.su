@@ -7,9 +7,9 @@
 ../application/source/user_interface/menuSMS.c:178:13:smsGetDestinationText.constprop	8	static
 ../application/source/user_interface/menuSMS.c:436:13:smsComposeRender	64	static
 ../application/source/user_interface/menuSMS.c:81:13:smsGetSourceDisplayText.part.0.constprop	48	static
-../application/source/user_interface/menuSMS.c:536:14:menuSMSMenu	8	static
-../application/source/user_interface/menuSMS.c:585:14:menuSMSCompose	56	static
-../application/source/user_interface/menuSMS.c:676:14:menuSMSInbox	48	static
-../application/source/user_interface/menuSMS.c:756:14:menuSMSSent	24	static
-../application/source/user_interface/menuSMS.c:836:14:menuSMSRxPopup	16	static
-../application/source/user_interface/menuSMS.c:930:14:menuSMSView	16	static
+../application/source/user_interface/menuSMS.c:535:14:menuSMSMenu	8	static
+../application/source/user_interface/menuSMS.c:584:14:menuSMSCompose	56	static
+../application/source/user_interface/menuSMS.c:675:14:menuSMSInbox	48	static
+../application/source/user_interface/menuSMS.c:755:14:menuSMSSent	24	static
+../application/source/user_interface/menuSMS.c:835:14:menuSMSRxPopup	16	static
+../application/source/user_interface/menuSMS.c:929:14:menuSMSView	16	static

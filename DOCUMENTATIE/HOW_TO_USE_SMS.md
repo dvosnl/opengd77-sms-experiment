@@ -1,82 +1,82 @@
 # HOW TO USE SMS
 
-This guide is radio-independent and applies to the current SMS implementation in the firmware.
+Deze handleiding is radio-onafhankelijk en geldt voor de huidige SMS-implementatie in de firmware.
 
-## 1. Prerequisites
+## 1. Voorwaarden
 
-- Put the radio in DMR (digital) mode.
-- Make sure your transmitter ID (DMR ID) is correctly configured.
-- For sending, a Private Call (PC) destination must be active.
+- Zet de radio in DMR (digitaal) mode.
+- Zorg dat je zender-ID (DMR ID) goed ingesteld is.
+- Voor verzenden moet een Private Call (PC) bestemming actief zijn.
 
-## 2. Opening the SMS menu
+## 2. SMS-menu openen
 
-- Open the menu and navigate to SMS.
-- You will see three sections:
+- Open het menu en ga naar SMS.
+- Je ziet nu drie onderdelen:
   - SEND SMS
   - INBOX
   - SENT
 
-## 3. Sending a message (SEND SMS)
+## 3. Bericht verzenden (SEND SMS)
 
-1. Select `SEND SMS`.
-2. Type your message (maximum 64 characters).
-3. Verify that a Private Call destination is active.
-4. Press `Green` to send.
+1. Kies `SEND SMS`.
+2. Typ je bericht (maximaal 64 tekens).
+3. Controleer dat een Private Call bestemming actief is.
+4. Druk `Groen` om te verzenden.
 
-What you will see:
+Wat je ziet:
 
-- `SMS TX` upon successful start of transmission.
-- The message is automatically saved in `SENT`.
+- `SMS TX` bij succesvolle start van zenden.
+- Het bericht wordt automatisch opgeslagen in `SENT`.
 
-## 4. Using INBOX
+## 4. INBOX gebruiken
 
-### Viewing messages
+### Berichten bekijken
 
-1. Go to `INBOX`.
-2. Select a message.
-3. Press `Green` to open it.
+1. Ga naar `INBOX`.
+2. Kies een bericht.
+3. Druk `Groen` om te openen.
 
-### Deleting messages
+### Berichten verwijderen
 
-- In the list: press `#` to delete the selected message.
-- In the message view: press `#` to delete the open message.
+- In de lijst: druk `#` om geselecteerd bericht te verwijderen.
+- In de berichtweergave: druk `#` om het geopende bericht te verwijderen.
 
-## 5. Using SENT
+## 5. SENT gebruiken
 
-### Viewing sent messages
+### Verzonden berichten bekijken
 
-1. Go to `SENT`.
-2. Select a message.
-3. Press `Green` to open it.
+1. Ga naar `SENT`.
+2. Kies een bericht.
+3. Druk `Groen` om te openen.
 
-### Resending a message
+### Bericht opnieuw versturen (resend)
 
-- Open a message in `SENT`.
-- Hold `6` to resend the same message.
+- Open een bericht in `SENT`.
+- Houd `6` ingedrukt om hetzelfde bericht opnieuw te versturen.
 
-### Deleting sent messages
+### Verzonden berichten verwijderen
 
-- In the list: press `#` to delete the selected message.
-- In the message view: press `#` to delete the open message.
+- In de lijst: druk `#` om geselecteerd bericht te verwijderen.
+- In de berichtweergave: druk `#` om het geopende bericht te verwijderen.
 
-## 6. Shortcut overview
+## 6. Sneltoets-overzicht
 
-- `Green`: open / confirm / send
-- `Red`: back
-- `#`: delete (INBOX and SENT)
-- Long press `6`: resend in SENT message view
+- `Groen`: openen / bevestigen / verzenden
+- `Rood`: terug
+- `#`: verwijderen (INBOX en SENT)
+- `6` lang indrukken: resend in SENT-berichtweergave
 
-## 7. Error messages and their meaning
+## 7. Foutmeldingen en betekenis
 
-- `DMR only`: the radio is not in digital mode.
-- `Select private call`: no valid private destination has been selected.
-- `SMS busy`: the transmit path is busy; try again.
-- `Empty message`: the message text is empty.
-- `Message too long`: the message exceeds 64 characters.
-- `ASCII only`: only ASCII characters are supported in this implementation.
+- `DMR only`: je zit niet in digitale mode.
+- `Select private call`: er is geen geldige private bestemming gekozen.
+- `SMS busy`: zendpad is bezig; probeer opnieuw.
+- `Empty message`: lege tekst.
+- `Message too long`: bericht is langer dan 64 tekens.
+- `ASCII only`: alleen ASCII tekens toegestaan in deze implementatie.
 
-## 8. Practical tips
+## 8. Praktische tips
 
-- Start with short messages (e.g. "test") for initial testing.
-- Use a stable private call setup for reliable transmission.
-- Delete old messages with `#` to keep things organised.
+- Test eerst met korte berichten (bijv. "test").
+- Gebruik een stabiele private call setup voor betrouwbare verzending.
+- Verwijder oude berichten met `#` om overzicht te houden.

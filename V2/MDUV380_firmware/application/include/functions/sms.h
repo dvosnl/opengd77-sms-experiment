@@ -50,6 +50,16 @@ typedef enum
 	SMS_PACK_ERROR_INVALID_INDEX
 } smsPackResult_t;
 
+typedef enum
+{
+	SMS_TX_EVENT_NONE = 0,
+	SMS_TX_EVENT_SENDING,
+	SMS_TX_EVENT_RETRYING,
+	SMS_TX_EVENT_ACK,
+	SMS_TX_EVENT_TIMEOUT,
+	SMS_TX_EVENT_REJECTED
+} smsTxEvent_t;
+
 typedef struct
 {
 	uint32_t destinationId;
@@ -57,6 +67,7 @@ typedef struct
 	uint16_t payloadLength;
 	uint8_t padOctetCount;
 	uint8_t blockCount;
+	bool requestAck;
 	uint8_t csbk[SMS_BLOCK_DATA_BYTES];
 	uint8_t dataHeader[SMS_BLOCK_DATA_BYTES];
 	uint8_t payload[SMS_MAX_UTF16_PAYLOAD_BYTES];
@@ -94,6 +105,11 @@ void smsClearSent(void);
 smsPackResult_t smsQueueSentMessage(uint8_t index, uint32_t sourceId);
 bool smsHasRxNotification(void);
 bool smsConsumeRxNotification(void);
+void smsRegisterOutgoingMessage(uint32_t destinationId, uint32_t sourceId, const char *text);
+void smsNotifyOutgoingAckReceived(void);
+void smsNotifyOutgoingRejected(void);
+smsTxEvent_t smsConsumeTxEvent(void);
+void smsTick(void);
 void smsInboxStorageTick(void);
 
 #endif
