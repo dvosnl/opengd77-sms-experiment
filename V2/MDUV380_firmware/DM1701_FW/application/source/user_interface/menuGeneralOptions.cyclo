@@ -1,0 +1,4 @@
+../application/source/user_interface/menuGeneralOptions.c:127:13:updateScreen	57
+../application/source/user_interface/menuGeneralOptions.c:793:13:applySettings	4
+../application/source/user_interface/menuGeneralOptions.c:819:13:exitCallback	6
+../application/source/user_interface/menuGeneralOptions.c:89:14:menuGeneralOptions	107

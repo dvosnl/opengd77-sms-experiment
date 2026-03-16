@@ -1,0 +1,2 @@
+../application/source/dmr_codec/codec_interface.c:35:6:codecDecode	2
+../application/source/dmr_codec/codec_interface.c:99:6:codecEncodeBlock	3

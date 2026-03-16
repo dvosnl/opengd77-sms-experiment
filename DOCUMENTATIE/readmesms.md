@@ -8,11 +8,14 @@ Dit document beschrijft welke bronbestanden zijn toegevoegd of aangepast voor de
   - Nieuwe publieke API en datatypes voor SMS packing/queueing.
 - application/source/functions/sms.c
   - Implementatie van SMS-opbouw:
-    - UTF-16BE payload packing
+    - DMR_Standard IP/UDP payload packing (UDP/5016)
+    - UTF-16BE tekst in standaard payload
+    - ETSI/DMR CRC32 op het volledige transportblok
     - CSBK opbouw
     - Data header opbouw
     - CRC16-CCITT berekening
     - Queue beheer
+  - Ontvangstdecode valideert nu eerst het standaard DMR_Standard/IP/UDP-formaat en valt alleen voor compatibiliteit terug op legacy ruwe UTF-16 payloads.
 - application/source/user_interface/menuSMS.c
   - Nieuwe UI schermen:
     - SMS menu

@@ -37,18 +37,33 @@
 #include "functions/codeplug.h"
 #include "functions/trx.h"
 #include "hardware/HR-C6000.h"
+#include "functions/ticks.h"
 #include "io/keyboard.h"
 
-#define SMS_MAX_LEN 64
-#define SMS_VISIBLE_CHARS 18
+#define SMS_MAX_LEN        64
+#define SMS_CHARS_PER_LINE 18
+#define SMS_CHAR_WIDTH      8
+#define SMS_VISIBLE_LINES   4
+#define SMS_LINE_SPACING   10
+#define SMS_TEXT_Y_START   (DISPLAY_Y_POS_MENU_START + FONT_SIZE_1_HEIGHT + 2)
 
 enum
 {
 	SMS_MENU_ITEM_COMPOSE = 0,
 	SMS_MENU_ITEM_INBOX,
+	SMS_MENU_ITEM_QUICKTEXT,
 	SMS_MENU_ITEM_SENT,
 	SMS_MENU_ITEMS_COUNT
 };
+
+typedef enum
+{
+	SMS_QUICKTEXT_EDIT_NONE = 0,
+	SMS_QUICKTEXT_EDIT_CREATE_TEXT,
+	SMS_QUICKTEXT_EDIT_CREATE_TITLE,
+	SMS_QUICKTEXT_EDIT_UPDATE_TEXT,
+	SMS_QUICKTEXT_EDIT_UPDATE_TITLE
+} smsQuickTextEditMode_t;
 
 typedef enum
 {
@@ -75,12 +90,23 @@ static uint8_t smsPopupMessageIndex = 0U;
 static char smsPopupSource[17];
 static smsViewSource_t smsViewSource = SMS_VIEW_SOURCE_RX_POPUP;
 static smsInboxMessage_t smsViewInboxMessage;
-static smsSentMessage_t smsViewSentMessage;
 static uint8_t smsViewMessageIndex = 0U;
 static char smsViewPeerText[24];
+static bool smsComposeHasPreset = false;
+static smsQuickTextEditMode_t smsQuickTextEditMode = SMS_QUICKTEXT_EDIT_NONE;
+static uint8_t smsQuickTextEditIndex = 0U;
+
+#define SMS_QUICKTEXT_DRAFT_TEXT  smsViewInboxMessage.text
+#define SMS_QUICKTEXT_DRAFT_TITLE smsPopupSource
 
 static const char *smsPackResultMessage(smsPackResult_t result);
 static void smsOptionsRender(void);
+static void smsComposeSetPreset(const char *text);
+static void smsQuickTextRender(void);
+static void smsQuickTextEditRender(bool fullRedraw, bool cursorMoved);
+static bool smsQuickTextStartCreate(void);
+static bool smsQuickTextStartEdit(uint8_t index);
+static void smsDrawTextCursor(int x, int y, bool moved);
 
 static void smsGetSourceDisplayText(uint32_t sourceId, char *buffer, size_t bufferLength)
 {
@@ -141,14 +167,16 @@ static bool smsLoadInboxViewMessage(uint8_t index)
 
 static bool smsLoadSentViewMessage(uint8_t index)
 {
-	if (smsGetSentMessage(index, &smsViewSentMessage) == false)
+	smsSentMessage_t message;
+
+	if (smsGetSentMessage(index, &message) == false)
 	{
 		return false;
 	}
 
 	smsViewSource = SMS_VIEW_SOURCE_SENT;
 	smsViewMessageIndex = index;
-	snprintf(smsViewPeerText, sizeof(smsViewPeerText), "To: %u", smsViewSentMessage.destinationId);
+	snprintf(smsViewPeerText, sizeof(smsViewPeerText), "To: %u", message.destinationId);
 	return true;
 }
 
@@ -156,6 +184,13 @@ static bool smsTryResendSelectedSentMessage(void)
 {
 	smsPackResult_t result;
 	bool waitForAckEnabled = settingsIsOptionBitSet(BIT_SMS_ACK_WAIT);
+	smsSentMessage_t message;
+
+	if (!smsGetSentMessage(smsViewMessageIndex, &message))
+	{
+		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Invalid message", true);
+		return false;
+	}
 
 	if (trxGetMode() != RADIO_MODE_DIGITAL)
 	{
@@ -176,7 +211,7 @@ static bool smsTryResendSelectedSentMessage(void)
 		return false;
 	}
 
-	smsRegisterOutgoingMessage(smsViewSentMessage.destinationId, trxDMRID, smsViewSentMessage.text);
+	smsRegisterOutgoingMessage(message.destinationId, trxDMRID, message.text);
 	if (!waitForAckEnabled)
 	{
 		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1800, "Sending SMS, ignoring ACK", true);
@@ -239,10 +274,24 @@ static const char *smsPackResultMessage(smsPackResult_t result)
 	}
 }
 
+static void smsComposeSetPreset(const char *text)
+{
+	if (text == NULL)
+	{
+		smsComposeHasPreset = false;
+		return;
+	}
+
+	strncpy(smsBuffer, text, SMS_MAX_LEN);
+	smsBuffer[SMS_MAX_LEN] = 0;
+	smsCursorPos = strlen(smsBuffer);
+	smsComposeHasPreset = true;
+}
+
 static void smsMenuRender(void)
 {
 	int mNum = 0;
-	const char *menuText[SMS_MENU_ITEMS_COUNT] = { "SEND SMS", "INBOX", "SENT" };
+	const char *menuText[SMS_MENU_ITEMS_COUNT] = { "SEND SMS", "INBOX", "QUICK TEXT", "SENT" };
 
 	displayClearBuf();
 	menuDisplayTitle("SMS");
@@ -262,6 +311,181 @@ static void smsMenuRender(void)
 	}
 
 	displayRender();
+}
+
+static void smsQuickTextRender(void)
+{
+	char line[SCREEN_LINE_BUFFER_SIZE];
+	uint8_t count = smsGetQuickTextCount();
+
+	displayClearBuf();
+	menuDisplayTitle("Quick text");
+
+	if (count == 0U)
+	{
+		displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_2_HEIGHT, "No templates", FONT_SIZE_2);
+		displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "0 new", FONT_SIZE_1);
+		displayThemeResetToDefault();
+		displayRender();
+		return;
+	}
+
+	for (int i = MENU_START_ITERATION_VALUE; i < MENU_END_ITERATION_VALUE; i++)
+	{
+		int mNum = menuGetMenuOffset(count, i);
+		smsQuickTextMessage_t msg;
+
+		if (mNum == MENU_OFFSET_BEFORE_FIRST_ENTRY)
+		{
+			continue;
+		}
+		else if (mNum == MENU_OFFSET_AFTER_LAST_ENTRY)
+		{
+			break;
+		}
+
+		if (smsGetQuickTextMessage((uint8_t)mNum, &msg))
+		{
+			snprintf(line, sizeof(line), "%u %.16s", (unsigned int)(mNum + 1), msg.title);
+		}
+		else
+		{
+			strncpy(line, "Invalid", sizeof(line));
+			line[sizeof(line) - 1] = 0;
+		}
+
+		menuDisplayEntry(i, mNum, line, 0, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_COLOUR_NONE, THEME_ITEM_BG);
+	}
+
+	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "0 new  # del  Green use", FONT_SIZE_1);
+	displayThemeResetToDefault();
+	displayRender();
+}
+
+static void smsQuickTextEditRender(bool fullRedraw, bool cursorMoved)
+{
+	char lineBuf[SMS_CHARS_PER_LINE + 1];
+	int len = strlen(smsBuffer);
+	int maxLen = SMS_MAX_LEN;
+	int cursorLine;
+	int cursorCol;
+	int topLine;
+	const char *title = "Quick text";
+	const char *subtitle = "Message";
+	const char *footer = "Green next  Red back";
+
+	if ((smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_CREATE_TITLE) || (smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_UPDATE_TITLE))
+	{
+		title = "Quick title";
+		subtitle = "Title";
+		footer = "Green save  Red back";
+		maxLen = SMS_QUICKTEXT_MAX_TITLE_LENGTH;
+	}
+
+	if (smsCursorPos > len)
+	{
+		smsCursorPos = len;
+	}
+
+	cursorLine = smsCursorPos / SMS_CHARS_PER_LINE;
+	cursorCol  = smsCursorPos % SMS_CHARS_PER_LINE;
+
+	if (cursorLine < SMS_VISIBLE_LINES)
+	{
+		topLine = 0;
+	}
+	else
+	{
+		topLine = cursorLine - SMS_VISIBLE_LINES + 1;
+	}
+
+	if (fullRedraw)
+	{
+		displayClearBuf();
+		menuDisplayTitle(title);
+		displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START, subtitle, FONT_SIZE_1);
+
+		for (int i = 0; i < SMS_VISIBLE_LINES; i++)
+		{
+			int lineNum = topLine + i;
+			int charStart = lineNum * SMS_CHARS_PER_LINE;
+			int lineY = SMS_TEXT_Y_START + (i * SMS_LINE_SPACING);
+			int charsOnLine;
+
+			if (charStart > len)
+			{
+				break;
+			}
+
+			charsOnLine = len - charStart;
+			if (charsOnLine > SMS_CHARS_PER_LINE)
+			{
+				charsOnLine = SMS_CHARS_PER_LINE;
+			}
+
+			memcpy(lineBuf, &smsBuffer[charStart], charsOnLine);
+			lineBuf[charsOnLine] = 0;
+			displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, lineY, lineBuf, FONT_SIZE_2);
+		}
+
+		displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_1_HEIGHT, footer, FONT_SIZE_1);
+		displayThemeResetToDefault();
+		displayRender();
+	}
+
+	smsDrawTextCursor(
+		DISPLAY_X_POS_MENU_TEXT_OFFSET + (cursorCol * SMS_CHAR_WIDTH),
+		SMS_TEXT_Y_START + ((cursorLine - topLine) * SMS_LINE_SPACING),
+		cursorMoved);
+
+	if ((int)strlen(smsBuffer) > maxLen)
+	{
+		smsBuffer[maxLen] = 0;
+		smsCursorPos = maxLen;
+	}
+}
+
+static bool smsQuickTextStartCreate(void)
+{
+	if (smsGetQuickTextCount() >= SMS_QUICKTEXT_MAX_MESSAGES)
+	{
+		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1500, "Quick text full", true);
+		return false;
+	}
+
+	memset(smsBuffer, 0, sizeof(smsBuffer));
+	memset(SMS_QUICKTEXT_DRAFT_TEXT, 0, (SMS_MAX_LEN + 1));
+	memset(SMS_QUICKTEXT_DRAFT_TITLE, 0, (SMS_QUICKTEXT_MAX_TITLE_LENGTH + 1U));
+	smsCursorPos = 0;
+	smsQuickTextEditMode = SMS_QUICKTEXT_EDIT_CREATE_TEXT;
+	smsQuickTextEditIndex = 0U;
+	return true;
+}
+
+static bool smsQuickTextStartEdit(uint8_t index)
+{
+	smsQuickTextMessage_t msg;
+
+	if (!smsGetQuickTextMessage(index, &msg))
+	{
+		return false;
+	}
+
+	strncpy(smsBuffer, msg.text, SMS_MAX_LEN);
+	smsBuffer[SMS_MAX_LEN] = 0;
+	strncpy(SMS_QUICKTEXT_DRAFT_TEXT, msg.text, SMS_MAX_LEN);
+	SMS_QUICKTEXT_DRAFT_TEXT[SMS_MAX_LEN] = 0;
+	strncpy(SMS_QUICKTEXT_DRAFT_TITLE, msg.title, SMS_QUICKTEXT_MAX_TITLE_LENGTH);
+	SMS_QUICKTEXT_DRAFT_TITLE[SMS_QUICKTEXT_MAX_TITLE_LENGTH] = 0;
+	smsCursorPos = strlen(smsBuffer);
+	smsQuickTextEditMode = SMS_QUICKTEXT_EDIT_UPDATE_TEXT;
+	smsQuickTextEditIndex = index;
+	return true;
 }
 
 static void smsRxPopupRender(void)
@@ -294,23 +518,27 @@ static void smsRxPopupRender(void)
 
 static void smsViewRender(void)
 {
-	const char *messageText;
-	char line2[SMS_VISIBLE_CHARS + 1];
-	char line3[SMS_VISIBLE_CHARS + 1];
+	const char *messageText = "";
+	char line2[SMS_CHARS_PER_LINE + 1];
+	char line3[SMS_CHARS_PER_LINE + 1];
+	smsSentMessage_t message;
 
 	if (smsViewSource == SMS_VIEW_SOURCE_SENT)
 	{
-		messageText = smsViewSentMessage.text;
+		if (smsGetSentMessage(smsViewMessageIndex, &message))
+		{
+			messageText = message.text;
+		}
 	}
 	else
 	{
 		messageText = smsViewInboxMessage.text;
 	}
 
-	strncpy(line2, messageText, SMS_VISIBLE_CHARS);
-	line2[SMS_VISIBLE_CHARS] = 0;
-	strncpy(line3, &messageText[SMS_VISIBLE_CHARS], SMS_VISIBLE_CHARS);
-	line3[SMS_VISIBLE_CHARS] = 0;
+	strncpy(line2, messageText, SMS_CHARS_PER_LINE);
+	line2[SMS_CHARS_PER_LINE] = 0;
+	strncpy(line3, &messageText[SMS_CHARS_PER_LINE], SMS_CHARS_PER_LINE);
+	line3[SMS_CHARS_PER_LINE] = 0;
 
 	displayClearBuf();
 	menuDisplayTitle("SMS VIEW");
@@ -442,12 +670,33 @@ static void smsSentRender(void)
 	displayRender();
 }
 
+static void smsDrawTextCursor(int x, int y, bool moved)
+{
+	static uint32_t lastBlink = 0;
+	static bool     blink = false;
+	uint32_t        m = ticksGetMillis();
+
+	if (moved)
+	{
+		blink = true;
+	}
+
+	if (moved || (m - lastBlink) > 500U)
+	{
+		displayDrawFastHLine(x, y + FONT_SIZE_2_HEIGHT, SMS_CHAR_WIDTH, blink);
+		blink = !blink;
+		lastBlink = m;
+		displayRenderRows((y + FONT_SIZE_2_HEIGHT) / 8, (y + FONT_SIZE_2_HEIGHT) / 8 + 1);
+	}
+}
+
 static void smsComposeRender(bool fullRedraw, bool cursorMoved)
 {
-	char visible[SMS_VISIBLE_CHARS + 1];
 	char destination[SCREEN_LINE_BUFFER_SIZE];
+	char lineBuf[SMS_CHARS_PER_LINE + 1];
 	int len = strlen(smsBuffer);
-	int start = 0;
+	int cursorLine, cursorCol, topLine;
+
 	(void)smsGetDestinationText(destination, sizeof(destination), NULL);
 
 	if (smsCursorPos > len)
@@ -455,38 +704,65 @@ static void smsComposeRender(bool fullRedraw, bool cursorMoved)
 		smsCursorPos = len;
 	}
 
-	if (smsCursorPos >= SMS_VISIBLE_CHARS)
-	{
-		start = (smsCursorPos - SMS_VISIBLE_CHARS) + 1;
-	}
+	cursorLine = smsCursorPos / SMS_CHARS_PER_LINE;
+	cursorCol  = smsCursorPos % SMS_CHARS_PER_LINE;
 
-	memset(visible, 0, sizeof(visible));
-	strncpy(visible, &smsBuffer[start], SMS_VISIBLE_CHARS);
+	if (cursorLine < SMS_VISIBLE_LINES)
+	{
+		topLine = 0;
+	}
+	else
+	{
+		topLine = cursorLine - SMS_VISIBLE_LINES + 1;
+	}
 
 	if (fullRedraw)
 	{
 		displayClearBuf();
 		menuDisplayTitle("SMS");
 		displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
-		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START, "Sent message", FONT_SIZE_2);
-		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_2_HEIGHT + 2, destination, FONT_SIZE_1);
-		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + (MENU_ENTRY_HEIGHT * 2), visible, FONT_SIZE_2);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START, destination, FONT_SIZE_1);
+
+		for (int i = 0; i < SMS_VISIBLE_LINES; i++)
+		{
+			int lineNum   = topLine + i;
+			int charStart = lineNum * SMS_CHARS_PER_LINE;
+			int lineY     = SMS_TEXT_Y_START + (i * SMS_LINE_SPACING);
+			int charsOnLine;
+
+			if (charStart > len)
+			{
+				break;
+			}
+
+			charsOnLine = len - charStart;
+			if (charsOnLine > SMS_CHARS_PER_LINE)
+			{
+				charsOnLine = SMS_CHARS_PER_LINE;
+			}
+
+			memcpy(lineBuf, &smsBuffer[charStart], charsOnLine);
+			lineBuf[charsOnLine] = 0;
+			displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, lineY, lineBuf, FONT_SIZE_2);
+		}
+
 		displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
-		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "Green send  Red back", FONT_SIZE_1);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_1_HEIGHT, "Green send  Red back", FONT_SIZE_1);
 		displayThemeResetToDefault();
 		displayRender();
 	}
 
-	displayThemeApply(THEME_ITEM_BG, THEME_ITEM_BG_MENU_ITEM_SELECTED);
-	menuUpdateCursor((smsCursorPos - start), cursorMoved, true);
-	displayThemeResetToDefault();
+	smsDrawTextCursor(
+		DISPLAY_X_POS_MENU_TEXT_OFFSET + (cursorCol * SMS_CHAR_WIDTH),
+		SMS_TEXT_Y_START + ((cursorLine - topLine) * SMS_LINE_SPACING),
+		cursorMoved);
 }
 
-static void smsComposeInsertChar(char c, bool advance)
+static void smsComposeInsertChar(char c, bool advance, int maxLen)
 {
 	int len = strlen(smsBuffer);
 
-	if (smsCursorPos >= SMS_MAX_LEN)
+	if (smsCursorPos >= maxLen)
 	{
 		return;
 	}
@@ -501,7 +777,7 @@ static void smsComposeInsertChar(char c, bool advance)
 		smsBuffer[smsCursorPos] = c;
 	}
 
-	if (advance && (smsCursorPos < (int)strlen(smsBuffer)) && (smsCursorPos < SMS_MAX_LEN - 1))
+	if (advance && (smsCursorPos < (int)strlen(smsBuffer)) && (smsCursorPos < (maxLen - 1)))
 	{
 		smsCursorPos++;
 	}
@@ -550,18 +826,20 @@ static bool smsSendBuffer(void)
 
 menuStatus_t menuSMSMenu(uiEvent_t *ev, bool isFirstRun)
 {
+	menuStatus_t menuStatus = (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
+
 	if (isFirstRun)
 	{
 		menuDataGlobal.currentItemIndex = 0;
 		menuDataGlobal.numItems = SMS_MENU_ITEMS_COUNT;
 		smsMenuRender();
-		return (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
+		return menuStatus;
 	}
 
 	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
 	{
 		smsMenuRender();
-		return MENU_STATUS_SUCCESS;
+		return menuStatus;
 	}
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
@@ -582,11 +860,16 @@ menuStatus_t menuSMSMenu(uiEvent_t *ev, bool isFirstRun)
 	{
 		if (menuDataGlobal.currentItemIndex == SMS_MENU_ITEM_COMPOSE)
 		{
+			smsComposeHasPreset = false;
 			menuSystemPushNewMenu(MENU_SMS_COMPOSE);
 		}
 		else if (menuDataGlobal.currentItemIndex == SMS_MENU_ITEM_INBOX)
 		{
 			menuSystemPushNewMenu(MENU_SMS_INBOX);
+		}
+		else if (menuDataGlobal.currentItemIndex == SMS_MENU_ITEM_QUICKTEXT)
+		{
+			menuSystemPushNewMenu(MENU_SMS_QUICKTEXT);
 		}
 		else
 		{
@@ -594,15 +877,23 @@ menuStatus_t menuSMSMenu(uiEvent_t *ev, bool isFirstRun)
 		}
 	}
 
-	return MENU_STATUS_SUCCESS;
+	return menuStatus;
 }
 
 menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 {
 	if (isFirstRun)
 	{
-		memset(smsBuffer, 0, sizeof(smsBuffer));
-		smsCursorPos = 0;
+		if (!smsComposeHasPreset)
+		{
+			memset(smsBuffer, 0, sizeof(smsBuffer));
+			smsCursorPos = 0;
+		}
+		else
+		{
+			smsComposeHasPreset = false;
+			smsCursorPos = strlen(smsBuffer);
+		}
 		smsClearQueuedMessage();
 		keypadAlphaEnable = true;
 		smsComposeRender(true, true);
@@ -665,14 +956,14 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_HASH))
 	{
-		smsComposeInsertChar(' ', true);
+		smsComposeInsertChar(' ', true, SMS_MAX_LEN);
 		smsComposeRender(true, true);
 		return MENU_STATUS_SUCCESS;
 	}
 
 	if ((ev->keys.event == KEY_MOD_PREVIEW) && (ev->keys.key >= 32) && (ev->keys.key <= 126))
 	{
-		smsComposeInsertChar(ev->keys.key, false);
+		smsComposeInsertChar(ev->keys.key, false, SMS_MAX_LEN);
 		announceChar(ev->keys.key);
 		smsComposeRender(true, true);
 		return MENU_STATUS_SUCCESS;
@@ -680,7 +971,7 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 
 	if ((ev->keys.event == KEY_MOD_PRESS) && (ev->keys.key >= 32) && (ev->keys.key <= 126))
 	{
-		smsComposeInsertChar(ev->keys.key, true);
+		smsComposeInsertChar(ev->keys.key, true, SMS_MAX_LEN);
 		announceChar(ev->keys.key);
 		smsComposeRender(true, true);
 		return MENU_STATUS_SUCCESS;
@@ -693,6 +984,7 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 menuStatus_t menuSMSInbox(uiEvent_t *ev, bool isFirstRun)
 {
 	uint8_t count = smsGetInboxCount();
+	menuStatus_t menuStatus = (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
 
 	if (isFirstRun)
 	{
@@ -705,7 +997,7 @@ menuStatus_t menuSMSInbox(uiEvent_t *ev, bool isFirstRun)
 	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
 	{
 		smsInboxRender();
-		return MENU_STATUS_SUCCESS;
+		return menuStatus;
 	}
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
@@ -717,7 +1009,7 @@ menuStatus_t menuSMSInbox(uiEvent_t *ev, bool isFirstRun)
 	if (count == 0U)
 	{
 		smsInboxRender();
-		return MENU_STATUS_SUCCESS;
+		return menuStatus;
 	}
 
 	if (menuDataGlobal.currentItemIndex >= count)
@@ -767,12 +1059,13 @@ menuStatus_t menuSMSInbox(uiEvent_t *ev, bool isFirstRun)
 		return MENU_STATUS_SUCCESS;
 	}
 
-	return MENU_STATUS_SUCCESS;
+	return menuStatus;
 }
 
 menuStatus_t menuSMSSent(uiEvent_t *ev, bool isFirstRun)
 {
 	uint8_t count = smsGetSentCount();
+	menuStatus_t menuStatus = (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
 
 	if (isFirstRun)
 	{
@@ -785,7 +1078,7 @@ menuStatus_t menuSMSSent(uiEvent_t *ev, bool isFirstRun)
 	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
 	{
 		smsSentRender();
-		return MENU_STATUS_SUCCESS;
+		return menuStatus;
 	}
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
@@ -797,7 +1090,7 @@ menuStatus_t menuSMSSent(uiEvent_t *ev, bool isFirstRun)
 	if (count == 0U)
 	{
 		smsSentRender();
-		return MENU_STATUS_SUCCESS;
+		return menuStatus;
 	}
 
 	if (menuDataGlobal.currentItemIndex >= count)
@@ -847,11 +1140,261 @@ menuStatus_t menuSMSSent(uiEvent_t *ev, bool isFirstRun)
 		return MENU_STATUS_SUCCESS;
 	}
 
+	return menuStatus;
+}
+
+menuStatus_t menuSMSQuickText(uiEvent_t *ev, bool isFirstRun)
+{
+	uint8_t count = smsGetQuickTextCount();
+	menuStatus_t menuStatus = (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
+
+	if (isFirstRun)
+	{
+		menuDataGlobal.currentItemIndex = 0;
+		menuDataGlobal.numItems = count;
+		smsQuickTextRender();
+		return menuStatus;
+	}
+
+	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
+	{
+		smsQuickTextRender();
+		return menuStatus;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
+	{
+		menuSystemPopPreviousMenu();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if ((KEYCHECK_SHORTUP(ev->keys, KEY_0) || KEYCHECK_PRESS(ev->keys, KEY_0)) && (KEYCHECK_LONGDOWN_REPEAT(ev->keys, KEY_0) == false))
+	{
+		if (smsQuickTextStartCreate())
+		{
+			menuSystemPushNewMenu(MENU_SMS_QUICKTEXT_EDIT);
+		}
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (count == 0U)
+	{
+		smsQuickTextRender();
+		return menuStatus;
+	}
+
+	if (menuDataGlobal.currentItemIndex >= count)
+	{
+		menuDataGlobal.currentItemIndex = (count - 1U);
+	}
+
+	if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
+	{
+		menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, count);
+		smsQuickTextRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_PRESS(ev->keys, KEY_UP))
+	{
+		menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, count);
+		smsQuickTextRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_HASH))
+	{
+		if (smsDeleteQuickTextMessage((uint8_t)menuDataGlobal.currentItemIndex))
+		{
+			uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Quick text deleted", true);
+			if ((menuDataGlobal.currentItemIndex > 0) && (menuDataGlobal.currentItemIndex >= smsGetQuickTextCount()))
+			{
+				menuDataGlobal.currentItemIndex--;
+			}
+		}
+		else
+		{
+			uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Delete failed", true);
+		}
+
+		smsQuickTextRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_LONGDOWN(ev->keys, KEY_3) && (KEYCHECK_LONGDOWN_REPEAT(ev->keys, KEY_3) == false))
+	{
+		if (smsQuickTextStartEdit((uint8_t)menuDataGlobal.currentItemIndex))
+		{
+			menuSystemPushNewMenu(MENU_SMS_QUICKTEXT_EDIT);
+		}
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
+	{
+		smsQuickTextMessage_t message;
+
+		if (smsGetQuickTextMessage((uint8_t)menuDataGlobal.currentItemIndex, &message))
+		{
+			smsComposeSetPreset(message.text);
+			menuSystemPushNewMenu(MENU_SMS_COMPOSE);
+		}
+		return MENU_STATUS_SUCCESS;
+	}
+
+	return menuStatus;
+}
+
+menuStatus_t menuSMSQuickTextEdit(uiEvent_t *ev, bool isFirstRun)
+{
+	int maxLen = (((smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_CREATE_TITLE) || (smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_UPDATE_TITLE)) ? SMS_QUICKTEXT_MAX_TITLE_LENGTH : SMS_MAX_LEN);
+
+	if (isFirstRun)
+	{
+		keypadAlphaEnable = true;
+		smsQuickTextEditRender(true, true);
+		return (MENU_STATUS_INPUT_TYPE | MENU_STATUS_SUCCESS);
+	}
+
+	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
+	{
+		smsQuickTextEditRender(true, false);
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
+	{
+		if (smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_CREATE_TITLE)
+		{
+			smsQuickTextEditMode = SMS_QUICKTEXT_EDIT_CREATE_TEXT;
+			strncpy(smsBuffer, SMS_QUICKTEXT_DRAFT_TEXT, SMS_MAX_LEN);
+			smsBuffer[SMS_MAX_LEN] = 0;
+			smsCursorPos = strlen(smsBuffer);
+			smsQuickTextEditRender(true, true);
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_UPDATE_TITLE)
+		{
+			smsQuickTextEditMode = SMS_QUICKTEXT_EDIT_UPDATE_TEXT;
+			strncpy(smsBuffer, SMS_QUICKTEXT_DRAFT_TEXT, SMS_MAX_LEN);
+			smsBuffer[SMS_MAX_LEN] = 0;
+			smsCursorPos = strlen(smsBuffer);
+			smsQuickTextEditRender(true, true);
+			return MENU_STATUS_SUCCESS;
+		}
+
+		keypadAlphaEnable = false;
+		smsQuickTextEditMode = SMS_QUICKTEXT_EDIT_NONE;
+		menuSystemPopPreviousMenu();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
+	{
+		if (strlen(smsBuffer) == 0)
+		{
+			soundSetMelody(MELODY_ERROR_BEEP);
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if ((smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_CREATE_TEXT) || (smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_UPDATE_TEXT))
+		{
+			strncpy(SMS_QUICKTEXT_DRAFT_TEXT, smsBuffer, SMS_MAX_LEN);
+			SMS_QUICKTEXT_DRAFT_TEXT[SMS_MAX_LEN] = 0;
+
+			smsQuickTextEditMode = (smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_CREATE_TEXT) ? SMS_QUICKTEXT_EDIT_CREATE_TITLE : SMS_QUICKTEXT_EDIT_UPDATE_TITLE;
+			strncpy(smsBuffer, SMS_QUICKTEXT_DRAFT_TITLE, SMS_QUICKTEXT_MAX_TITLE_LENGTH);
+			smsBuffer[SMS_QUICKTEXT_MAX_TITLE_LENGTH] = 0;
+			smsCursorPos = strlen(smsBuffer);
+			smsQuickTextEditRender(true, true);
+			return MENU_STATUS_SUCCESS;
+		}
+
+		strncpy(SMS_QUICKTEXT_DRAFT_TITLE, smsBuffer, SMS_QUICKTEXT_MAX_TITLE_LENGTH);
+		SMS_QUICKTEXT_DRAFT_TITLE[SMS_QUICKTEXT_MAX_TITLE_LENGTH] = 0;
+
+		if (smsQuickTextEditMode == SMS_QUICKTEXT_EDIT_CREATE_TITLE)
+		{
+			if (smsStoreQuickTextMessage(SMS_QUICKTEXT_DRAFT_TITLE, SMS_QUICKTEXT_DRAFT_TEXT))
+			{
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Quick text saved", true);
+			}
+			else
+			{
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Save failed", true);
+			}
+		}
+		else
+		{
+			if (smsUpdateQuickTextMessage(smsQuickTextEditIndex, SMS_QUICKTEXT_DRAFT_TITLE, SMS_QUICKTEXT_DRAFT_TEXT))
+			{
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Quick text updated", true);
+			}
+			else
+			{
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1200, "Update failed", true);
+			}
+		}
+
+		keypadAlphaEnable = false;
+		smsQuickTextEditMode = SMS_QUICKTEXT_EDIT_NONE;
+		menuSystemPopPreviousMenu();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_LEFT))
+	{
+		moveCursorLeftInString(smsBuffer, &smsCursorPos, false);
+		smsQuickTextEditRender(true, true);
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_RIGHT))
+	{
+		moveCursorRightInString(smsBuffer, &smsCursorPos, maxLen, false);
+		smsQuickTextEditRender(true, true);
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_STAR))
+	{
+		moveCursorLeftInString(smsBuffer, &smsCursorPos, true);
+		smsQuickTextEditRender(true, true);
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_HASH))
+	{
+		smsComposeInsertChar(' ', true, maxLen);
+		smsQuickTextEditRender(true, true);
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if ((ev->keys.event == KEY_MOD_PREVIEW) && (ev->keys.key >= 32) && (ev->keys.key <= 126))
+	{
+		smsComposeInsertChar(ev->keys.key, false, maxLen);
+		announceChar(ev->keys.key);
+		smsQuickTextEditRender(true, true);
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if ((ev->keys.event == KEY_MOD_PRESS) && (ev->keys.key >= 32) && (ev->keys.key <= 126))
+	{
+		smsComposeInsertChar(ev->keys.key, true, maxLen);
+		announceChar(ev->keys.key);
+		smsQuickTextEditRender(true, true);
+		return MENU_STATUS_SUCCESS;
+	}
+
+	smsQuickTextEditRender(false, false);
 	return MENU_STATUS_SUCCESS;
 }
 
 menuStatus_t menuSMSRxPopup(uiEvent_t *ev, bool isFirstRun)
 {
+	menuStatus_t menuStatus = (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
+
 	if (isFirstRun)
 	{
 		smsReplyDestinationEnabled = false;
@@ -872,13 +1415,13 @@ menuStatus_t menuSMSRxPopup(uiEvent_t *ev, bool isFirstRun)
 		menuDataGlobal.currentItemIndex = 0;
 		menuDataGlobal.numItems = SMS_RX_POPUP_ITEMS_COUNT;
 		smsRxPopupRender();
-		return (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
+		return menuStatus;
 	}
 
 	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
 	{
 		smsRxPopupRender();
-		return MENU_STATUS_SUCCESS;
+		return menuStatus;
 	}
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
@@ -941,7 +1484,7 @@ menuStatus_t menuSMSRxPopup(uiEvent_t *ev, bool isFirstRun)
 		return MENU_STATUS_SUCCESS;
 	}
 
-	return MENU_STATUS_SUCCESS;
+	return menuStatus;
 }
 
 menuStatus_t menuSMSView(uiEvent_t *ev, bool isFirstRun)
@@ -1048,18 +1591,20 @@ static void smsOptionsRender(void)
 
 menuStatus_t menuSMSOptions(uiEvent_t *ev, bool isFirstRun)
 {
+	menuStatus_t menuStatus = (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
+
 	if (isFirstRun)
 	{
 		menuDataGlobal.currentItemIndex = 0;
 		menuDataGlobal.numItems = 2;
 		smsOptionsRender();
-		return (MENU_STATUS_LIST_TYPE | MENU_STATUS_SUCCESS);
+		return menuStatus;
 	}
 
 	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
 	{
 		smsOptionsRender();
-		return MENU_STATUS_SUCCESS;
+		return menuStatus;
 	}
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
@@ -1097,5 +1642,5 @@ menuStatus_t menuSMSOptions(uiEvent_t *ev, bool isFirstRun)
 		return MENU_STATUS_SUCCESS;
 	}
 
-	return MENU_STATUS_SUCCESS;
+	return menuStatus;
 }

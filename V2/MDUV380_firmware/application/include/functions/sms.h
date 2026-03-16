@@ -33,11 +33,16 @@
 #define SMS_MAX_TEXT_LENGTH           64U
 #define SMS_MAX_UTF16_PAYLOAD_BYTES  (SMS_MAX_TEXT_LENGTH * 2U)
 #define SMS_BLOCK_DATA_BYTES          12U
-#define SMS_MAX_DATA_BLOCKS          ((SMS_MAX_UTF16_PAYLOAD_BYTES + SMS_BLOCK_DATA_BYTES - 1U) / SMS_BLOCK_DATA_BYTES)
+#define SMS_STANDARD_HEADER_BYTES     32U
+#define SMS_STANDARD_CRC32_BYTES       4U
+#define SMS_MAX_TRANSPORT_BYTES      (((SMS_STANDARD_HEADER_BYTES + SMS_MAX_UTF16_PAYLOAD_BYTES + SMS_STANDARD_CRC32_BYTES + SMS_BLOCK_DATA_BYTES - 1U) / SMS_BLOCK_DATA_BYTES) * SMS_BLOCK_DATA_BYTES)
+#define SMS_MAX_DATA_BLOCKS          ((SMS_MAX_TRANSPORT_BYTES + SMS_BLOCK_DATA_BYTES - 1U) / SMS_BLOCK_DATA_BYTES)
 #define SMS_PREAMBLE_CSBKS            8U
 #define SMS_MAX_TX_FRAMES            (SMS_PREAMBLE_CSBKS + 1U + SMS_MAX_DATA_BLOCKS)
 #define SMS_INBOX_MAX_MESSAGES         8U
 #define SMS_SENT_MAX_MESSAGES          8U
+#define SMS_QUICKTEXT_MAX_MESSAGES    10U
+#define SMS_QUICKTEXT_MAX_TITLE_LENGTH 16U
 
 typedef enum
 {
@@ -70,7 +75,6 @@ typedef struct
 	bool requestAck;
 	uint8_t csbk[SMS_BLOCK_DATA_BYTES];
 	uint8_t dataHeader[SMS_BLOCK_DATA_BYTES];
-	uint8_t payload[SMS_MAX_UTF16_PAYLOAD_BYTES];
 	uint8_t blocks[SMS_MAX_DATA_BLOCKS][SMS_BLOCK_DATA_BYTES];
 } smsPreparedMessage_t;
 
@@ -85,6 +89,12 @@ typedef struct
 	uint32_t destinationId;
 	char text[SMS_MAX_TEXT_LENGTH + 1U];
 } smsSentMessage_t;
+
+typedef struct
+{
+	char title[SMS_QUICKTEXT_MAX_TITLE_LENGTH + 1U];
+	char text[SMS_MAX_TEXT_LENGTH + 1U];
+} smsQuickTextMessage_t;
 
 void smsInit(void);
 smsPackResult_t smsPackMessage(uint32_t destinationId, uint32_t sourceId, const char *text, smsPreparedMessage_t *message);
@@ -103,6 +113,11 @@ bool smsStoreSentMessage(uint32_t destinationId, const char *text);
 bool smsDeleteSentMessage(uint8_t index);
 void smsClearSent(void);
 smsPackResult_t smsQueueSentMessage(uint8_t index, uint32_t sourceId);
+uint8_t smsGetQuickTextCount(void);
+bool smsGetQuickTextMessage(uint8_t index, smsQuickTextMessage_t *message);
+bool smsStoreQuickTextMessage(const char *title, const char *text);
+bool smsUpdateQuickTextMessage(uint8_t index, const char *title, const char *text);
+bool smsDeleteQuickTextMessage(uint8_t index);
 bool smsHasRxNotification(void);
 bool smsConsumeRxNotification(void);
 void smsRegisterOutgoingMessage(uint32_t destinationId, uint32_t sourceId, const char *text);

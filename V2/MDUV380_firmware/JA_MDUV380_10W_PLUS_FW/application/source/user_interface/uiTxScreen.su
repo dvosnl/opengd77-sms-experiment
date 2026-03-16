@@ -1,0 +1,4 @@
+../application/source/user_interface/uiTxScreen.c:384:13:updateScreen	8	static
+../application/source/user_interface/uiTxScreen.c:379:6:menuTxScreenDisplaysLastHeard	0	static
+../application/source/user_interface/uiTxScreen.c:664:6:menuTxScreenHandleTxTermination	24	static
+../application/source/user_interface/uiTxScreen.c:61:14:menuTxScreen	40	static

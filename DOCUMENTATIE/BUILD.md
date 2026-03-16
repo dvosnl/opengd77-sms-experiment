@@ -16,19 +16,7 @@ Standaard installatiepad op Windows: `C:\ST\STM32CubeIDE_2.1.0\STM32CubeIDE\`
 
 ---
 
-## 2. Codec linkerdata voorbereiden (`prepare.bat`)
-
-De firmware maakt gebruik van twee binaire secties met de DMR-codec.  
-Deze kunnen **niet** in de repository worden opgenomen vanwege licentieredenen.
-
-**Vereiste bestanden** (handmatig aanleveren of uit een eerdere build kopiëren):
-
-```
-MDUV380_firmware/application/source/linkerdata/codec_bin_section_1.bin
-MDUV380_firmware/application/source/linkerdata/codec_bin_section_2.bin
-```
-
-Zodra de twee `.bin`-bestanden aanwezig zijn, voer dan vanuit de `V2\`-map uit:
+voer vanuit `V2\`-map uit:
 
 ```bat
 cd C:\Users\berts\Documents\uv390-self_dev\V2
@@ -48,7 +36,7 @@ Done
 
 ---
 
-## 3. Build-configuraties
+## 3. Build-configuraties 
 
 | Configuratienaam | Radio | Uitvoerbestand |
 |---|---|---|

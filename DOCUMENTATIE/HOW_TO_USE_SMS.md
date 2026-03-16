@@ -1,82 +1,77 @@
 # HOW TO USE SMS
 
-Deze handleiding is radio-onafhankelijk en geldt voor de huidige SMS-implementatie in de firmware.
+Compact overview of the current SMS features.
 
-## 1. Voorwaarden
+## Requirements
 
-- Zet de radio in DMR (digitaal) mode.
-- Zorg dat je zender-ID (DMR ID) goed ingesteld is.
-- Voor verzenden moet een Private Call (PC) bestemming actief zijn.
+- Radio must be in DMR mode (digital).
+- A valid own DMR ID is required.
+- For sending: an active Private Call (PC) destination is required. (Double press '#')
 
-## 2. SMS-menu openen
+## SMS Menu
 
-- Open het menu en ga naar SMS.
-- Je ziet nu drie onderdelen:
-  - SEND SMS
-  - INBOX
-  - SENT
+- `SEND SMS`
+- `INBOX`
+- `QUICK TEXT`
+- `SENT`
 
-## 3. Bericht verzenden (SEND SMS)
+## Limits
 
-1. Kies `SEND SMS`.
-2. Typ je bericht (maximaal 64 tekens).
-3. Controleer dat een Private Call bestemming actief is.
-4. Druk `Groen` om te verzenden.
+- Message length: maximum 64 characters.
+- Allowed characters: ASCII (plus CR/LF).
+- Inbox storage: 8 messages.
+- Sent storage: 8 messages.
+- Quick Text storage: 10 templates.
+- Quick Text title: maximum 16 characters.
 
-Wat je ziet:
+## SEND SMS
 
-- `SMS TX` bij succesvolle start van zenden.
-- Het bericht wordt automatisch opgeslagen in `SENT`.
+1. Open `SEND SMS`.
+2. Type the message.
+3. `Green` = send.
 
-## 4. INBOX gebruiken
+Behavior:
 
-### Berichten bekijken
+- The message is stored in `SENT`.
+- If ACK wait mode is enabled, you will see ACK/timeout status.
 
-1. Ga naar `INBOX`.
-2. Kies een bericht.
-3. Druk `Groen` om te openen.
+## INBOX
 
-### Berichten verwijderen
+- `Green`: open message.
+- `#`: delete selected message.
+- In message view: `#` deletes the open message.
 
-- In de lijst: druk `#` om geselecteerd bericht te verwijderen.
-- In de berichtweergave: druk `#` om het geopende bericht te verwijderen.
+## SENT
 
-## 5. SENT gebruiken
+- `Green`: open message.
+- `#`: delete selected message.
+- In message view: `#` deletes the open message.
+- In message view: long press `6` = resend.
 
-### Verzonden berichten bekijken
+## QUICK TEXT
 
-1. Ga naar `SENT`.
-2. Kies een bericht.
-3. Druk `Groen` om te openen.
+- `0`: new template.
+  - Step 1: message text.
+  - Step 2: title.
+- `Green`: use the selected template (prefill in `SEND SMS`).
+- `#`: delete the selected template.
+- Long press `3`: edit the selected template.
 
-### Bericht opnieuw versturen (resend)
+## SMS Options
 
-- Open een bericht in `SENT`.
-- Houd `6` ingedrukt om hetzelfde bericht opnieuw te versturen.
+In `SMS options`:
 
-### Verzonden berichten verwijderen
+- `Wait for ACK` (`On/Off`)
+  - `On`: waits for an ACK/timeout event.
+  - `Off`: sends without waiting for ACK.
+- `In filter` (`None/PC`)
+  - `PC`: filters incoming Private Calls.
 
-- In de lijst: druk `#` om geselecteerd bericht te verwijderen.
-- In de berichtweergave: druk `#` om het geopende bericht te verwijderen.
+## Main Messages
 
-## 6. Sneltoets-overzicht
-
-- `Groen`: openen / bevestigen / verzenden
-- `Rood`: terug
-- `#`: verwijderen (INBOX en SENT)
-- `6` lang indrukken: resend in SENT-berichtweergave
-
-## 7. Foutmeldingen en betekenis
-
-- `DMR only`: je zit niet in digitale mode.
-- `Select private call`: er is geen geldige private bestemming gekozen.
-- `SMS busy`: zendpad is bezig; probeer opnieuw.
-- `Empty message`: lege tekst.
-- `Message too long`: bericht is langer dan 64 tekens.
-- `ASCII only`: alleen ASCII tekens toegestaan in deze implementatie.
-
-## 8. Praktische tips
-
-- Test eerst met korte berichten (bijv. "test").
-- Gebruik een stabiele private call setup voor betrouwbare verzending.
-- Verwijder oude berichten met `#` om overzicht te houden.
+- `DMR only`: not in digital mode.
+- `Select private call`: no valid PC destination selected.
+- `SMS busy`: transmit path busy.
+- `Empty message`: empty message.
+- `Message too long`: more than 64 characters.
+- `ASCII only`: unsupported characters were used.

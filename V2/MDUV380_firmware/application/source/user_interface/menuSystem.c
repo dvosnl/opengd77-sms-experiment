@@ -171,6 +171,8 @@ static menuFunctionData_t menuFunctions[] =
 		{ menuSMSMenu,              NULL, NULL, 0 },
 		{ menuSMSCompose,           NULL, NULL, 0 },
 		{ menuSMSInbox,             NULL, NULL, 0 },
+		{ menuSMSQuickText,         NULL, NULL, 0 },
+		{ menuSMSQuickTextEdit,     NULL, NULL, 0 },
 		{ menuSMSRxPopup,           NULL, NULL, 0 },
 		{ menuSMSView,              NULL, NULL, 0 },
 		{ menuSMSSent,              NULL, NULL, 0 },
@@ -925,17 +927,7 @@ void moveCursorLeftInString(char *str, int *pos, bool delete)
 
 	if (*pos > 0)
 	{
-		if (nLen == 16)
-		{
-			if (*pos != 15)
-			{
-				*pos -=1;
-			}
-		}
-		else
-		{
-			*pos -=1;
-		}
+		*pos -=1;
 
 		announceChar(str[*pos]); // speak the new char or the char about to be backspaced out.
 

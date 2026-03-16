@@ -221,3 +221,282 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclip
 
 !ENTRY org.eclipse.cdt.core 1 0 2026-03-15 18:32:28.208
 !MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 3,81 sec: 40.980 declarations; 202.174 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 20:09:32.141 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:09:49.988
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 9,06 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:10:26.399
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 4,49 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 20:12:55.599 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:\Users\berts\Documents\uv390-self_dev\V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.core.jobs 4 2 2026-03-15 20:12:57.180
+!MESSAGE An internal error occurred during: "Setting up indexer".
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "org.eclipse.core.runtime.IExtensionRegistry.getConfigurationElementsFor(String)" because the return value of "org.eclipse.core.runtime.Platform.getExtensionRegistry()" is null
+	at org.eclipse.cdt.core.model.LanguageManager.cacheAllLanguages(LanguageManager.java:374)
+	at org.eclipse.cdt.core.model.LanguageManager.getLanguageForContentTypeID(LanguageManager.java:202)
+	at org.eclipse.cdt.internal.core.pdom.indexer.ProjectIndexerInputAdapter.<init>(ProjectIndexerInputAdapter.java:78)
+	at org.eclipse.cdt.internal.core.pdom.PDOMManager.getOrCreatePDOM(PDOMManager.java:421)
+	at org.eclipse.cdt.internal.core.pdom.PDOMManager.createIndexer(PDOMManager.java:592)
+	at org.eclipse.cdt.internal.core.pdom.PDOMSetupJob.run(PDOMSetupJob.java:61)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+!SESSION 2026-03-15 20:24:43.673 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:25:01.141
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 9,98 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:25:35.192
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 4,06 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 20:34:34.116 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:\Users\berts\Documents\uv390-self_dev\V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:34:51.905
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 8,41 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:35:25.274
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 3,92 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 20:38:30.343 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:38:48.928
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 8,88 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 20:39:19.911 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.core.resources 2 10035 2026-03-15 20:39:21.719
+!MESSAGE The workspace will exit with unsaved changes in this session.
+
+!ENTRY org.eclipse.core.jobs 4 2 2026-03-15 20:39:21.751
+!MESSAGE An internal error occurred during: "Setting up indexer".
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "org.eclipse.core.runtime.preferences.IPreferencesService.get(String, String, org.osgi.service.prefs.Preferences[])" because the return value of "org.eclipse.core.runtime.Platform.getPreferencesService()" is null
+	at org.eclipse.cdt.internal.core.pdom.indexer.IndexerPreferences.getUpdatePolicy(IndexerPreferences.java:402)
+	at org.eclipse.cdt.internal.core.pdom.indexer.IndexerPreferences.getUpdatePolicy(IndexerPreferences.java:398)
+	at org.eclipse.cdt.internal.core.pdom.PDOMManager.createPolicy(PDOMManager.java:859)
+	at org.eclipse.cdt.internal.core.pdom.PDOMManager.createIndexer(PDOMManager.java:595)
+	at org.eclipse.cdt.internal.core.pdom.PDOMSetupJob.run(PDOMSetupJob.java:61)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:39:24.589
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 5,38 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 20:40:30.147 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:40:47.487
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 10,6 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 20:41:20.040
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 4,08 sec: 41.010 declarations; 202.405 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 21:16:18.590 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:\Users\berts\Documents\uv390-self_dev\V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 21:17:00.945
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 4,13 sec: 41.069 declarations; 203.285 references; 1 unresolved inclusions; 204 syntax errors; 319 unresolved names (0,13%)
+!SESSION 2026-03-15 21:17:42.339 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:\Users\berts\Documents\uv390-self_dev\V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 21:18:03.821
+!MESSAGE Indexed 'MDUV380_firmware' (143 sources, 262 headers) in 13,6 sec: 41.545 declarations; 206.125 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 21:18:12.786
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 8,95 sec: 41.067 declarations; 202.711 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 21:18:40.498
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 4 sec: 41.073 declarations; 203.295 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 22:23:03.621 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -cleanBuild MDUV380_firmware/MDUV380_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 22:23:25.992
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 14,7 sec: 41.186 declarations; 203.684 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 22:23:59.012
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 5,15 sec: 41.192 declarations; 204.271 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 22:27:37.997 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -cleanBuild MDUV380_firmware/MDUV380_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 22:27:57.314
+!MESSAGE Indexed 'MDUV380_firmware' (142 sources, 262 headers) in 12,2 sec: 41.548 declarations; 205.892 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 22:28:33.371
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 6,31 sec: 41.195 declarations; 204.376 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 22:35:47.507 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -cleanBuild MDUV380_firmware/MDUV380_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 22:36:07.184
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 12,3 sec: 41.189 declarations; 203.826 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 22:36:13.685
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 6,5 sec: 41.189 declarations; 203.826 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-15 22:36:40.979
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 4,9 sec: 41.195 declarations; 204.413 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-15 22:59:20.793 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import C:/Users/berts/Documents/uv390-self_dev/V2/MDUV380_firmware -cleanBuild MDUV380_firmware/MDUV380_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -import C:/Users/berts/Documents/uv390-self_dev/V2/MDUV380_firmware -cleanBuild MDUV380_firmware/MDUV380_FW
+
+!ENTRY org.eclipse.osgi 4 0 2026-03-15 22:59:38.518
+!MESSAGE Application error
+!STACK 1
+org.eclipse.core.runtime.CoreException: No file system is defined for scheme: C
+	at org.eclipse.core.internal.filesystem.Policy.error(Policy.java:32)
+	at org.eclipse.core.internal.filesystem.Policy.error(Policy.java:27)
+	at org.eclipse.core.internal.filesystem.InternalFileSystemCore.getFileSystem(InternalFileSystemCore.java:79)
+	at org.eclipse.core.internal.filesystem.InternalFileSystemCore.getStore(InternalFileSystemCore.java:127)
+	at org.eclipse.core.filesystem.EFS.getStore(EFS.java:479)
+	at org.eclipse.cdt.managedbuilder.internal.core.HeadlessBuilder.importProject(HeadlessBuilder.java:377)
+	at org.eclipse.cdt.managedbuilder.internal.core.HeadlessBuilder.start(HeadlessBuilder.java:648)
+	at org.eclipse.cdt.managedbuilder.internal.headlessbuilderapp.HeadlessBuilderWrapper.start(HeadlessBuilderWrapper.java:131)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:208)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:143)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:109)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:439)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:271)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:668)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:605)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1481)
+!SESSION 2026-03-15 23:03:52.562 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import C:/Users/berts/Documents/uv390-self_dev/V2/MDUV380_firmware -cleanBuild MDUV380_firmware/MDUV380_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -import C:/Users/berts/Documents/uv390-self_dev/V2/MDUV380_firmware -cleanBuild MDUV380_firmware/MDUV380_FW
+
+!ENTRY org.eclipse.osgi 4 0 2026-03-15 23:03:54.176
+!MESSAGE Application error
+!STACK 1
+org.eclipse.core.runtime.CoreException: No file system is defined for scheme: C
+	at org.eclipse.core.internal.filesystem.Policy.error(Policy.java:32)
+	at org.eclipse.core.internal.filesystem.Policy.error(Policy.java:27)
+	at org.eclipse.core.internal.filesystem.InternalFileSystemCore.getFileSystem(InternalFileSystemCore.java:79)
+	at org.eclipse.core.internal.filesystem.InternalFileSystemCore.getStore(InternalFileSystemCore.java:127)
+	at org.eclipse.core.filesystem.EFS.getStore(EFS.java:479)
+	at org.eclipse.cdt.managedbuilder.internal.core.HeadlessBuilder.importProject(HeadlessBuilder.java:377)
+	at org.eclipse.cdt.managedbuilder.internal.core.HeadlessBuilder.start(HeadlessBuilder.java:648)
+	at org.eclipse.cdt.managedbuilder.internal.headlessbuilderapp.HeadlessBuilderWrapper.start(HeadlessBuilderWrapper.java:131)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:208)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:143)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:109)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:439)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:271)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:668)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:605)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1481)
+!SESSION 2026-03-15 23:04:02.449 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import C:/Users/berts/Documents/uv390-self_dev/V2/MDUV380_firmware -cleanBuild MDUV380_firmware/MDUV380_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:/Users/berts/Documents/uv390-self_dev/V2 -import C:/Users/berts/Documents/uv390-self_dev/V2/MDUV380_firmware -cleanBuild MDUV380_firmware/MDUV380_FW
+
+!ENTRY org.eclipse.osgi 4 0 2026-03-15 23:04:04.031
+!MESSAGE Application error
+!STACK 1
+org.eclipse.core.runtime.CoreException: No file system is defined for scheme: C
+	at org.eclipse.core.internal.filesystem.Policy.error(Policy.java:32)
+	at org.eclipse.core.internal.filesystem.Policy.error(Policy.java:27)
+	at org.eclipse.core.internal.filesystem.InternalFileSystemCore.getFileSystem(InternalFileSystemCore.java:79)
+	at org.eclipse.core.internal.filesystem.InternalFileSystemCore.getStore(InternalFileSystemCore.java:127)
+	at org.eclipse.core.filesystem.EFS.getStore(EFS.java:479)
+	at org.eclipse.cdt.managedbuilder.internal.core.HeadlessBuilder.importProject(HeadlessBuilder.java:377)
+	at org.eclipse.cdt.managedbuilder.internal.core.HeadlessBuilder.start(HeadlessBuilder.java:648)
+	at org.eclipse.cdt.managedbuilder.internal.headlessbuilderapp.HeadlessBuilderWrapper.start(HeadlessBuilderWrapper.java:131)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:208)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:143)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:109)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:439)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:271)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:668)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:605)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1481)
+!SESSION 2026-03-16 09:42:30.433 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data C:\Users\berts\Documents\uv390-self_dev\V2 -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-16 09:42:47.121
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 8,42 sec: 41.195 declarations; 203.859 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-16 09:42:59.411
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 3,54 sec: 41.190 declarations; 203.828 references; 1 unresolved inclusions; 204 syntax errors; 275 unresolved names (0,11%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-16 09:43:04.039
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 3,29 sec: 41.201 declarations; 204.446 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
