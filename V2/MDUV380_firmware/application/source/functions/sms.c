@@ -407,6 +407,8 @@ static bool smsDecodeUtf16Payload(const uint8_t *payload, uint16_t payloadLength
 {
 	uint16_t inIndex = 0U;
 	uint16_t outIndex = 0U;
+	uint16_t utf16PatternCount = 0U;
+	uint16_t replacedCount = 0U;
 
 	if ((payload == NULL) || (textOut == NULL) || ((payloadLength & 0x01U) != 0U))
 	{
@@ -419,17 +421,25 @@ static bool smsDecodeUtf16Payload(const uint8_t *payload, uint16_t payloadLength
 		uint8_t low = payload[inIndex++];
 		uint8_t c;
 
+		if ((high == 0x00U) && (low == 0x00U))
+		{
+			break;
+		}
+
 		if ((high == 0x00U) && smsIsPrintableCharacter(low))
 		{
+			utf16PatternCount++;
 			c = low;
 		}
 		else if ((low == 0x00U) && smsIsPrintableCharacter(high))
 		{
+			utf16PatternCount++;
 			c = high;
 		}
 		else
 		{
 			c = '?';
+			replacedCount++;
 		}
 
 		if (outIndex >= SMS_MAX_TEXT_LENGTH)
@@ -441,7 +451,67 @@ static bool smsDecodeUtf16Payload(const uint8_t *payload, uint16_t payloadLength
 	}
 
 	textOut[outIndex] = 0;
-	return (outIndex > 0U);
+
+	if ((outIndex == 0U) || (utf16PatternCount < 2U))
+	{
+		return false;
+	}
+
+	// Reject random binary that accidentally contains a single UTF-16-like pair.
+	if ((replacedCount * 3U) > outIndex)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+static bool smsDecodeAsciiPayload(const uint8_t *payload, uint16_t payloadLength, char *textOut)
+{
+	uint16_t outIndex = 0U;
+	uint16_t printableCount = 0U;
+	uint16_t replacedCount = 0U;
+
+	if ((payload == NULL) || (textOut == NULL) || (payloadLength == 0U))
+	{
+		return false;
+	}
+
+	for (uint16_t i = 0U; (i < payloadLength) && (outIndex < SMS_MAX_TEXT_LENGTH); i++)
+	{
+		uint8_t c = payload[i];
+
+		if (c == 0x00U)
+		{
+			break;
+		}
+
+		if (smsIsPrintableCharacter(c))
+		{
+			textOut[outIndex++] = (char)c;
+			printableCount++;
+		}
+		else if ((c == '\r') || (c == '\n') || (c == '\t'))
+		{
+			textOut[outIndex++] = ' ';
+			printableCount++;
+		}
+		else
+		{
+			textOut[outIndex++] = '?';
+			replacedCount++;
+		}
+	}
+
+	textOut[outIndex] = 0;
+
+	if ((outIndex < 3U) || (printableCount == 0U))
+	{
+		return false;
+	}
+
+	// Accept ASCII only when mostly printable; avoids storing IP/UDP header bytes as text.
+	return ((replacedCount * 4U) <= outIndex);
 }
 
 static void smsResetRxAssembly(void)
@@ -1176,12 +1246,60 @@ bool smsHandleReceivedDataFrame(uint8_t dataType, const uint8_t *frame)
 		if (rxAssembly.receivedBlocks >= rxAssembly.expectedBlocks)
 		{
 			uint16_t totalLength = (uint16_t)(rxAssembly.expectedBlocks * SMS_BLOCK_DATA_BYTES);
+			uint16_t payloadLength = (uint16_t)(totalLength - rxAssembly.padOctets);
+			uint16_t payloadWithoutCrcLength = payloadLength;
+			uint16_t standardTextOffsetLength = 0U;
 			char decodedText[SMS_MAX_TEXT_LENGTH + 1U] = { 0 };
+			bool decoded = false;
 
-			if ((totalLength > 0U) && (totalLength <= sizeof(rxAssembly.payload)) &&
-				(smsDecodeStandardPayload(rxAssembly.payload, totalLength, rxAssembly.padOctets, decodedText) ||
-				 ((((uint16_t)(totalLength - rxAssembly.padOctets) <= SMS_MAX_UTF16_PAYLOAD_BYTES)) &&
-				  smsDecodeUtf16Payload(rxAssembly.payload, (uint16_t)(totalLength - rxAssembly.padOctets), decodedText))))
+			if (payloadWithoutCrcLength > SMS_STANDARD_CRC32_BYTES)
+			{
+				payloadWithoutCrcLength = (uint16_t)(payloadWithoutCrcLength - SMS_STANDARD_CRC32_BYTES);
+			}
+			else
+			{
+				payloadWithoutCrcLength = 0U;
+			}
+
+			if (payloadLength > SMS_STANDARD_TEXT_OFFSET)
+			{
+				standardTextOffsetLength = (uint16_t)(payloadLength - SMS_STANDARD_TEXT_OFFSET);
+				if (standardTextOffsetLength > SMS_MAX_UTF16_PAYLOAD_BYTES)
+				{
+					standardTextOffsetLength = SMS_MAX_UTF16_PAYLOAD_BYTES;
+				}
+				if ((standardTextOffsetLength & 0x01U) != 0U)
+				{
+					standardTextOffsetLength--;
+				}
+			}
+
+			if ((totalLength > 0U) && (totalLength <= sizeof(rxAssembly.payload)))
+			{
+				decoded = smsDecodeStandardPayload(rxAssembly.payload, totalLength, rxAssembly.padOctets, decodedText);
+
+				if (!decoded && (standardTextOffsetLength >= 2U))
+				{
+					decoded = smsDecodeUtf16Payload(&rxAssembly.payload[SMS_STANDARD_TEXT_OFFSET], standardTextOffsetLength, decodedText);
+				}
+
+				if (!decoded && (standardTextOffsetLength >= 3U))
+				{
+					decoded = smsDecodeAsciiPayload(&rxAssembly.payload[SMS_STANDARD_TEXT_OFFSET], standardTextOffsetLength, decodedText);
+				}
+
+				if (!decoded && (payloadWithoutCrcLength >= 2U) && (payloadWithoutCrcLength <= SMS_MAX_UTF16_PAYLOAD_BYTES))
+				{
+					decoded = smsDecodeUtf16Payload(rxAssembly.payload, payloadWithoutCrcLength, decodedText);
+				}
+
+				if (!decoded && (payloadWithoutCrcLength >= 3U))
+				{
+					decoded = smsDecodeAsciiPayload(rxAssembly.payload, payloadWithoutCrcLength, decodedText);
+				}
+			}
+
+			if (decoded)
 			{
 				smsStoreInboxMessage(rxAssembly.sourceId, decodedText);
 

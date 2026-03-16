@@ -927,7 +927,17 @@ void moveCursorLeftInString(char *str, int *pos, bool delete)
 
 	if (*pos > 0)
 	{
-		*pos -=1;
+		if (nLen == 16)
+		{
+			if (*pos != 15)
+			{
+				*pos -=1;
+			}
+		}
+		else
+		{
+			*pos -=1;
+		}
 
 		announceChar(str[*pos]); // speak the new char or the char about to be backspaced out.
 

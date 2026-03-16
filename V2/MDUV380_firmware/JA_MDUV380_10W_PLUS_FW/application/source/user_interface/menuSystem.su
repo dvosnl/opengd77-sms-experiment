@@ -23,7 +23,7 @@
 ../application/source/user_interface/menuSystem.c:837:5:menuGetKeypadKeyValue	88	static
 ../application/source/user_interface/menuSystem.c:887:6:menuUpdateCursor	24	static
 ../application/source/user_interface/menuSystem.c:924:6:moveCursorLeftInString	24	static
-../application/source/user_interface/menuSystem.c:944:6:moveCursorRightInString	24	static
-../application/source/user_interface/menuSystem.c:970:6:menuSystemMenuIncrement	0	static
-../application/source/user_interface/menuSystem.c:975:6:menuSystemMenuDecrement	0	static
-../application/source/user_interface/menuSystem.c:981:6:menuDisplaySettingOption	32	static
+../application/source/user_interface/menuSystem.c:954:6:moveCursorRightInString	24	static
+../application/source/user_interface/menuSystem.c:980:6:menuSystemMenuIncrement	0	static
+../application/source/user_interface/menuSystem.c:985:6:menuSystemMenuDecrement	0	static
+../application/source/user_interface/menuSystem.c:991:6:menuDisplaySettingOption	32	static

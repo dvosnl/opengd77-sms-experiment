@@ -360,7 +360,7 @@ static void smsQuickTextRender(void)
 	}
 
 	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
-	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "0 new  # del  Green use", FONT_SIZE_1);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_2_HEIGHT, "0 new  Green use", FONT_SIZE_1);
 	displayThemeResetToDefault();
 	displayRender();
 }
@@ -521,10 +521,11 @@ static void smsViewRender(void)
 	const char *messageText = "";
 	char line2[SMS_CHARS_PER_LINE + 1];
 	char line3[SMS_CHARS_PER_LINE + 1];
-	smsSentMessage_t message;
 
 	if (smsViewSource == SMS_VIEW_SOURCE_SENT)
 	{
+		smsSentMessage_t message;
+
 		if (smsGetSentMessage(smsViewMessageIndex, &message))
 		{
 			messageText = message.text;
@@ -1168,7 +1169,8 @@ menuStatus_t menuSMSQuickText(uiEvent_t *ev, bool isFirstRun)
 		return MENU_STATUS_SUCCESS;
 	}
 
-	if ((KEYCHECK_SHORTUP(ev->keys, KEY_0) || KEYCHECK_PRESS(ev->keys, KEY_0)) && (KEYCHECK_LONGDOWN_REPEAT(ev->keys, KEY_0) == false))
+	if ((KEYCHECK_SHORTUP(ev->keys, KEY_0) || KEYCHECK_PRESS(ev->keys, KEY_0)) &&
+		(KEYCHECK_LONGDOWN_REPEAT(ev->keys, KEY_0) == false))
 	{
 		if (smsQuickTextStartCreate())
 		{

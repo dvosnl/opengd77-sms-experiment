@@ -22,8 +22,8 @@
 ../application/source/user_interface/menuSystem.c:789:5:menuGetMenuOffset	8
 ../application/source/user_interface/menuSystem.c:837:5:menuGetKeypadKeyValue	7
 ../application/source/user_interface/menuSystem.c:887:6:menuUpdateCursor	4
-../application/source/user_interface/menuSystem.c:924:6:moveCursorLeftInString	4
-../application/source/user_interface/menuSystem.c:944:6:moveCursorRightInString	6
-../application/source/user_interface/menuSystem.c:970:6:menuSystemMenuIncrement	1
-../application/source/user_interface/menuSystem.c:975:6:menuSystemMenuDecrement	1
-../application/source/user_interface/menuSystem.c:981:6:menuDisplaySettingOption	2
+../application/source/user_interface/menuSystem.c:924:6:moveCursorLeftInString	6
+../application/source/user_interface/menuSystem.c:954:6:moveCursorRightInString	6
+../application/source/user_interface/menuSystem.c:980:6:menuSystemMenuIncrement	1
+../application/source/user_interface/menuSystem.c:985:6:menuSystemMenuDecrement	1
+../application/source/user_interface/menuSystem.c:991:6:menuDisplaySettingOption	2

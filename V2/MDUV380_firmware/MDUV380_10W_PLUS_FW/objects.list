@@ -65,6 +65,7 @@
 "./USB_DEVICE/Target/usbd_conf.o"
 "./application/source/applicationMain.o"
 "./application/source/dmr_codec/codec.o"
+"./application/source/dmr_codec/codec_bin.o"
 "./application/source/dmr_codec/codec_interface.o"
 "./application/source/functions/aprs.o"
 "./application/source/functions/calibration.o"

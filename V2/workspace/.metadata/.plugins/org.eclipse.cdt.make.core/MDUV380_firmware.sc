@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?scdStore version="2"?><scannerInfo id="org.eclipse.cdt.make.core.discoveredScannerInfo">
-                                                                        
+                                                                                    
+    
+    
+    
     
     
     
@@ -18,7 +21,10 @@
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.547334273;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1967651531.1357605746;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.761776848">
-                                                                                                                                                
+                                                                                                                                                                        
+        
+        
+        
         
         
         
@@ -450,7 +456,10 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                                                                                                                            
+                                                                                                                                                                    
+    
+    
+    
     
     
     
@@ -468,7 +477,10 @@
     
     
     </instance>
-                                                                        
+                                                                                    
+    
+    
+    
     
     
     
@@ -486,7 +498,10 @@
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1640977102;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1967651531.254067944;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1616924110">
-                                                                                                                                                
+                                                                                                                                                                        
+        
+        
+        
         
         
         
@@ -918,7 +933,10 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                                                                                                                            
+                                                                                                                                                                    
+    
+    
+    
     
     
     
@@ -936,7 +954,10 @@
     
     
     </instance>
-                                                                        
+                                                                                    
+    
+    
+    
     
     
     
@@ -954,7 +975,10 @@
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1234994308;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1967651531.231295207;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.871893021">
-                                                                                                                                                
+                                                                                                                                                                        
+        
+        
+        
         
         
         
@@ -1386,7 +1410,10 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                                                                                                                            
+                                                                                                                                                                    
+    
+    
+    
     
     
     
@@ -1404,7 +1431,10 @@
     
     
     </instance>
-                                                                        
+                                                                                    
+    
+    
+    
     
     
     
@@ -1422,7 +1452,10 @@
     
     
     <instance id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2031719103.1299037630.90246553.1177965285;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1967651531.735658774;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.580930965">
-                                                                                                                                                
+                                                                                                                                                                        
+        
+        
+        
         
         
         
@@ -1854,7 +1887,10 @@
             <definedSymbol symbol="__DECIMAL_BID_FORMAT__=1"/>
             <definedSymbol symbol="_REENTRANT=1"/>
         </collector>
-                                                                                                                                            
+                                                                                                                                                                    
+    
+    
+    
     
     
     
@@ -1872,7 +1908,10 @@
     
     
     </instance>
-                                                                    
+                                                                                
+
+
+
 
 
 
