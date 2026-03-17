@@ -38,13 +38,18 @@ Done
 
 ## 3. Build-configuraties 
 
-| Configuratienaam | Radio | Uitvoerbestand |
-|---|---|---|
-| `MDUV380_10W_PLUS_FW` | TYT MD-UV380 10W+ | `OpenMDUV380_10W_PLUS.bin` |
-| `RT84_FW` | Retevis RT-84 / RT3S | `OpenRT84.bin` |
-| `DM1701_FW` | Baofeng DM-1701 | *(zie .cproject)* |
-| `JA_MDUV380_FW` | MD-UV380 (JA variant) | *(zie .cproject)* |
-| `JA_RT84_FW` | RT-84 (JA variant) | *(zie .cproject)* |
+| Configuratienaam | Radio | Omschrijving | Uitvoerbestand |
+|---|---|---|---|
+| `MDUV380_FW` | TYT MD-UV380 | Standaard MD-UV380 | `MDUV380_FW\OpenMDUV380.bin` |
+| `MDUV380_10W_PLUS_FW` | TYT MD-UV380 10W+ | 10W+ versie van UV380 | `MDUV380_10W_PLUS_FW\OpenMDUV380_10W_PLUS.bin` |
+| `DM1701_FW` | Baofeng DM-1701 | Standaard DM-1701 | `DM1701_FW\OpenDM1701.bin` |
+| `RT84_FW` | Retevis RT-84 | Standaard RT-84 | `RT84_FW\OpenRT84.bin` |
+| `JA_MDUV380_FW` | TYT MD-UV380 | MD-UV380 Japanse variant | `JA_MDUV380_FW\OpenMDUV380_Japanese.bin` |
+| `JA_MDUV380_10W_PLUS_FW` | TYT MD-UV380 10W+ | 10W+ Japanse variant | `JA_MDUV380_10W_PLUS_FW\OpenMDUV380_10W_PLUS_Japanese.bin` |
+| `JA_DM1701_FW` | Baofeng DM-1701 | DM-1701 Japanse variant | `JA_DM1701_FW\OpenDM1701_Japanese.bin` |
+| `JA_RT84_FW` | Retevis RT-84 | RT-84 Japanse variant | `JA_RT84_FW\OpenRT84_Japanese.bin` |
+
+Alle paden zijn relatief t.o.v. `V2\MDUV380_firmware\`.
 
 ---
 

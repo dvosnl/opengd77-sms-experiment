@@ -1,6 +1,9 @@
 application/source/functions/sms.o: ../application/source/functions/sms.c \
  ../application/include/functions/sms.h \
- ../application/include/functions/ticks.h \
+ ../application/include/functions/settings.h \
+ ../application/include/functions/codeplug.h \
+ ../application/include/functions/trx.h \
+ ../application/include/functions/sound.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
  ../Core/Inc/FreeRTOSConfig.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
@@ -10,9 +13,7 @@ application/source/functions/sms.o: ../application/source/functions/sms.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
- ../application/include/functions/trx.h \
- ../application/include/functions/sound.h ../Core/Inc/main.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+ ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
@@ -58,10 +59,7 @@ application/source/functions/sms.o: ../application/source/functions/sms.c \
  ../application/include/applicationMain.h ../application/include/utils.h \
  ../application/include/io/buttons.h \
  ../application/include/interfaces/gpio.h \
- ../application/include/io/LEDs.h \
- ../application/include/functions/settings.h \
- ../application/include/functions/codeplug.h \
- ../application/include/io/keyboard.h \
+ ../application/include/io/LEDs.h ../application/include/io/keyboard.h \
  ../application/include/io/rotary_switch.h \
  ../application/include/io/display.h \
  ../application/include/functions/vox.h \
@@ -71,6 +69,7 @@ application/source/functions/sms.o: ../application/source/functions/sms.c \
  ../application/include/dmr_codec/codec.h \
  ../application/include/interfaces/wdog.h \
  ../application/include/interfaces/adc.h \
+ ../application/include/functions/ticks.h \
  ../application/include/interfaces/i2c.h \
  ../application/include/interfaces/i2s.h \
  ../application/include/interfaces/dac.h \
@@ -82,7 +81,10 @@ application/source/functions/sms.o: ../application/source/functions/sms.c \
  ../application/include/functions/calibration.h \
  ../application/include/hardware/radioHardwareInterface.h
 ../application/include/functions/sms.h:
-../application/include/functions/ticks.h:
+../application/include/functions/settings.h:
+../application/include/functions/codeplug.h:
+../application/include/functions/trx.h:
+../application/include/functions/sound.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h:
@@ -92,8 +94,6 @@ application/source/functions/sms.o: ../application/source/functions/sms.c \
 ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h:
-../application/include/functions/trx.h:
-../application/include/functions/sound.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -143,8 +143,6 @@ application/source/functions/sms.o: ../application/source/functions/sms.c \
 ../application/include/io/buttons.h:
 ../application/include/interfaces/gpio.h:
 ../application/include/io/LEDs.h:
-../application/include/functions/settings.h:
-../application/include/functions/codeplug.h:
 ../application/include/io/keyboard.h:
 ../application/include/io/rotary_switch.h:
 ../application/include/io/display.h:
@@ -155,6 +153,7 @@ application/source/functions/sms.o: ../application/source/functions/sms.c \
 ../application/include/dmr_codec/codec.h:
 ../application/include/interfaces/wdog.h:
 ../application/include/interfaces/adc.h:
+../application/include/functions/ticks.h:
 ../application/include/interfaces/i2c.h:
 ../application/include/interfaces/i2s.h:
 ../application/include/interfaces/dac.h:

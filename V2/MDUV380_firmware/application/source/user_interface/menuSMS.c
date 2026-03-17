@@ -211,8 +211,11 @@ static bool smsTryResendSelectedSentMessage(void)
 		return false;
 	}
 
-	smsRegisterOutgoingMessage(message.destinationId, trxDMRID, message.text);
-	if (!waitForAckEnabled)
+	if (waitForAckEnabled)
+	{
+		smsRegisterOutgoingMessage(message.destinationId, trxDMRID, message.text);
+	}
+	else
 	{
 		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1800, "Sending SMS, ignoring ACK", true);
 	}
@@ -817,8 +820,11 @@ static bool smsSendBuffer(void)
 	}
 
 	(void)smsStoreSentMessage(destinationId, smsBuffer);
-	smsRegisterOutgoingMessage(destinationId, trxDMRID, smsBuffer);
-	if (!waitForAckEnabled)
+	if (waitForAckEnabled)
+	{
+		smsRegisterOutgoingMessage(destinationId, trxDMRID, smsBuffer);
+	}
+	else
 	{
 		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1800, "Sending SMS, ignoring ACK", true);
 	}

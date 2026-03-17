@@ -28,6 +28,7 @@
 #include <stddef.h>
 
 #include "functions/sms.h"
+#include "functions/settings.h"
 #include "functions/ticks.h"
 #include "functions/trx.h"
 #include "hardware/HR-C6000.h"
@@ -1220,6 +1221,16 @@ bool smsHandleReceivedDataFrame(uint8_t dataType, const uint8_t *frame)
 		{
 			smsResetRxAssembly();
 			return false;
+		}
+
+		if (settingsIsOptionBitSet(BIT_SMS_FILTER_INCOMING_PC))
+		{
+			uint32_t destId = (((uint32_t)frame[2] << 16) | ((uint32_t)frame[3] << 8) | frame[4]);
+			if (destId != trxDMRID)
+			{
+				smsResetRxAssembly();
+				return false;
+			}
 		}
 
 		rxAssembly.active = true;
