@@ -1,0 +1,9 @@
+.github/
+.headless-workspace/
+.metadata/
+.stm32cubeide-buid/
+.vscode/
+
+.headless_ws/
+.headless-workspace-rebuild/
+*.log
