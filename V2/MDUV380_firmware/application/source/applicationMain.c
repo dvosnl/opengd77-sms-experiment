@@ -285,6 +285,28 @@ static bool validateUpdateCallback(void)
 	return false;
 }
 
+static bool validateSmsTimeoutCallback(void)
+{
+	if (uiDataGlobal.MessageBox.keyPressed == KEY_GREEN)
+	{
+		if (smsRetryLastOutgoingMessage())
+		{
+			return true;
+		}
+
+		soundSetMelody(MELODY_NACK_BEEP);
+		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 2000U, "SMS busy", true);
+		return true;
+	}
+
+	if (uiDataGlobal.MessageBox.keyPressed == KEY_RED)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 static void settingsUpdateAudioAlert(void)
 {
 	if (nonVolatileSettings.audioPromptMode >= AUDIO_PROMPT_MODE_VOICE_THRESHOLD)
@@ -1379,11 +1401,11 @@ void applicationMainTask(void)
 		switch (smsConsumeTxEvent())
 		{
 			case SMS_TX_EVENT_SENDING:
-				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 10000U, "Sending SMS", true);
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 2500U, "Sending SMS", true);
 				break;
 
 			case SMS_TX_EVENT_RETRYING:
-				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 10000U, "Retrying SMS", true);
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 2500U, "Retrying SMS", true);
 				break;
 
 			case SMS_TX_EVENT_ACK:
@@ -1393,7 +1415,12 @@ void applicationMainTask(void)
 
 			case SMS_TX_EVENT_TIMEOUT:
 				soundSetMelody(MELODY_NACK_BEEP);
-				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_SMS_TX, 2000U, "SMS timeout", true);
+					snprintf(uiDataGlobal.MessageBox.message, MESSAGEBOX_MESSAGE_LEN_MAX, "%s", "SMS timeout\nGreen: Resend\nRed: Cancel");
+					uiDataGlobal.MessageBox.type = MESSAGEBOX_TYPE_INFO;
+					uiDataGlobal.MessageBox.decoration = MESSAGEBOX_DECORATION_FRAME;
+					uiDataGlobal.MessageBox.buttons = MESSAGEBOX_BUTTONS_YESNO;
+					uiDataGlobal.MessageBox.validatorCallback = validateSmsTimeoutCallback;
+					menuSystemPushNewMenu(UI_MESSAGE_BOX);
 				break;
 
 			case SMS_TX_EVENT_REJECTED:

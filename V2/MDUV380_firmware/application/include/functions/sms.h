@@ -123,6 +123,7 @@ bool smsConsumeRxNotification(void);
 void smsRegisterOutgoingMessage(uint32_t destinationId, uint32_t sourceId, const char *text);
 void smsNotifyOutgoingAckReceived(void);
 void smsNotifyOutgoingRejected(void);
+bool smsRetryLastOutgoingMessage(void);
 smsTxEvent_t smsConsumeTxEvent(void);
 void smsTick(void);
 void smsInboxStorageTick(void);

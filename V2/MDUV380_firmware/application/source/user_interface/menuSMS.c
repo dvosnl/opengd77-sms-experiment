@@ -26,6 +26,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "user_interface/uiGlobals.h"
 #include "user_interface/menuSystem.h"
@@ -72,6 +73,28 @@ typedef enum
 	SMS_VIEW_SOURCE_SENT
 } smsViewSource_t;
 
+typedef enum
+{
+	SMS_COMPOSE_MODE_EDIT = 0,
+	SMS_COMPOSE_MODE_DESTINATION_SELECT,
+	SMS_COMPOSE_MODE_CONTACT_SELECT,
+	SMS_COMPOSE_MODE_MANUAL_ID
+} smsComposeMode_t;
+
+typedef enum
+{
+	SMS_DESTINATION_OPTION_SELECT_CONTACT = 0,
+	SMS_DESTINATION_OPTION_MANUAL_ID,
+	SMS_DESTINATION_OPTION_COUNT
+} smsDestinationOption_t;
+
+typedef enum
+{
+	SMS_RESPOND_OPTION_SELECT_CONTACT = 0,
+	SMS_RESPOND_OPTION_TO_SENDER,
+	SMS_RESPOND_OPTION_COUNT
+} smsRespondOption_t;
+
 enum
 {
 	SMS_RX_POPUP_ITEM_VIEW = 0,
@@ -95,6 +118,12 @@ static char smsViewPeerText[24];
 static bool smsComposeHasPreset = false;
 static smsQuickTextEditMode_t smsQuickTextEditMode = SMS_QUICKTEXT_EDIT_NONE;
 static uint8_t smsQuickTextEditIndex = 0U;
+static smsComposeMode_t smsComposeMode = SMS_COMPOSE_MODE_EDIT;
+static uint16_t smsComposeContactIndex = 0U;
+static uint8_t smsComposeDestinationOptionIndex = 0U;
+static char smsComposeManualIdBuffer[11] = { 0 };
+static bool smsRxRespondMode = false;
+static uint8_t smsRxRespondOptionIndex = 0U;
 
 #define SMS_QUICKTEXT_DRAFT_TEXT  smsViewInboxMessage.text
 #define SMS_QUICKTEXT_DRAFT_TITLE smsPopupSource
@@ -102,11 +131,16 @@ static uint8_t smsQuickTextEditIndex = 0U;
 static const char *smsPackResultMessage(smsPackResult_t result);
 static void smsOptionsRender(void);
 static void smsComposeSetPreset(const char *text);
+static void smsComposeRenderDestinationSelect(void);
+static void smsComposeRenderContactSelect(void);
+static void smsComposeRenderManualIdEntry(void);
+static bool smsComposeGetPrivateContactAt(uint16_t listIndex, CodeplugContact_t *contact);
 static void smsQuickTextRender(void);
 static void smsQuickTextEditRender(bool fullRedraw, bool cursorMoved);
 static bool smsQuickTextStartCreate(void);
 static bool smsQuickTextStartEdit(uint8_t index);
 static void smsDrawTextCursor(int x, int y, bool moved);
+static void smsRxRespondRender(void);
 
 static void smsGetSourceDisplayText(uint32_t sourceId, char *buffer, size_t bufferLength)
 {
@@ -220,38 +254,6 @@ static bool smsTryResendSelectedSentMessage(void)
 		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1800, "Sending SMS, ignoring ACK", true);
 	}
 	return true;
-}
-
-static bool smsGetDestinationText(char *buffer, size_t bufferLength, uint32_t *destinationId)
-{
-	if ((smsReplyDestinationEnabled == true) && (smsReplyDestinationId != 0U))
-	{
-		if (destinationId != NULL)
-		{
-			*destinationId = smsReplyDestinationId;
-		}
-
-		snprintf(buffer, bufferLength, "PC %u", smsReplyDestinationId);
-		return true;
-	}
-
-	if (((trxTalkGroupOrPcId >> 24) == PC_CALL_FLAG) && ((trxTalkGroupOrPcId & 0x00FFFFFFU) != 0U))
-	{
-		uint32_t pcId = (trxTalkGroupOrPcId & 0x00FFFFFFU);
-		if (destinationId != NULL)
-		{
-			*destinationId = pcId;
-		}
-		snprintf(buffer, bufferLength, "PC %u", pcId);
-		return true;
-	}
-
-	if (destinationId != NULL)
-	{
-		*destinationId = 0U;
-	}
-	snprintf(buffer, bufferLength, "Select private call");
-	return false;
 }
 
 static const char *smsPackResultMessage(smsPackResult_t result)
@@ -519,6 +521,42 @@ static void smsRxPopupRender(void)
 	displayRender();
 }
 
+static void smsRxRespondRender(void)
+{
+	const char *menuText[SMS_RESPOND_OPTION_COUNT] = { "Select contact", "To sender" };
+
+	menuDataGlobal.numItems = SMS_RESPOND_OPTION_COUNT;
+	if (smsRxRespondOptionIndex >= SMS_RESPOND_OPTION_COUNT)
+	{
+		smsRxRespondOptionIndex = 0U;
+	}
+	menuDataGlobal.currentItemIndex = smsRxRespondOptionIndex;
+
+	displayClearBuf();
+	menuDisplayTitle("Respond");
+
+	for (int i = MENU_START_ITERATION_VALUE; i < MENU_END_ITERATION_VALUE; i++)
+	{
+		int mNum = menuGetMenuOffset(SMS_RESPOND_OPTION_COUNT, i);
+
+		if (mNum == MENU_OFFSET_BEFORE_FIRST_ENTRY)
+		{
+			continue;
+		}
+		else if (mNum == MENU_OFFSET_AFTER_LAST_ENTRY)
+		{
+			break;
+		}
+
+		menuDisplayEntry(i, mNum, menuText[mNum], 0, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_COLOUR_NONE, THEME_ITEM_BG);
+	}
+
+	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_1_HEIGHT, "Green select  Red back", FONT_SIZE_1);
+	displayThemeResetToDefault();
+	displayRender();
+}
+
 static void smsViewRender(void)
 {
 	const char *messageText = "";
@@ -696,12 +734,12 @@ static void smsDrawTextCursor(int x, int y, bool moved)
 
 static void smsComposeRender(bool fullRedraw, bool cursorMoved)
 {
-	char destination[SCREEN_LINE_BUFFER_SIZE];
+	char composeInfo[SCREEN_LINE_BUFFER_SIZE];
 	char lineBuf[SMS_CHARS_PER_LINE + 1];
 	int len = strlen(smsBuffer);
 	int cursorLine, cursorCol, topLine;
 
-	(void)smsGetDestinationText(destination, sizeof(destination), NULL);
+	snprintf(composeInfo, sizeof(composeInfo), "%d/%d", len, SMS_MAX_LEN);
 
 	if (smsCursorPos > len)
 	{
@@ -725,7 +763,7 @@ static void smsComposeRender(bool fullRedraw, bool cursorMoved)
 		displayClearBuf();
 		menuDisplayTitle("SMS");
 		displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
-		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START, destination, FONT_SIZE_1);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START, composeInfo, FONT_SIZE_1);
 
 		for (int i = 0; i < SMS_VISIBLE_LINES; i++)
 		{
@@ -762,6 +800,135 @@ static void smsComposeRender(bool fullRedraw, bool cursorMoved)
 		cursorMoved);
 }
 
+static bool smsComposeGetPrivateContactAt(uint16_t listIndex, CodeplugContact_t *contact)
+{
+	if (contact == NULL)
+	{
+		return false;
+	}
+
+	return (codeplugContactGetDataForNumberInType((int)(listIndex + 1U), CONTACT_CALLTYPE_PC, contact) > 0);
+}
+
+static void smsComposeRenderContactSelect(void)
+{
+	char line[SCREEN_LINE_BUFFER_SIZE];
+	int count = codeplugContactsGetCount(CONTACT_CALLTYPE_PC);
+
+	displayClearBuf();
+	menuDisplayTitle("Select contact");
+
+	if (count <= 0)
+	{
+		displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_2_HEIGHT, "No private contacts", FONT_SIZE_2);
+		displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+		displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_1_HEIGHT, "Red back", FONT_SIZE_1);
+		displayThemeResetToDefault();
+		displayRender();
+		return;
+	}
+
+	for (int i = MENU_START_ITERATION_VALUE; i < MENU_END_ITERATION_VALUE; i++)
+	{
+		int mNum = menuGetMenuOffset(count, i);
+		CodeplugContact_t contact;
+		char contactName[17] = { 0 };
+
+		if (mNum == MENU_OFFSET_BEFORE_FIRST_ENTRY)
+		{
+			continue;
+		}
+		else if (mNum == MENU_OFFSET_AFTER_LAST_ENTRY)
+		{
+			break;
+		}
+
+		if (smsComposeGetPrivateContactAt((uint16_t)mNum, &contact))
+		{
+			codeplugUtilConvertBufToString(contact.name, contactName, 16);
+			if (contactName[0] == 0)
+			{
+				strncpy(contactName, "(no name)", sizeof(contactName));
+				contactName[sizeof(contactName) - 1] = 0;
+			}
+			snprintf(line, sizeof(line), "%s", contactName);
+		}
+		else
+		{
+			strncpy(line, "Invalid", sizeof(line));
+			line[sizeof(line) - 1] = 0;
+		}
+
+		menuDisplayEntry(i, mNum, line, 0, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_COLOUR_NONE, THEME_ITEM_BG);
+	}
+
+	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_1_HEIGHT, "Green send  Red back", FONT_SIZE_1);
+	displayThemeResetToDefault();
+	displayRender();
+}
+
+static void smsComposeRenderDestinationSelect(void)
+{
+	const char *options[SMS_DESTINATION_OPTION_COUNT] = { "Select contact", "Manual ID" };
+
+	menuDataGlobal.numItems = SMS_DESTINATION_OPTION_COUNT;
+	if (smsComposeDestinationOptionIndex >= SMS_DESTINATION_OPTION_COUNT)
+	{
+		smsComposeDestinationOptionIndex = 0U;
+	}
+	menuDataGlobal.currentItemIndex = smsComposeDestinationOptionIndex;
+
+	displayClearBuf();
+	menuDisplayTitle("Send to");
+
+	for (int i = MENU_START_ITERATION_VALUE; i < MENU_END_ITERATION_VALUE; i++)
+	{
+		int mNum = menuGetMenuOffset(SMS_DESTINATION_OPTION_COUNT, i);
+
+		if (mNum == MENU_OFFSET_BEFORE_FIRST_ENTRY)
+		{
+			continue;
+		}
+		else if (mNum == MENU_OFFSET_AFTER_LAST_ENTRY)
+		{
+			break;
+		}
+
+		menuDisplayEntry(i, mNum, options[mNum], 0, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_COLOUR_NONE, THEME_ITEM_BG);
+	}
+
+	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_1_HEIGHT, "Green select  Red back", FONT_SIZE_1);
+	displayThemeResetToDefault();
+	displayRender();
+}
+
+static void smsComposeRenderManualIdEntry(void)
+{
+	char line[SCREEN_LINE_BUFFER_SIZE];
+
+	if (smsComposeManualIdBuffer[0] == 0)
+	{
+		strncpy(line, "ID:", sizeof(line));
+		line[sizeof(line) - 1] = 0;
+	}
+	else
+	{
+		snprintf(line, sizeof(line), "ID:%s", smsComposeManualIdBuffer);
+	}
+
+	displayClearBuf();
+	menuDisplayTitle("Manual ID");
+	displayThemeApply(THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_BG);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_Y_POS_MENU_START + FONT_SIZE_2_HEIGHT, line, FONT_SIZE_2);
+	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_1_HEIGHT, "Green send  Red back", FONT_SIZE_1);
+	displayThemeResetToDefault();
+	displayRender();
+}
+
 static void smsComposeInsertChar(char c, bool advance, int maxLen)
 {
 	int len = strlen(smsBuffer);
@@ -787,22 +954,14 @@ static void smsComposeInsertChar(char c, bool advance, int maxLen)
 	}
 }
 
-static bool smsSendBuffer(void)
+static bool smsSendBuffer(uint32_t destinationId)
 {
-	uint32_t destinationId;
-	char destination[SCREEN_LINE_BUFFER_SIZE];
 	smsPackResult_t result;
 	bool waitForAckEnabled = settingsIsOptionBitSet(BIT_SMS_ACK_WAIT);
 
 	if (trxGetMode() != RADIO_MODE_DIGITAL)
 	{
 		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 2000, "DMR only", true);
-		return false;
-	}
-
-	if (smsGetDestinationText(destination, sizeof(destination), &destinationId) == false)
-	{
-		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 2000, "Select private call", true);
 		return false;
 	}
 
@@ -891,6 +1050,10 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 {
 	if (isFirstRun)
 	{
+		smsComposeMode = SMS_COMPOSE_MODE_EDIT;
+		smsComposeContactIndex = 0U;
+		smsComposeDestinationOptionIndex = SMS_DESTINATION_OPTION_SELECT_CONTACT;
+		smsComposeManualIdBuffer[0] = 0;
 		if (!smsComposeHasPreset)
 		{
 			memset(smsBuffer, 0, sizeof(smsBuffer));
@@ -909,12 +1072,50 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 
 	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
 	{
-		smsComposeRender(true, false);
+		if (smsComposeMode == SMS_COMPOSE_MODE_CONTACT_SELECT)
+		{
+			smsComposeRenderContactSelect();
+		}
+		else if (smsComposeMode == SMS_COMPOSE_MODE_DESTINATION_SELECT)
+		{
+			smsComposeRenderDestinationSelect();
+		}
+		else if (smsComposeMode == SMS_COMPOSE_MODE_MANUAL_ID)
+		{
+			smsComposeRenderManualIdEntry();
+		}
+		else
+		{
+			smsComposeRender(true, false);
+		}
 		return MENU_STATUS_SUCCESS;
 	}
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
 	{
+		if (smsComposeMode == SMS_COMPOSE_MODE_MANUAL_ID)
+		{
+			smsComposeMode = SMS_COMPOSE_MODE_DESTINATION_SELECT;
+			smsComposeRenderDestinationSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (smsComposeMode == SMS_COMPOSE_MODE_DESTINATION_SELECT)
+		{
+			smsComposeMode = SMS_COMPOSE_MODE_EDIT;
+			menuDataGlobal.currentItemIndex = 0;
+			smsComposeRender(true, false);
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (smsComposeMode == SMS_COMPOSE_MODE_CONTACT_SELECT)
+		{
+			smsComposeMode = SMS_COMPOSE_MODE_DESTINATION_SELECT;
+			menuDataGlobal.currentItemIndex = 0;
+			smsComposeRenderDestinationSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
 		keypadAlphaEnable = false;
 		menuSystemPopPreviousMenu();
 		return MENU_STATUS_SUCCESS;
@@ -922,19 +1123,208 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
 	{
+		if (smsComposeMode == SMS_COMPOSE_MODE_DESTINATION_SELECT)
+		{
+			if (smsComposeDestinationOptionIndex == SMS_DESTINATION_OPTION_SELECT_CONTACT)
+			{
+				int privateContactsCount = codeplugContactsGetCount(CONTACT_CALLTYPE_PC);
+
+				if (privateContactsCount <= 0)
+				{
+					soundSetMelody(MELODY_ERROR_BEEP);
+					uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1800, "No private contacts", true);
+				}
+				else
+				{
+					smsComposeContactIndex = 0U;
+					smsComposeMode = SMS_COMPOSE_MODE_CONTACT_SELECT;
+					menuDataGlobal.currentItemIndex = 0;
+					menuDataGlobal.numItems = privateContactsCount;
+					smsComposeRenderContactSelect();
+				}
+			}
+			else
+			{
+				smsComposeMode = SMS_COMPOSE_MODE_MANUAL_ID;
+				smsComposeManualIdBuffer[0] = 0;
+				smsComposeRenderManualIdEntry();
+			}
+
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (smsComposeMode == SMS_COMPOSE_MODE_CONTACT_SELECT)
+		{
+			CodeplugContact_t selectedContact;
+
+			if (smsComposeGetPrivateContactAt(smsComposeContactIndex, &selectedContact) == false)
+			{
+				soundSetMelody(MELODY_ERROR_BEEP);
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1500, "Invalid contact", true);
+				return MENU_STATUS_SUCCESS;
+			}
+
+			if (smsSendBuffer(selectedContact.tgNumber))
+			{
+				smsReplyDestinationEnabled = false;
+				smsReplyDestinationId = 0U;
+				smsComposeMode = SMS_COMPOSE_MODE_EDIT;
+				keypadAlphaEnable = false;
+				menuSystemPopAllAndDisplayRootMenu();
+			}
+
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (smsComposeMode == SMS_COMPOSE_MODE_MANUAL_ID)
+		{
+			char *endPtr = NULL;
+			unsigned long parsedId = strtoul(smsComposeManualIdBuffer, &endPtr, 10);
+
+			if ((smsComposeManualIdBuffer[0] == 0) || (endPtr == NULL) || (*endPtr != 0) || (parsedId == 0UL) || (parsedId > 0xFFFFFFFFUL))
+			{
+				soundSetMelody(MELODY_ERROR_BEEP);
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 1500, "Invalid ID", true);
+				return MENU_STATUS_SUCCESS;
+			}
+
+			if (smsSendBuffer((uint32_t)parsedId))
+			{
+				smsReplyDestinationEnabled = false;
+				smsReplyDestinationId = 0U;
+				smsComposeMode = SMS_COMPOSE_MODE_EDIT;
+				keypadAlphaEnable = false;
+				menuSystemPopAllAndDisplayRootMenu();
+			}
+
+			return MENU_STATUS_SUCCESS;
+		}
+
 		if (strlen(smsBuffer) == 0)
 		{
 			soundSetMelody(MELODY_ERROR_BEEP);
 		}
 		else
 		{
-			if (smsSendBuffer())
+			if (smsReplyDestinationEnabled && (smsReplyDestinationId != 0U))
 			{
-				smsReplyDestinationEnabled = false;
-				smsReplyDestinationId = 0U;
-				keypadAlphaEnable = false;
-				menuSystemPopAllAndDisplayRootMenu();
+				if (smsSendBuffer(smsReplyDestinationId))
+				{
+					smsReplyDestinationEnabled = false;
+					smsReplyDestinationId = 0U;
+					smsComposeMode = SMS_COMPOSE_MODE_EDIT;
+					keypadAlphaEnable = false;
+					menuSystemPopAllAndDisplayRootMenu();
+				}
 			}
+			else
+			{
+				smsComposeDestinationOptionIndex = SMS_DESTINATION_OPTION_SELECT_CONTACT;
+				smsComposeMode = SMS_COMPOSE_MODE_DESTINATION_SELECT;
+				menuDataGlobal.currentItemIndex = 0;
+				menuDataGlobal.numItems = SMS_DESTINATION_OPTION_COUNT;
+				smsComposeRenderDestinationSelect();
+			}
+		}
+
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (smsComposeMode == SMS_COMPOSE_MODE_CONTACT_SELECT)
+	{
+		int privateContactsCount = codeplugContactsGetCount(CONTACT_CALLTYPE_PC);
+
+		if (privateContactsCount <= 0)
+		{
+			smsComposeRenderContactSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (smsComposeContactIndex >= (uint16_t)privateContactsCount)
+		{
+			smsComposeContactIndex = (uint16_t)(privateContactsCount - 1);
+			menuDataGlobal.currentItemIndex = (int)smsComposeContactIndex;
+		}
+
+		if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
+		{
+			menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, privateContactsCount);
+			smsComposeContactIndex = (uint16_t)menuDataGlobal.currentItemIndex;
+			smsComposeRenderContactSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (KEYCHECK_PRESS(ev->keys, KEY_UP))
+		{
+			menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, privateContactsCount);
+			smsComposeContactIndex = (uint16_t)menuDataGlobal.currentItemIndex;
+			smsComposeRenderContactSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (smsComposeMode == SMS_COMPOSE_MODE_DESTINATION_SELECT)
+	{
+		if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
+		{
+			menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, SMS_DESTINATION_OPTION_COUNT);
+			smsComposeDestinationOptionIndex = (uint8_t)menuDataGlobal.currentItemIndex;
+			smsComposeRenderDestinationSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (KEYCHECK_PRESS(ev->keys, KEY_UP))
+		{
+			menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, SMS_DESTINATION_OPTION_COUNT);
+			smsComposeDestinationOptionIndex = (uint8_t)menuDataGlobal.currentItemIndex;
+			smsComposeRenderDestinationSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (smsComposeMode == SMS_COMPOSE_MODE_MANUAL_ID)
+	{
+		if (KEYCHECK_SHORTUP(ev->keys, KEY_LEFT) || KEYCHECK_SHORTUP(ev->keys, KEY_HASH))
+		{
+			size_t len = strlen(smsComposeManualIdBuffer);
+			if (len > 0U)
+			{
+				smsComposeManualIdBuffer[len - 1U] = 0;
+			}
+			smsComposeRenderManualIdEntry();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		char digit = 0;
+		if (KEYCHECK_SHORTUP(ev->keys, KEY_0)) digit = '0';
+		else if (KEYCHECK_SHORTUP(ev->keys, KEY_1)) digit = '1';
+		else if (KEYCHECK_SHORTUP(ev->keys, KEY_2)) digit = '2';
+		else if (KEYCHECK_SHORTUP(ev->keys, KEY_3)) digit = '3';
+		else if (KEYCHECK_SHORTUP(ev->keys, KEY_4)) digit = '4';
+		else if (KEYCHECK_SHORTUP(ev->keys, KEY_5)) digit = '5';
+		else if (KEYCHECK_SHORTUP(ev->keys, KEY_6)) digit = '6';
+		else if (KEYCHECK_SHORTUP(ev->keys, KEY_7)) digit = '7';
+		else if (KEYCHECK_SHORTUP(ev->keys, KEY_8)) digit = '8';
+		else if (KEYCHECK_SHORTUP(ev->keys, KEY_9)) digit = '9';
+
+		if (digit != 0)
+		{
+			size_t len = strlen(smsComposeManualIdBuffer);
+			if (len < (sizeof(smsComposeManualIdBuffer) - 1U))
+			{
+				smsComposeManualIdBuffer[len] = digit;
+				smsComposeManualIdBuffer[len + 1U] = 0;
+				smsComposeRenderManualIdEntry();
+			}
+			else
+			{
+				soundSetMelody(MELODY_ERROR_BEEP);
+			}
+			return MENU_STATUS_SUCCESS;
 		}
 
 		return MENU_STATUS_SUCCESS;
@@ -1407,6 +1797,8 @@ menuStatus_t menuSMSRxPopup(uiEvent_t *ev, bool isFirstRun)
 	{
 		smsReplyDestinationEnabled = false;
 		smsReplyDestinationId = 0U;
+		smsRxRespondMode = false;
+		smsRxRespondOptionIndex = 0U;
 		(void)smsConsumeRxNotification();
 
 		if (smsLoadPopupMessage() == false)
@@ -1428,12 +1820,26 @@ menuStatus_t menuSMSRxPopup(uiEvent_t *ev, bool isFirstRun)
 
 	if ((ev->events & FUNCTION_EVENT) && (ev->function == FUNC_REDRAW))
 	{
-		smsRxPopupRender();
+		if (smsRxRespondMode)
+		{
+			smsRxRespondRender();
+		}
+		else
+		{
+			smsRxPopupRender();
+		}
 		return menuStatus;
 	}
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
 	{
+		if (smsRxRespondMode)
+		{
+			smsRxRespondMode = false;
+			smsRxPopupRender();
+			return MENU_STATUS_SUCCESS;
+		}
+
 		smsReplyDestinationEnabled = false;
 		smsReplyDestinationId = 0U;
 		menuSystemPopPreviousMenu();
@@ -1442,20 +1848,56 @@ menuStatus_t menuSMSRxPopup(uiEvent_t *ev, bool isFirstRun)
 
 	if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
 	{
-		menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, SMS_RX_POPUP_ITEMS_COUNT);
-		smsRxPopupRender();
+		if (smsRxRespondMode)
+		{
+			menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, SMS_RESPOND_OPTION_COUNT);
+			smsRxRespondOptionIndex = (uint8_t)menuDataGlobal.currentItemIndex;
+			smsRxRespondRender();
+		}
+		else
+		{
+			menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, SMS_RX_POPUP_ITEMS_COUNT);
+			smsRxPopupRender();
+		}
 		return MENU_STATUS_SUCCESS;
 	}
 
 	if (KEYCHECK_PRESS(ev->keys, KEY_UP))
 	{
-		menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, SMS_RX_POPUP_ITEMS_COUNT);
-		smsRxPopupRender();
+		if (smsRxRespondMode)
+		{
+			menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, SMS_RESPOND_OPTION_COUNT);
+			smsRxRespondOptionIndex = (uint8_t)menuDataGlobal.currentItemIndex;
+			smsRxRespondRender();
+		}
+		else
+		{
+			menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, SMS_RX_POPUP_ITEMS_COUNT);
+			smsRxPopupRender();
+		}
 		return MENU_STATUS_SUCCESS;
 	}
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
 	{
+		if (smsRxRespondMode)
+		{
+			if (smsRxRespondOptionIndex == SMS_RESPOND_OPTION_TO_SENDER)
+			{
+				smsReplyDestinationEnabled = true;
+				smsReplyDestinationId = smsPopupMessage.sourceId;
+			}
+			else
+			{
+				smsReplyDestinationEnabled = false;
+				smsReplyDestinationId = 0U;
+			}
+
+			smsRxRespondMode = false;
+			menuSystemPushNewMenu(MENU_SMS_COMPOSE);
+			return MENU_STATUS_SUCCESS;
+		}
+
 		switch (menuDataGlobal.currentItemIndex)
 		{
 			case SMS_RX_POPUP_ITEM_VIEW:
@@ -1473,9 +1915,9 @@ menuStatus_t menuSMSRxPopup(uiEvent_t *ev, bool isFirstRun)
 				break;
 
 			case SMS_RX_POPUP_ITEM_RESPOND:
-				smsReplyDestinationEnabled = true;
-				smsReplyDestinationId = smsPopupMessage.sourceId;
-				menuSystemPushNewMenu(MENU_SMS_COMPOSE);
+				smsRxRespondMode = true;
+				smsRxRespondOptionIndex = SMS_RESPOND_OPTION_SELECT_CONTACT;
+				smsRxRespondRender();
 				break;
 
 			case SMS_RX_POPUP_ITEM_DELETE:

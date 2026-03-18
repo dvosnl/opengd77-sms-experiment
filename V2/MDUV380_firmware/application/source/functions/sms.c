@@ -38,9 +38,7 @@
 #define SMS_STORAGE_MAGIC                      0x534D5349U
 #define SMS_STORAGE_VERSION                    4U
 #define SMS_STORAGE_DEBOUNCE_MS                1500U
-#define SMS_TX_ACK_TIMEOUT_MS                  3000U
-#define SMS_TX_RETRY_BACKOFF_MS                 250U
-#define SMS_TX_MAX_RETRIES                        2U
+#define SMS_TX_ACK_TIMEOUT_MS                  6000U
 #define SMS_STANDARD_UDP_PORT                0x1398U
 #define SMS_STANDARD_IPV4_PROTOCOL           0x11U
 #define SMS_STANDARD_IPV4_TTL                0x01U
@@ -93,7 +91,6 @@ typedef struct
 	bool active;
 	uint32_t destinationId;
 	uint32_t sourceId;
-	uint8_t retriesRemaining;
 	ticksTimer_t ackTimer;
 	char text[SMS_MAX_TEXT_LENGTH + 1U];
 } smsOutgoingTracking_t;
@@ -120,7 +117,6 @@ static bool smsQueueAckResponseMessage(uint32_t destinationId, uint32_t sourceId
 static uint16_t smsCrc16Ccitt(const uint8_t *data, uint8_t length);
 static void smsResetOutgoingTracking(void);
 static void smsSetPendingTxEvent(smsTxEvent_t event);
-static bool smsRetryOutgoingMessage(void);
 static smsPackResult_t smsConvertTextToUtf16Be(const char *text, uint8_t *payload, uint16_t *payloadLength);
 static smsPackResult_t smsBuildStandardPayload(uint32_t destinationId, uint32_t sourceId, const char *text, uint8_t *payload, uint16_t *payloadLength, uint8_t *padOctetCount);
 static bool smsDecodeStandardPayload(const uint8_t *payload, uint16_t totalLength, uint8_t padOctets, char *textOut);
@@ -1087,7 +1083,6 @@ void smsRegisterOutgoingMessage(uint32_t destinationId, uint32_t sourceId, const
 	outgoingTracking.active = true;
 	outgoingTracking.destinationId = destinationId;
 	outgoingTracking.sourceId = sourceId;
-	outgoingTracking.retriesRemaining = SMS_TX_MAX_RETRIES;
 	strncpy(outgoingTracking.text, text, SMS_MAX_TEXT_LENGTH);
 	outgoingTracking.text[SMS_MAX_TEXT_LENGTH] = 0;
 	ticksTimerStart(&outgoingTracking.ackTimer, SMS_TX_ACK_TIMEOUT_MS);
@@ -1116,9 +1111,14 @@ void smsNotifyOutgoingRejected(void)
 	smsSetPendingTxEvent(SMS_TX_EVENT_REJECTED);
 }
 
-static bool smsRetryOutgoingMessage(void)
+bool smsRetryLastOutgoingMessage(void)
 {
 	smsPackResult_t result;
+
+	if ((outgoingTracking.destinationId == 0U) || (outgoingTracking.sourceId == 0U) || (outgoingTracking.text[0] == 0))
+	{
+		return false;
+	}
 
 	result = smsQueueMessage(outgoingTracking.destinationId, outgoingTracking.sourceId, outgoingTracking.text);
 	if (result != SMS_PACK_OK)
@@ -1132,13 +1132,9 @@ static bool smsRetryOutgoingMessage(void)
 		return false;
 	}
 
-	if (outgoingTracking.retriesRemaining > 0U)
-	{
-		outgoingTracking.retriesRemaining--;
-	}
-
+	outgoingTracking.active = true;
 	ticksTimerStart(&outgoingTracking.ackTimer, SMS_TX_ACK_TIMEOUT_MS);
-	smsSetPendingTxEvent(SMS_TX_EVENT_RETRYING);
+	smsSetPendingTxEvent(SMS_TX_EVENT_SENDING);
 	return true;
 }
 
@@ -1178,17 +1174,6 @@ void smsTick(void)
 
 	if (HRC6000IsSendingSMS() || HRC6000IRQHandlerIsRunning())
 	{
-		return;
-	}
-
-	if (outgoingTracking.retriesRemaining > 0U)
-	{
-		if (smsRetryOutgoingMessage())
-		{
-			return;
-		}
-
-		ticksTimerStart(&outgoingTracking.ackTimer, SMS_TX_RETRY_BACKOFF_MS);
 		return;
 	}
 
