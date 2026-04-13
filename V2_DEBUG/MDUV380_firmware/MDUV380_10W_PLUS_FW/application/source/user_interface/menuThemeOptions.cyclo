@@ -1,0 +1,8 @@
+../application/source/user_interface/menuThemeOptions.c:492:13:exitBrowserCallback	1
+../application/source/user_interface/menuThemeOptions.c:127:13:updateScreen	11
+../application/source/user_interface/menuThemeOptions.c:337:13:updateBrowerScreen	16
+../application/source/user_interface/menuThemeOptions.c:552:13:updatePickerScreen	13
+../application/source/user_interface/menuThemeOptions.c:710:13:exitPickerCallback	4
+../application/source/user_interface/menuThemeOptions.c:97:14:menuThemeOptions	23
+../application/source/user_interface/menuThemeOptions.c:257:14:menuThemeItemsBrowser	27
+../application/source/user_interface/menuThemeOptions.c:500:14:menuColourPicker	25

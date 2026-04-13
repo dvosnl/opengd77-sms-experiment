@@ -2898,8 +2898,18 @@ bool HRC6000StartQueuedSMS(void)
 {
 	const smsPreparedMessage_t *message = smsGetQueuedMessage();
 	uint8_t frameIndex = 0U;
+	bool slotStateReady;
 
-	if ((message == NULL) || (trxGetMode() != RADIO_MODE_DIGITAL) || trxTransmissionEnabled || trxIsTransmitting || (slotState != DMR_STATE_IDLE))
+	if ((hrc.isWaking == WAKING_MODE_FAILED) && trxTransmissionEnabled && !trxIsTransmitting)
+	{
+		// Recover a stuck wake-failure state (UI Tx screen recovery is not active for SMS).
+		trxDisableTransmission();
+		HRC6000ClearIsWakingState();
+	}
+
+	slotStateReady = ((slotState == DMR_STATE_IDLE) || (slotState == DMR_STATE_RX_1) || (slotState == DMR_STATE_RX_2));
+
+	if ((message == NULL) || (trxGetMode() != RADIO_MODE_DIGITAL) || trxTransmissionEnabled || trxIsTransmitting || !slotStateReady)
 	{
 		return false;
 	}

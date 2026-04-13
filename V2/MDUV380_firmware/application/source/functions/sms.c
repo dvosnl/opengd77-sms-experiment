@@ -1111,6 +1111,28 @@ void smsNotifyOutgoingRejected(void)
 	smsSetPendingTxEvent(SMS_TX_EVENT_REJECTED);
 }
 
+void smsNotifyOutgoingNoRepeater(void)
+{
+	if (!outgoingTracking.active)
+	{
+		return;
+	}
+
+	outgoingTracking.active = false;
+	smsSetPendingTxEvent(SMS_TX_EVENT_NO_REPEATER);
+}
+
+void smsNotifyOutgoingSent(void)
+{
+	if (!outgoingTracking.active)
+	{
+		return;
+	}
+
+	outgoingTracking.active = false;
+	smsSetPendingTxEvent(SMS_TX_EVENT_SENT);
+}
+
 bool smsRetryLastOutgoingMessage(void)
 {
 	smsPackResult_t result;

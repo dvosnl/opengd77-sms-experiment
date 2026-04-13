@@ -71,6 +71,7 @@
 "./application/source/functions/calibration.o"
 "./application/source/functions/codeplug.o"
 "./application/source/functions/hotspot.o"
+"./application/source/functions/mdc1200.o"
 "./application/source/functions/rxPowerSaving.o"
 "./application/source/functions/satellite.o"
 "./application/source/functions/settings.o"

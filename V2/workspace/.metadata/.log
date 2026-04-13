@@ -88,3 +88,73 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclip
 
 !ENTRY org.eclipse.cdt.core 1 0 2026-03-15 22:54:28.548
 !MESSAGE Indexed 'MDUV380_firmware' (142 sources, 262 headers) in 11,8 sec: 41.417 declarations; 206.301 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-18 15:28:07.827 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data c:\Users\berts\Documents\uv390-self_dev\V2\workspace -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-18 15:28:24.952
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 263 headers) in 9,16 sec: 41.296 declarations; 204.690 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-18 15:29:26.192 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data c:\Users\berts\Documents\uv390-self_dev\V2\workspace -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-18 15:29:50.649
+!MESSAGE Indexed 'MDUV380_firmware' (142 sources, 263 headers) in 18,4 sec: 41.369 declarations; 205.061 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-18 15:52:40.657 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data c:\Users\berts\Documents\uv390-self_dev\V2\workspace -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-18 15:52:57.470
+!MESSAGE Indexed 'MDUV380_firmware' (142 sources, 263 headers) in 9,33 sec: 41.389 declarations; 205.118 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-18 15:55:18.179 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data c:\Users\berts\Documents\uv390-self_dev\V2\workspace -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-18 15:55:37.570
+!MESSAGE Indexed 'MDUV380_firmware' (144 sources, 263 headers) in 10,7 sec: 41.465 declarations; 205.996 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-18 15:57:34.784 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data c:\Users\berts\Documents\uv390-self_dev\V2\workspace -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-18 15:57:52.813
+!MESSAGE Indexed 'MDUV380_firmware' (143 sources, 264 headers) in 10,9 sec: 41.742 declarations; 205.753 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-18 15:59:38.940 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data c:\Users\berts\Documents\uv390-self_dev\V2\workspace -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-18 15:59:56.255
+!MESSAGE Indexed 'MDUV380_firmware' (143 sources, 264 headers) in 11,1 sec: 41.930 declarations; 205.820 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)
+!SESSION 2026-03-28 08:26:33.812 -----------------------------------------------
+eclipse.buildId=Version 2.1.0
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=nl_NL
+Framework arguments:  -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -application org.eclipse.cdt.managedbuilder.core.headlessbuild -data c:/Users/berts/Documents/uv390-self_dev/V2/workspace -cleanBuild MDUV380_firmware/MDUV380_10W_PLUS_FW
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-28 08:26:47.864
+!MESSAGE Indexed 'MDUV380_firmware' (141 sources, 262 headers) in 8,44 sec: 41.281 declarations; 204.727 references; 1 unresolved inclusions; 204 syntax errors; 312 unresolved names (0,13%)

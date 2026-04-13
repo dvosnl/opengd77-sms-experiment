@@ -1,0 +1,7 @@
+../application/source/dmr_codec/codec.c:1065:13:g2312	5
+../application/source/dmr_codec/codec.c:1097:6:initFrame	10
+../application/source/dmr_codec/codec.c:1227:6:codecInitInternalBuffers	4
+../application/source/dmr_codec/codec.c:1237:6:codecInit	3
+../application/source/dmr_codec/codec.c:1249:6:codecIsAvailable	1
+../application/source/dmr_codec/codec.c:1256:6:codecEncodeInit	1
+../application/source/dmr_codec/codec.c:1262:6:codecEncode	2

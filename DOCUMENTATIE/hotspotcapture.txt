@@ -1,0 +1,724 @@
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=03 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 1B 1F 21 1D 04 03 51 86 1F
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 19 1F 21 1D 04 03 51 E6 FC
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 18 1F 21 1D 04 03 51 5E 9D
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 17 1F 21 1D 04 03 51 D4 74
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 16 1F 21 1D 04 03 51 6C 15
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 14 1F 21 1D 04 03 51 0C F6
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 13 1F 21 1D 04 03 51 15 B2
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 12 1F 21 1D 04 03 51 AD D3
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 11 1F 21 1D 04 03 51 75 51
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 10 1F 21 1D 04 03 51 CD 30
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0F 1F 21 1D 04 03 51 70 A2
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0E 1F 21 1D 04 03 51 C8 C3
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX AIR-SMS +00: 43 48 1F 21 1D 04 03 51 8D 88 E6 86
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+
+
+Poging 2:
+
+SMSAIR sc=01 dt=09 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=01 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 accepted src=040351 dst=1F211D blk=03 pad=0B resp=00
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX D08 +00: 03 CC 0C 1F 21 1D 0F A7 0F A7 00 0D
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX assemble total=24 pad=0B pay=19 src=040351
+SMSRX RAW-FULL +10: 21 1D 0F A7 0F A7 00 0D 04 D7 06 00 00 00 00 00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 +00: 01 40 04 03 51 1F 21 1D 00 08 41 17
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=02 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX assemble total=24 pad=0B pay=19 src=040351
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=03 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 +00: 43 4A 1F 21 1D 04 03 51 8D 88 20 E1
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX D08 +00: 00 D9 45 00 00 C2 16 54 00 00 40 11
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX D08 +00: 08 6B 6D 00 73 00 74 00 65 00 72 00
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX assemble total=9C pad=0A pay=92 src=040351
+SMSRX RAW-TR +60: 10 3B 57 00 69 00 6E 00 64 00 20 00 13 FA 33 00
+SMSRX RAW-FULL +00: 00 D9 45 00 00 C2 16 54 00 00 40 11 03 C8 0C 1F
+SMSRX RAW-FULL +40: 31 00 31 00 2E 00 34 00 0C E7 48 00 3A 00 36 00
+SMSRX RAW-FULL +90: 19 B2 73 00 00 00 00 00 00 00 00 00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 response-like PDU, no active outgoing tracking
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0B crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=04 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX assemble total=30 pad=0B pay=25 src=1F211D
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=09 crc=01 rd=00
+
+poging 3:
+
+--SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=03 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 accepted src=040351 dst=1F211D blk=08 pad=06 resp=00
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX assemble total=60 pad=06 pay=5A src=040351
+SMSRX text=
+Hi?ns,
+      S?was r?ived ?the S?em
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 +00: 01 40 04 03 51 1F 21 1D 00 08 41 17
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=04 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0A 04 03 51 1F 21 1D E7 E4
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 +00: 02 4B 04 03 51 1F 21 1D 84 00 A2 37
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 45 00 00 21 00 0A 00 00 40 11 3E 32
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 0C 1F 21 1D 0C 04 03 51 0F A7 0F A7
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 00 0D C8 F1 00 03 BF 00 1C 00 00 00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 00 00 00 00 00 00 00 00 C9 90 45 08
+SMSRX done dec=00 path=none sig=00 std=00
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0B crc=01 rd=00
+SMSAIR sc=00 dt=0C crc=01 rd=00
+
+
+poging 4:
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=01 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX assemble total=50 pad=06 pay=4A src=040351
+SMSRX done dec=01 path=utf16-scan sig=00 std=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 rejected: sap/blocks/pad invalid
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=00 dt=02 crc=01 rd=00
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0A 04 03 51 1F 21 1D E7 E4
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 accepted src=1F211D dst=040351 blk=04 pad=0B resp=00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 45 00 00 21 00 01 00 00 40 11 3E 3B
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 0C 1F 21 1D 0C 04 03 51 0F A7 0F A7
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX AIR-SMS +00: 00 00 00 00 00 00 00 00 8A FE 33 A8
+SMSRX RAW-FULL +20: 09 00 00 00 00 00 00 00 00 00 00 00 8A FE 33 A8
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=09 crc=01 rd=00
+SMSAIR sc=00 dt=0E crc=01 rd=00
+SMSAIR sc=00 dt=0A crc=01 rd=00
+SMSAIR sc=00 dt=0B crc=01 rd=00
+
+
+poging 5:
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX hdr srcp=0000 dstp=0000 sig=00 std=00 mLen=0000 sLen=0000
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX assemble total=50 pad=06 pay=4A src=040351
+SMSRX text=b$  Hins, Swas rived the Sem
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 rejected: sap/blocks/pad invalid
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX hdr srcp=0FA7 dstp=0FA7 sig=00 std=00 mLen=0000 sLen=0004
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX hdr srcp=9F24 dstp=0D00 sig=00 std=00 mLen=0024 sLen=002A
+SMSRX RAW-FULL +10: 0F A7 00 62 9F 24 0D 00 0A 00 48 00 69 00 6E 00
+SMSRX scan off=0012 len=001C
+SMSRX text=b$  Hins, Swas rived the Sem
+
+
+poging 6:
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 accepted src=040351 dst=1F211D blk=03 pad=0B resp=00
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX hdr srcp=0000 dstp=0000 sig=00 std=00 mLen=0000 sLen=0000
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 response-like PDU, no active outgoing tracking
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=09 crc=01 rd=01
+SMSAIR sc=02 dt=09 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX hdr srcp=0FA7 dstp=0FA7 sig=00 std=00 mLen=0000 sLen=0004
+
+poging 7:
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 response-like PDU, no active outgoing tracking
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 accepted src=040351 dst=1F211D blk=08 pad=06 resp=00
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX hdr srcp=9344 dstp=0D00 sig=00 std=00 mLen=0024 sLen=002A
+SMSRX RAW-D08FULL +20: 48 00 69 00 07 BA 6E 00 73 00 2C 00 0A 00 53 00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX D08-H +00: 0F FB
+SMSRX RAW-D08FULL +00: 00 F1 45 00 00 76 20 99 00 00 40 11 03 C9 0C 1F
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 response-like PDU, no active outgoing tracking
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 16 1F 21 1D 04 03 51 6C 15
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 15 1F 21 1D 04 03 51 B4 97
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 14 1F 21 1D 04 03 51 0C F6
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 13 1F 21 1D 04 03 51 15 B2
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 12 1F 21 1D 04 03 51 AD D3
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 11 1F 21 1D 04 03 51 75 51
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 10 1F 21 1D 04 03 51 CD 30
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0F 1F 21 1D 04 03 51 70 A2
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0E 1F 21 1D 04 03 51 C8 C3
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0D 1F 21 1D 04 03 51 10 41
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0C 1F 21 1D 04 03 51 A8 20
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0B 1F 21 1D 04 03 51 B1 64
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0A 1F 21 1D 04 03 51 09 05
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 09 1F 21 1D 04 03 51 D1 87
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSAIR sc=02 dt=08 crc=01 rd=01
+SMSRX assemble total=50 pad=06 pay=4A src=040351
+SMSRX RAW-FULL +00: 45 00 00 76 20 99 00 00 40 11 0C 1F 21 1D 0F A7
+SMSRX RAW-D08FULL +50: 20 00 53 00 0F FB 65 00 6D 00 2E 00 00 00 00 00
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 rejected: sap/blocks/pad invalid
+
+poging 10:
+-SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 19 1F 21 1D 04 03 51 E6 FC
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 18 1F 21 1D 04 03 51 5E 9D
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 17 1F 21 1D 04 03 51 D4 74
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 16 1F 21 1D 04 03 51 6C 15
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 15 1F 21 1D 04 03 51 B4 97
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 14 1F 21 1D 04 03 51 0C F6
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 13 1F 21 1D 04 03 51 15 B2
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 12 1F 21 1D 04 03 51 AD D3
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 11 1F 21 1D 04 03 51 75 51
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 10 1F 21 1D 04 03 51 CD 30
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0F 1F 21 1D 04 03 51 70 A2
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0E 1F 21 1D 04 03 51 C8 C3
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0D 1F 21 1D 04 03 51 10 41
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSRX AIR-DATA +00: BD 00 80 0C 1F 21 1D 04 03 51 A8 20
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 45 00 00 76 05 63 00 00 40 11 38 84
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 0C 04 03 51 0C 1F 21 1D 0F A7 0F A7
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 00 62 A3 80 00 58 E0 00 83 64 0D 00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 0A 00 48 00 69 00 20 00 48 00 61 00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 6E 00 73 00 2C 00 0A 00 53 00 4D 00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 53 00 20 00 77 00 61 00 73 00 20 00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 72 00 65 00 63 00 65 00 69 00 76 00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 65 00 64 00 20 00 62 00 79 00 20 00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 74 00 68 00 65 00 20 00 53 00 79 00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX D07 +00: 73 00 74 00 65 00 6D 00 2E 00 00 00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX hdr srcp=0FA7 dstp=0FA7 sig=00 std=00 mLen=0054 sLen=005A
+SMSRX run16 off=0022 len=002A
+
+
+

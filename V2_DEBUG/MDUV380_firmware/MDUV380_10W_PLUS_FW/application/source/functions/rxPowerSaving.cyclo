@@ -1,0 +1,6 @@
+../application/source/functions/rxPowerSaving.c:67:13:resumeBeepAndC6000Tasks	1
+../application/source/functions/rxPowerSaving.c:44:6:rxPowerSavingIsRxOn	1
+../application/source/functions/rxPowerSaving.c:62:5:rxPowerSavingGetLevel	1
+../application/source/functions/rxPowerSaving.c:86:6:rxPowerSavingSetState	6
+../application/source/functions/rxPowerSaving.c:49:6:rxPowerSavingSetLevel	3
+../application/source/functions/rxPowerSaving.c:111:6:rxPowerSavingTick	30

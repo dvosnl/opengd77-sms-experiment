@@ -1,0 +1,212 @@
+
+SMS Motorola OEM bevindingen (2026-04-03)
+
+Context
+- Doel: compatibiliteit met originele MD-UV390 SMS-traffic via BrandMeister hotspot.
+- Probleem: uitgaand werkte, inkomend weerbericht werd niet zichtbaar in firmware.
+
+Bevestigde on-air observaties (sniff)
+- Uitgaand bericht van originele radio: IPv4/UDP payload op poort 0x0FA7.
+- Tekstdeel zichtbaar als UTF-16 little-endian in hoofdletters (bijv. WX AMSTERDAM, NL als 57 00 58 00 ...).
+- Motorola interne header in payload gezien als: 00 28 E0 00 ...
+- Inkomende reply-sequentie bevat o.a. H06 43 4E, H06 01 40, H06 02 4B + D07-blokken.
+
+Aanpassingen in V2_MOTOROLA_FORMAT
+Bestand
+- V2_MOTOROLA_FORMAT/MDUV380_firmware/application/source/functions/sms.c
+
+1) Uitgaand formaat OEM-compat gemaakt
+- Markerbyte in Motorola UDP interne header aangepast van 0xA0 naar 0xE0.
+- Tekstconversie aangepast naar UTF-16LE + uppercase voor ASCII a-z.
+- Effect: uitgaand frame sluit aan op gesnifte OEM-vorm.
+
+2) Ontvangst robuuster gemaakt
+- Decoder accepteert nu zowel marker 0xA0 als 0xE0.
+- Signature-check accepteert ook A0/E0.
+- Response/ACK-relevantie uitgebreid: dataPacketFormat 0x02 telt nu ook als ACK-relevant.
+- ACK-planning losgekoppeld van alleen succesvolle tekstdecode:
+  ook bij compleet geassembleerd packet zonder decodebare tekst wordt ACK ingepland.
+
+3) H06 parser-flow verbeterd (laatste fix)
+- H06 met format 0x01 (response PDU zonder actieve outgoing tracking) wordt nu geconsumeerd
+  zonder de lopende RX-assembly te resetten.
+- Alleen format 0x02 en 0x03 starten nu een nieuwe data-assembly.
+- Voor format 0x03 wordt pad niet meer blind uit H06 gehaald; pad wordt eerst op "onbekend"
+  gezet en bij complete assembly afgeleid uit ipPacketLength + CRC32 relatie.
+- Effect: control/response H06's verstoren de echte inkomende SMS-assembly niet meer,
+  en format-0x03 payloads krijgen een realistische decode-kans.
+
+4) ACK PDU byteprofiel gelijkgetrokken met on-air BrandMeister response
+- Op basis van dump `H06 01 40 ... 00 08` is de door firmware gegenereerde ACK aangepast van
+  `01 00 ... 00 00` naar `01 40 ... 00 08` (CRC wordt daarna opnieuw berekend).
+- Dit is gedaan in `smsQueueAckResponseMessage(...)` om vervolgsegmenten niet te blokkeren
+  op hotspots die strikt op dit response-profiel valideren.
+
+5) Debug-freeze bij seriele SMS logging (V2_DEBUG) aangepakt
+- Waarschijnlijke oorzaak: zware `USB_DEBUG_printf(...)` vanuit RX-pad (IRQ-context), met
+  relatief grote stackdruk en onveilige USB-send calls wanneer USB niet volledig geconfigureerd is.
+- Maatregelen:
+  1. `smsDebugLogLine(...)` gebruikt nu een lichte printroute (`USB_DEBUG_PRINT`) i.p.v.
+     formattering per logregel via `USB_DEBUG_printf`.
+  2. `USB_DEBUG_PRINT(...)` controleert nu eerst of USB bruikbaar is
+     (`USBD_STATE_CONFIGURED`, `pClassData != NULL`, geen reset actief) en dropt anders veilig.
+  3. `USB_DEBUG_printf(...)` gebruikt een begrensde lokale buffer (256 bytes) i.p.v. de volledige
+     COM-buffer-grootte, wat stackdruk aanzienlijk verlaagt.
+- Resultaat: V2_DEBUG build compileert/linkt schoon en de kans op hard-freeze door debug logging
+  is sterk verlaagd.
+
+6) Extra BM control-flow compat (V2_MOTOROLA_FORMAT)
+- Analyse van logpatroon toont dat originele firmware op `H06 43 xx` (format 0x03)
+  direct een `01 40 ... 00 08` response-PDU ACK terugstuurt, nog voordat D07-blokken volgen.
+- In `smsHandleReceivedDataFrame(...)` wordt nu voor format 0x03 direct ACK ingepland
+  (mits bron-ID niet lokaal is), zodat hotspot control-handshakes niet vastlopen.
+- Daarnaast reset de parser de lopende RX-assembly niet meer agressief bij genegeerde/afgekeurde
+  H06-headers, om interleaved controlverkeer minder verstorend te maken.
+
+7) Motorola fallback-decode minder afhankelijk van strikte signature-bytes
+- In de RX-fallback wordt Motorola-textdecode nu niet alleen gestart bij volledige
+  `hasMotorolaSignature`, maar ook wanneer UDP-poort 0x0FA7 is gedetecteerd.
+- Dit vangt varianten af waarbij interne marker/length bytes afwijken, terwijl de
+  payloadtekst op dezelfde offset staat.
+
+8) Extra RX-robuustheid: sliding text-scan + richting-onafhankelijke ID-handling
+- Voor niet-gedecodeerde pakketten op relevante UDP-poorten wordt nu een sliding scan gedaan
+  over de UDP payload (UTF-16 en daarna ASCII), zodat tekst op afwijkende offsets alsnog
+  gevonden kan worden.
+- H06 ID-koppeling is robuuster gemaakt tegen bron/doel-volgordevarianten:
+  filtering op lokaal DMR ID accepteert nu beide ID-posities en de peer-ID wordt afgeleid
+  als "de niet-lokale kant" waar mogelijk.
+
+Waarom deze RX-fix
+- In de dump van het weerbericht zit een kort UDP-pakket (len 0x000D) dat niet als tekst decodeert,
+  maar wel deel lijkt van een flow waarbij extra segmenten pas volgen na ACK.
+- Zonder ACK kan de hotspot verdere inhoud stoppen; met ACK blijft de flow doorlopen.
+
+Quick text controle
+- Quick text versturen gebruikt dezelfde smsSendBuffer -> smsQueueMessage -> smsPackMessage -> smsBuildMotorolaPayload keten.
+- Daardoor gaan quick texts nu ook via exact dezelfde OEM-compat builder (E0 + UTF-16LE + uppercase).
+
+Build validatie
+- Headless build V2_MOTOROLA_FORMAT/MDUV380_10W_PLUS_FW: 0 errors, 0 warnings.
+- Uitvoerbinair:
+  V2_MOTOROLA_FORMAT/MDUV380_firmware/MDUV380_10W_PLUS_FW/OpenMDUV380_10W_PLUS.bin
+
+Praktische testaanwijzing
+1) Flash bovenstaande bin.
+2) Test opnieuw met wx Amsterdam, nl (normaal en quick text).
+3) Controleer of na H06 02 4B-sequentie meer reply-segmenten binnenkomen en inbox wordt gevuld.
+4) Indien nog nodig: nieuwe dump delen voor volgende decode-aanpassing.
+
+Aanpassingen in V2_MOTOROLA_FORMAT_TESTING (open-door forensische modus)
+Bestand
+- V2_MOTOROLA_FORMAT_TESTING/MDUV380_firmware/application/source/functions/sms.c
+
+9) Open-door modus geactiveerd met force decode + RAW fallback
+- In testbranch staat `SMS_RX_TESTING_OPEN_DOOR` aan.
+- Ontvangstfilter is versoepeld en decodepad probeert agressief UTF-16/ASCII extractie.
+- Als decode nog steeds faalt, wordt alsnog een inboxtekst opgeslagen (`RAW_SMS_PAYLOAD`) om
+  transport/assembly vs decode te onderscheiden.
+
+10) Nog agressiever: H06 marker direct naar inbox + gegarandeerde frame-fallback
+- Bij geaccepteerde H06-start (format 0x02/0x03) wordt nu direct een markerbericht in inbox
+  gezet: `RX_OPEN_DOOR_H06` (throttled, om spam te beperken).
+- Bij complete frame-assembly zonder decode wordt nu altijd een inboxtekst geforceerd:
+  `RX_OPEN_DOOR_FRAME`.
+- Doel: zelfs als echte tekstdecoding volledig mislukt, moet er zichtbaar inbox-verkeer ontstaan
+  zodra de RX-route überhaupt geraakt wordt.
+
+11) UI/inbox pad hard-check: bootmarker in inbox
+- Bij opstart in open-door testmodus wordt (eenmalig, als nog niet aanwezig) een inboxbericht
+  toegevoegd: `RX_BOOT_INBOX_OK` met bron-ID 999000.
+- Doel: direct aantonen of inbox-opslag + UI-weergave werken, volledig los van RF/RX.
+- Interpretatie:
+  1. Zie je `RX_BOOT_INBOX_OK`, dan werkt inbox/UI-pad en zit het probleem in RX-pad/filtering.
+  2. Zie je deze bootmarker niet, dan zit het probleem waarschijnlijk in inbox/UI/presentatiepad.
+
+12) Nieuwe diagnostiek na veldresultaat "wel H06, geen FRAME"
+- Gebruikersresultaat: `RX_OPEN_DOOR_H06` komt binnen, maar `RX_OPEN_DOOR_FRAME` niet.
+- Conclusie: H06-startpad wordt geraakt; complete D07-assembly wordt niet gehaald.
+- Extra markers toegevoegd in testing branch om faalpunt te isoleren:
+  - `RX_OPEN_DOOR_H07_FIRST`: eerste D07/H07 data-block ontvangen.
+  - `RX_OPEN_DOOR_NO_H07`: na H06 geen enkel D07-block binnen timeout.
+  - `RX_OPEN_DOOR_PARTIAL_D07`: wel D07-blocks, maar frame niet compleet binnen timeout.
+  - `RX_OPEN_DOOR_PARTIAL_RESTART`: nieuwe H06 start terwijl vorige assembly al partial data had.
+- Timeoutpad plant ook ACK in (indien gevraagd) en reset daarna assembly, zodat flow niet blijft hangen.
+
+13) Veldresultaat: `RX_OPEN_DOOR_NO_H07` + parser verruiming in testbranch
+- Nieuw gebruikersresultaat: marker `RX_OPEN_DOOR_NO_H07`.
+- Betekenis: na geaccepteerde H06 wordt in huidige keten geen klassiek type-0x07 data-block gezien.
+- Testing-aanpassing in RX-keten:
+  - In `HR-C6000.c` worden nu naast `0x06/0x07` ook `0x08/0x09` data-types naar `smsHandleReceivedDataFrame(...)` doorgestuurd.
+  - Voor data-blokken (`0x07..0x09`) is forwarding in testmodus CRC-tolerant gemaakt, zodat ook "beschadigd" of anders geclassificeerd blokverkeer zichtbaar wordt in de SMS-diagnostiek.
+  - In `sms.c` accepteert de assembler nu ook `0x08/0x09` als blocktype en zet marker `RX_OPEN_DOOR_ALT_BLOCKTYPE` wanneer zo'n blok gezien wordt.
+- Doel: onderscheid maken tussen:
+  1) écht geen vervolgblokken vanaf hotspot,
+  2) vervolgblokken met ander DMR-datatype,
+  3) vervolgblokken die eerder door CRC-gating niet bij de SMS-layer kwamen.
+
+14) Veldresultaat: `H07_FIRST` + `ALT_BLOCKTYPE` + `PARTIAL_D07`
+- Nieuw gebruikersresultaat: er komen wel vervolgblokken binnen (`RX_OPEN_DOOR_H07_FIRST`), inclusief
+  alternatieve blocktypes (`RX_OPEN_DOOR_ALT_BLOCKTYPE`), maar assembly eindigt herhaaldelijk als partial.
+- Analyse: timeout werd gemeten vanaf H06-start i.p.v. sinds laatste ontvangen datablock, waardoor
+  langere of bursty block-reeksen te vroeg als "partial" werden afgebroken.
+- Fix in testing branch:
+  - timeout nu gebaseerd op inactiviteit sinds laatste ontvangen block (niet sinds H06),
+  - timeout verruimd naar 4000 ms,
+  - H06-marker throttling losgekoppeld van timeout-timestamp om timing niet te vervuilen.
+- Verwachting na deze stap: minder `RX_OPEN_DOOR_PARTIAL_D07` en grotere kans op volledige assembly
+  (`RX_OPEN_DOOR_FRAME`) of tenminste duidelijker patroon van echte segmentafbreking.
+
+15) Veldresultaat: mix `RX_OPEN_DOOR_PARTIAL_D07` + `RX_OPEN_DOOR_ALT_BLOCKTYPE`
+- Nieuw gebruikersresultaat: nog steeds partials, maar tegelijk bewijs dat alternatieve datablocks
+  binnenkomen tijdens actieve RX-flow.
+- Analyse: H06 format `0x03` controlverkeer kan interleaved binnenkomen naast datablokken. Als zo'n
+  header de assembly herstart, raak je blokketens kwijt en eindig je opnieuw in partial.
+- Fix in testing branch:
+  - H06 format `0x03` met `full`-flag uit wordt als control geconsumeerd (`RX_OPEN_DOOR_F03_CONTROL`) en
+    start geen nieuwe assembly.
+  - Interleaved format `0x03` tijdens actieve assembly reset de assembly niet meer
+    (`RX_OPEN_DOOR_F03_INTERLEAVE`).
+  - ACK-gedrag voor format `0x03` blijft intact.
+- Verwachting na deze stap: minder onderbrekingen van de datablock-reeks en daardoor hogere kans
+  op complete frame-assembly i.p.v. terugkerende partial timeouts.
+
+16) Veldresultaat: `RX_OPEN_DOOR_F03_INTERLEAVE` + rare tekens + minder `PARTIAL_D07`
+- Nieuw gebruikersresultaat: interleave-marker komt door (verwacht), partials lijken minder vaak,
+  maar er verschijnen soms nog "rare" inbox-tekens.
+- Analyse: UTF-16 mapping accepteerde bytes >= `0xA0` als direct toonbaar karakter; dat kan binaire
+  payloadruis als pseudo-tekst laten passeren.
+- Fix in testing branch:
+  - UTF-16 decode accepteert nu alleen printable ASCII als direct karakter,
+  - tab/NBSP worden naar spatie gemapt,
+  - overige high-byte waarden vallen terug op de bestaande reject/fallback-logica.
+- Verwachting na deze stap: minder/geen rommeltekens; bij twijfel liever `RX_OPEN_DOOR_FRAME`
+  fallback dan schijnbare maar corrupte tekst.
+
+17) Offset niet meer hard op 32/38 in strikte RX-decode
+- Vraag: payload-offset hoort niet vast te staan maar uit pakketstructuur te volgen.
+- Fix in testing branch:
+  - `smsDecodeMotorolaPayload(...)` en `smsDecodeStandardPayload(...)` leiden nu de UDP-start af
+    uit IPv4 IHL (`(payload[0] & 0x0F) * 4`) i.p.v. vaste 20-byte IP-header.
+  - Tekst-offset volgt daarna dynamisch uit dat UDP-startpunt
+    (Motorola: `udpOffset + 18`, Standard: `udpOffset + 12`).
+  - UDP-checksum verificatie gebruikt nu dezelfde dynamische UDP-offset, zodat checks ook kloppen
+    bij niet-standaard IHL.
+- UTF-opmerking:
+  - RX decodepad houdt rekening met zowel UTF-16 BE als LE ASCII-patronen (`00 xx` en `xx 00`).
+
+Build validatie (testbranch)
+- Headless build V2_MOTOROLA_FORMAT_TESTING/MDUV380_10W_PLUS_FW: 0 errors, 0 warnings.
+- Uitvoerbinair:
+  V2_MOTOROLA_FORMAT_TESTING/MDUV380_firmware/MDUV380_10W_PLUS_FW/OpenMDUV380_10W_PLUS.bin
+
+  Aftiklijst om in praktijk af te gaan (rx)
+
+Komt DATA sync-class met type 06/07/08/09 binnen?
+Is type 06 CRC geldig in de mislukte cases?
+Is header format 02 of 03 en SAP 0x40?
+Is incoming PC filter uit of matcht ID met jouw radio-ID?
+Zie je vooral control (03 full=0 / CK/CF/CL) maar geen complete datareeks?
+Wordt de sessie binnen 4s compleet, of time-out/reset?
+Kloppen port/protocol (Motorola 4007 of Standard 5016)?
+Is er na complete blocks echt decode true en daarna opslag?

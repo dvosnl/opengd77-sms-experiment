@@ -5,4 +5,4 @@
 ../application/source/applicationMain.c:310:13:settingsUpdateAudioAlert	2
 ../application/source/applicationMain.c:276:13:validateUpdateCallback	2
 ../application/source/applicationMain.c:324:13:updateVolumeGain	4
-../application/source/applicationMain.c:340:6:applicationMainTask	229
+../application/source/applicationMain.c:340:6:applicationMainTask	231

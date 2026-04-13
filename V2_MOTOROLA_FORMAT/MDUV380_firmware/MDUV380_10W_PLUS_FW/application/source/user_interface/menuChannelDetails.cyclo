@@ -1,0 +1,15 @@
+../application/source/user_interface/menuChannelDetails.c:839:13:updateFrequency	3
+../application/source/user_interface/menuChannelDetails.c:199:13:coordinateVoicePromptSpellCardinal	2
+../application/source/user_interface/menuChannelDetails.c:1791:13:saveChanges	17
+../application/source/user_interface/menuChannelDetails.c:260:13:readAprsConfig	3
+../application/source/user_interface/menuChannelDetails.c:182:13:updateCursor	3
+../application/source/user_interface/menuChannelDetails.c:222:13:coordinateSetLatOrLonCoord	5
+../application/source/user_interface/menuChannelDetails.c:246:13:coordinateUpdate	3
+../application/source/user_interface/menuChannelDetails.c:1680:13:cssIncrementFromEvent	10
+../application/source/user_interface/menuChannelDetails.c:1870:13:applyShiftOffset	6
+../application/source/user_interface/menuChannelDetails.c:1735:13:cssDecrementFromEvent	8
+../application/source/user_interface/menuChannelDetails.c:210:13:coordinateToString.constprop	3
+../application/source/user_interface/menuChannelDetails.c:281:13:updateScreen	116
+../application/source/user_interface/menuChannelDetails.c:1908:13:exitCallback	1
+../application/source/user_interface/menuChannelDetails.c:854:13:handleEvent	241
+../application/source/user_interface/menuChannelDetails.c:119:14:menuChannelDetails	8

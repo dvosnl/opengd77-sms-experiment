@@ -9,6 +9,7 @@ C_SRCS += \
 ../application/source/functions/calibration.c \
 ../application/source/functions/codeplug.c \
 ../application/source/functions/hotspot.c \
+../application/source/functions/mdc1200.c \
 ../application/source/functions/rxPowerSaving.c \
 ../application/source/functions/satellite.c \
 ../application/source/functions/settings.c \
@@ -24,6 +25,7 @@ OBJS += \
 ./application/source/functions/calibration.o \
 ./application/source/functions/codeplug.o \
 ./application/source/functions/hotspot.o \
+./application/source/functions/mdc1200.o \
 ./application/source/functions/rxPowerSaving.o \
 ./application/source/functions/satellite.o \
 ./application/source/functions/settings.o \
@@ -39,6 +41,7 @@ C_DEPS += \
 ./application/source/functions/calibration.d \
 ./application/source/functions/codeplug.d \
 ./application/source/functions/hotspot.d \
+./application/source/functions/mdc1200.d \
 ./application/source/functions/rxPowerSaving.d \
 ./application/source/functions/satellite.d \
 ./application/source/functions/settings.d \
@@ -59,7 +62,7 @@ application/source/functions/hotspot.o: ../application/source/functions/hotspot.
 clean: clean-application-2f-source-2f-functions
 
 clean-application-2f-source-2f-functions:
-	-$(RM) ./application/source/functions/aprs.cyclo ./application/source/functions/aprs.d ./application/source/functions/aprs.o ./application/source/functions/aprs.su ./application/source/functions/calibration.cyclo ./application/source/functions/calibration.d ./application/source/functions/calibration.o ./application/source/functions/calibration.su ./application/source/functions/codeplug.cyclo ./application/source/functions/codeplug.d ./application/source/functions/codeplug.o ./application/source/functions/codeplug.su ./application/source/functions/hotspot.cyclo ./application/source/functions/hotspot.d ./application/source/functions/hotspot.o ./application/source/functions/hotspot.su ./application/source/functions/rxPowerSaving.cyclo ./application/source/functions/rxPowerSaving.d ./application/source/functions/rxPowerSaving.o ./application/source/functions/rxPowerSaving.su ./application/source/functions/satellite.cyclo ./application/source/functions/satellite.d ./application/source/functions/satellite.o ./application/source/functions/satellite.su ./application/source/functions/settings.cyclo ./application/source/functions/settings.d ./application/source/functions/settings.o ./application/source/functions/settings.su ./application/source/functions/sms.cyclo ./application/source/functions/sms.d ./application/source/functions/sms.o ./application/source/functions/sms.su ./application/source/functions/sound.cyclo ./application/source/functions/sound.d ./application/source/functions/sound.o ./application/source/functions/sound.su ./application/source/functions/ticks.cyclo ./application/source/functions/ticks.d ./application/source/functions/ticks.o ./application/source/functions/ticks.su ./application/source/functions/trx.cyclo ./application/source/functions/trx.d ./application/source/functions/trx.o ./application/source/functions/trx.su ./application/source/functions/voicePrompts.cyclo ./application/source/functions/voicePrompts.d ./application/source/functions/voicePrompts.o ./application/source/functions/voicePrompts.su ./application/source/functions/vox.cyclo ./application/source/functions/vox.d ./application/source/functions/vox.o ./application/source/functions/vox.su
+	-$(RM) ./application/source/functions/aprs.cyclo ./application/source/functions/aprs.d ./application/source/functions/aprs.o ./application/source/functions/aprs.su ./application/source/functions/calibration.cyclo ./application/source/functions/calibration.d ./application/source/functions/calibration.o ./application/source/functions/calibration.su ./application/source/functions/codeplug.cyclo ./application/source/functions/codeplug.d ./application/source/functions/codeplug.o ./application/source/functions/codeplug.su ./application/source/functions/hotspot.cyclo ./application/source/functions/hotspot.d ./application/source/functions/hotspot.o ./application/source/functions/hotspot.su ./application/source/functions/mdc1200.cyclo ./application/source/functions/mdc1200.d ./application/source/functions/mdc1200.o ./application/source/functions/mdc1200.su ./application/source/functions/rxPowerSaving.cyclo ./application/source/functions/rxPowerSaving.d ./application/source/functions/rxPowerSaving.o ./application/source/functions/rxPowerSaving.su ./application/source/functions/satellite.cyclo ./application/source/functions/satellite.d ./application/source/functions/satellite.o ./application/source/functions/satellite.su ./application/source/functions/settings.cyclo ./application/source/functions/settings.d ./application/source/functions/settings.o ./application/source/functions/settings.su ./application/source/functions/sms.cyclo ./application/source/functions/sms.d ./application/source/functions/sms.o ./application/source/functions/sms.su ./application/source/functions/sound.cyclo ./application/source/functions/sound.d ./application/source/functions/sound.o ./application/source/functions/sound.su ./application/source/functions/ticks.cyclo ./application/source/functions/ticks.d ./application/source/functions/ticks.o ./application/source/functions/ticks.su ./application/source/functions/trx.cyclo ./application/source/functions/trx.d ./application/source/functions/trx.o ./application/source/functions/trx.su ./application/source/functions/voicePrompts.cyclo ./application/source/functions/voicePrompts.d ./application/source/functions/voicePrompts.o ./application/source/functions/voicePrompts.su ./application/source/functions/vox.cyclo ./application/source/functions/vox.d ./application/source/functions/vox.o ./application/source/functions/vox.su
 
 .PHONY: clean-application-2f-source-2f-functions
 

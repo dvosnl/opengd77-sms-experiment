@@ -80,6 +80,14 @@ cd C:\Users\berts\Documents\uv390-self_dev\V2
     -cleanBuild "MDUV380_firmware/MDUV380_10W_PLUS_FW"
 ```
 
+# Build voor de motorola-tak:
+
+& "C:\ST\STM32CubeIDE_2.1.0\STM32CubeIDE\stm32cubeidec.exe" `
+    -nosplash `
+    -application org.eclipse.cdt.managedbuilder.core.headlessbuild `
+    -data "C:\Users\berts\Documents\uv390-self_dev\V2_MOTOROLA_FORMAT" `
+    -cleanBuild "MDUV380_firmware/MDUV380_10W_PLUS_FW"
+
 Verwachte einduitvoer:
 ```
 Build Finished. 0 errors, 0 warnings.

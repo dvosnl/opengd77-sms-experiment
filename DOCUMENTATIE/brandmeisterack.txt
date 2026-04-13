@@ -1,0 +1,192 @@
+DMR SMS ACK MECHANISME - TECHNISCHE ANALYSE
+
+---
+
+## OVERZICHT
+
+Deze analyse beschrijft het ACK-mechanisme zoals waargenomen in DMR SMS verkeer
+(met name Motorola TMS via BrandMeister).
+
+Belangrijk inzicht:
+ACK is NIET één enkel mechanisme, maar bestaat uit meerdere lagen.
+
+---
+
+1. ACK LAGEN
+
+---
+
+Er zijn minimaal 3 ACK-niveaus:
+
+1. ETSI Transport ACK
+2. Motorola SMS ACK
+3. Netwerk/Service gedrag (BrandMeister retries)
+
+---
+
+2. ETSI TRANSPORT ACK
+
+---
+
+Doel:
+Bevestigen dat DMR datablocks correct zijn ontvangen.
+
+Herkenning in dump:
+
+T=06 01 40 ...
+
+Eigenschappen:
+
+* Werkt op block-niveau
+* Bevestigt ontvangst van fragmenten (T=03)
+* Nodig voor correcte reassembly
+
+Belangrijk:
+Dit ACK mechanisme zegt NIETS over SMS delivery.
+
+---
+
+3. MOTOROLA SMS ACK
+
+---
+
+Doel:
+Bevestigen dat een SMS bericht logisch is ontvangen/verwerkt.
+
+Herkenning:
+
+T=06 43 4B  → "CK"
+T=06 43 46  → "CF"
+T=06 43 4C  → "CL"
+
+ASCII interpretatie:
+
+43 4B → 'C' 'K'
+43 46 → 'C' 'F'
+43 4C → 'C' 'L'
+
+Betekenis (afgeleid uit gedrag):
+
+CK = OK / Accepted
+CF = Fail / Reject
+CL = Continue / More data / Session control
+
+Belangrijk:
+Dit is Motorola-specifiek en NIET onderdeel van pure ETSI.
+
+---
+
+4. ACK FLOW (GEBASEERD OP DUMPS)
+
+---
+
+Typische volgorde:
+
+1. TX SMS
+2. RX T=06 "CK" → bericht geaccepteerd
+3. RX T=03 → data blocks (response)
+4. RX T=06 "CL" → vervolg/flow control
+5. RX T=08/T=07 → payload (IP/UDP)
+6. RX T=06 01 40 → ETSI block ACK
+
+Observaties:
+
+* ACK en data lopen door elkaar
+* ACK kan meerdere keren voorkomen
+* Retransmissions bij ontbrekende ACK
+
+---
+
+5. RETRANSMISSIONS
+
+---
+
+Waargenomen gedrag:
+
+* Zelfde T=03 blocks worden herhaald
+* Dit gebeurt als ACK ontbreekt of te laat komt
+
+Conclusie:
+
+* Implementatie moet duplicate blocks kunnen verwerken
+* Blocks mogen overschreven worden
+
+---
+
+6. SAMENHANG MET BRANDMEISTER
+
+---
+
+BrandMeister verwacht:
+
+1. Correcte ETSI ACK
+2. Correct Motorola SMS ACK gedrag
+
+Als dit ontbreekt:
+
+* Bericht wordt opnieuw verstuurd
+* Of wordt niet als afgeleverd beschouwd
+
+---
+
+7. BELANGRIJKE IMPLEMENTATIEDETAILS
+
+---
+
+1. ACK scheiden per laag
+
+   * Transport (ETSI)
+   * SMS (Motorola)
+
+2. ACK niet verwarren met payload
+
+3. ACK kan:
+
+   * los frame zijn
+   * tussen data zitten
+
+4. Parser moet:
+
+   * T=06 herkennen en apart verwerken
+   * NIET als SMS behandelen
+
+---
+
+8. TYPE OVERZICHT
+
+---
+
+T=03 → Data fragment (12 bytes)
+T=06 → ACK / control
+T=07 → Complete IP packet (geen fragmentatie)
+T=08 → Start van gefragmenteerde payload
+
+---
+
+9. BELANGRIJKSTE CONCLUSIES
+
+---
+
+* ACK is multi-layer
+* Motorola voegt eigen ACK toe bovenop ETSI
+* BrandMeister gebruikt beide lagen actief
+* Correct ACK gedrag is cruciaal voor:
+
+  * delivery
+  * stoppen van retransmissions
+
+---
+
+10. PRAKTISCHE IMPLEMENTATIE REGELS
+
+---
+
+1. Behandel T=06 altijd apart
+2. Decodeer ASCII indien mogelijk
+3. Gebruik ACK niet als trigger voor decode
+4. Vertrouw alleen op complete block-set voor SMS decode
+5. Ondersteun retransmissions
+
+---
+
+## EINDE

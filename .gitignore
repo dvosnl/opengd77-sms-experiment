@@ -7,3 +7,4 @@
 .headless_ws/
 .headless-workspace-rebuild/
 *.log
+TEST_MDC1200_BUILD/
