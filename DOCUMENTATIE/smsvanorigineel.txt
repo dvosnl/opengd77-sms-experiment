@@ -1,0 +1,24 @@
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=03 crc=01 rd=01
+SMSAIR sc=02 dt=06 crc=01 rd=01
+SMSRX H06 accepted src=1F211D dst=1F211D blk=05 pad=0A resp=00
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSAIR sc=02 dt=07 crc=01 rd=01
+SMSRX hdr srcp=0FA7 dstp=0FA7 sig=01 std=00 mLen=000C sLen=0012

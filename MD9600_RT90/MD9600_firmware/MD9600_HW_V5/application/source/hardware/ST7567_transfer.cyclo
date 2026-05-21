@@ -1,0 +1,6 @@
+../application/source/hardware/ST7567_transfer.c:73:13:ST7567transferCommand	2
+../application/source/hardware/ST7567_transfer.c:39:6:displayRenderRows	3
+../application/source/hardware/ST7567_transfer.c:88:6:displaySetInverseVideo	2
+../application/source/hardware/ST7567_transfer.c:106:6:displayBegin	2
+../application/source/hardware/ST7567_transfer.c:136:6:displaySetContrast	1
+../application/source/hardware/ST7567_transfer.c:147:6:displaySetDisplayPowerMode	4

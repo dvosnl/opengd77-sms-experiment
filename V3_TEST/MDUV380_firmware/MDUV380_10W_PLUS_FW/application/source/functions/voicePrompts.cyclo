@@ -1,0 +1,12 @@
+../application/source/functions/voicePrompts.c:30:6:voicePromptsInit	1
+../application/source/functions/voicePrompts.c:34:6:voicePromptsAppendPrompt	1
+../application/source/functions/voicePrompts.c:39:6:voicePromptsAppendString	1
+../application/source/functions/voicePrompts.c:44:6:voicePromptsAppendInteger	1
+../application/source/functions/voicePrompts.c:49:6:voicePromptsAppendLanguageString	1
+../application/source/functions/voicePrompts.c:54:6:voicePromptsPlay	1
+../application/source/functions/voicePrompts.c:58:6:voicePromptsIsPlaying	1
+../application/source/functions/voicePrompts.c:63:6:voicePromptsHasDataToPlay	1
+../application/source/functions/voicePrompts.c:68:6:voicePromptsDoesItContainPrompt	1
+../application/source/functions/voicePrompts.c:74:6:voicePromptsTerminate	1
+../application/source/functions/voicePrompts.c:78:6:voicePromptsTerminateNoTail	1
+../application/source/functions/voicePrompts.c:82:6:voicePromptsInitWithOverride	1

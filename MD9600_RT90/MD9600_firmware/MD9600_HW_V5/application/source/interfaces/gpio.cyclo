@@ -1,0 +1,10 @@
+../application/source/interfaces/gpio.c:34:6:gpioInitButtons	1
+../application/source/interfaces/gpio.c:38:6:gpioInitCommon	1
+../application/source/interfaces/gpio.c:42:6:gpioInitDisplay	1
+../application/source/interfaces/gpio.c:47:6:gpioSetDisplayBacklightIntensityPercentage	4
+../application/source/interfaces/gpio.c:84:9:gpioGetDisplayBacklightIntensityPercentage	1
+../application/source/interfaces/gpio.c:89:6:gpioInitFlash	1
+../application/source/interfaces/gpio.c:94:6:gpioInitKeyboard	1
+../application/source/interfaces/gpio.c:99:6:gpioInitLEDs	1
+../application/source/interfaces/gpio.c:104:6:gpioInitRotarySwitch	1
+../application/source/interfaces/gpio.c:109:6:gpioInitC6000Interface	1

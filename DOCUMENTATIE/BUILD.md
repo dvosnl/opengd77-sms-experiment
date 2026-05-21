@@ -76,17 +76,19 @@ cd C:\Users\berts\Documents\uv390-self_dev\V2
 & "C:\ST\STM32CubeIDE_2.1.0\STM32CubeIDE\stm32cubeidec.exe" `
     -nosplash `
     -application org.eclipse.cdt.managedbuilder.core.headlessbuild `
-    -data "C:\Users\berts\Documents\uv390-self_dev\V2" `
+    -data "C:\Users\berts\Documents\uv390-self_dev\V3_TEST" `
     -cleanBuild "MDUV380_firmware/MDUV380_10W_PLUS_FW"
 ```
 
-# Build voor de motorola-tak:
+# Build voor de MD9600_RT90-tak (specifiek V5 hardware):
 
+cd C:\Users\berts\Documents\uv390-self_dev\MD9600_RT90
+.\prepare.bat
 & "C:\ST\STM32CubeIDE_2.1.0\STM32CubeIDE\stm32cubeidec.exe" `
     -nosplash `
     -application org.eclipse.cdt.managedbuilder.core.headlessbuild `
-    -data "C:\Users\berts\Documents\uv390-self_dev\V2_MOTOROLA_FORMAT" `
-    -cleanBuild "MDUV380_firmware/MDUV380_10W_PLUS_FW"
+    -data "C:\Users\berts\Documents\uv390-self_dev\MD9600_RT90" `
+    -cleanBuild "MD9600_firmware/MD9600_HW_V5"
 
 Verwachte einduitvoer:
 ```

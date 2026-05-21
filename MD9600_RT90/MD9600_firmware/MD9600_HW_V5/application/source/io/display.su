@@ -1,0 +1,3 @@
+../application/source/io/display.c:41:6:displayInit	16	static
+../application/source/io/display.c:67:6:displayEnableBacklight	4	static
+../application/source/io/display.c:99:6:displayIsBacklightLit	8	static

@@ -1,0 +1,13 @@
+../application/source/interfaces/batteryAndPowerManagement.c:74:6:showLowBattery	1
+../application/source/interfaces/batteryAndPowerManagement.c:79:6:batteryIsLowWarning	1
+../application/source/interfaces/batteryAndPowerManagement.c:84:6:batteryIsLowVoltageWarning	1
+../application/source/interfaces/batteryAndPowerManagement.c:89:6:batteryIsLowCriticalVoltage	1
+../application/source/interfaces/batteryAndPowerManagement.c:94:6:batteryLastReadingIsCritical	1
+../application/source/interfaces/batteryAndPowerManagement.c:203:6:batteryUpdate	4
+../application/source/interfaces/batteryAndPowerManagement.c:226:6:powerOff	1
+../application/source/interfaces/batteryAndPowerManagement.c:237:6:powerDown	4
+../application/source/interfaces/batteryAndPowerManagement.c:538:6:wakeFromSleep	5
+../application/source/interfaces/batteryAndPowerManagement.c:287:6:die	8
+../application/source/interfaces/batteryAndPowerManagement.c:597:6:powerOffFinalStage	5
+../application/source/interfaces/batteryAndPowerManagement.c:99:6:batteryChecking	19
+../application/source/interfaces/batteryAndPowerManagement.c:665:6:apoTick	13

@@ -1,0 +1,10 @@
+../application/source/interfaces/gpio.c:34:6:gpioInitButtons	0	static
+../application/source/interfaces/gpio.c:38:6:gpioInitCommon	0	static
+../application/source/interfaces/gpio.c:42:6:gpioInitDisplay	0	static
+../application/source/interfaces/gpio.c:47:6:gpioSetDisplayBacklightIntensityPercentage	40	static
+../application/source/interfaces/gpio.c:84:9:gpioGetDisplayBacklightIntensityPercentage	0	static
+../application/source/interfaces/gpio.c:89:6:gpioInitFlash	0	static
+../application/source/interfaces/gpio.c:94:6:gpioInitKeyboard	0	static
+../application/source/interfaces/gpio.c:99:6:gpioInitLEDs	0	static
+../application/source/interfaces/gpio.c:104:6:gpioInitRotarySwitch	0	static
+../application/source/interfaces/gpio.c:109:6:gpioInitC6000Interface	0	static

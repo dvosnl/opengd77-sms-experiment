@@ -1,0 +1,3 @@
+../application/source/user_interface/menuSoundOptions.c:122:13:updateScreen	128	static
+../application/source/user_interface/menuSoundOptions.c:700:13:exitCallback	8	static
+../application/source/user_interface/menuSoundOptions.c:83:14:menuSoundOptions	24	static

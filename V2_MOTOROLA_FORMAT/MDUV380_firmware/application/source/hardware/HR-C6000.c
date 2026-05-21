@@ -86,6 +86,10 @@
 #define CC_PROBE_MAX_COUNT                 (4 * 2)
 #define CC_PROBE_LOCKED                    (CC_PROBE_MAX_COUNT + 1)
 
+// OEM/hotspot control ACK bursts are typically longer than normal SMS send preambles.
+// Use a longer preamble only for header-only response PDUs to improve interoperability.
+#define SMS_ACK_PREAMBLE_CSBKS              16U
+
 
 Task_t hrc6000Task;
 
@@ -2904,6 +2908,7 @@ bool HRC6000StartQueuedSMS(void)
 {
 	const smsPreparedMessage_t *message = smsGetQueuedMessage();
 	uint8_t frameIndex = 0U;
+	uint8_t preambleCount = SMS_PREAMBLE_CSBKS;
 	bool slotStateReady;
 
 	if ((hrc.isWaking == WAKING_MODE_FAILED) && trxTransmissionEnabled && !trxIsTransmitting)
@@ -2920,7 +2925,14 @@ bool HRC6000StartQueuedSMS(void)
 		return false;
 	}
 
-	hrc.smsPreambleCount = SMS_PREAMBLE_CSBKS;
+	if ((message->blockCount == 0U) &&
+		((message->dataHeader[0] & 0x0FU) == 0x01U) &&
+		((message->dataHeader[8] & 0x7FU) == 0U))
+	{
+		preambleCount = SMS_ACK_PREAMBLE_CSBKS;
+	}
+
+	hrc.smsPreambleCount = preambleCount;
 
 	for (uint8_t preamble = 0U; preamble < hrc.smsPreambleCount; preamble++)
 	{

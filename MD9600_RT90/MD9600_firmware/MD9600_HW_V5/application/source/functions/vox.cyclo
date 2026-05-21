@@ -1,0 +1,6 @@
+../application/source/functions/vox.c:79:6:voxIsEnabled	7
+../application/source/functions/vox.c:90:6:voxIsTriggered	1
+../application/source/functions/vox.c:95:6:voxReset	1
+../application/source/functions/vox.c:60:6:voxInit	1
+../application/source/functions/vox.c:69:6:voxSetParameters	1
+../application/source/functions/vox.c:107:6:voxTick	19

@@ -1,0 +1,7 @@
+../application/source/user_interface/menuDisplayOptions.c:984:13:checkMinBacklightValue	4
+../application/source/user_interface/menuDisplayOptions.c:944:13:updateBacklightMode	5
+../application/source/user_interface/menuDisplayOptions.c:1005:13:applySettings	9
+../application/source/user_interface/menuDisplayOptions.c:968:13:setDisplayInvert	2
+../application/source/user_interface/menuDisplayOptions.c:1048:13:exitCallback	10
+../application/source/user_interface/menuDisplayOptions.c:148:13:updateScreen	47
+../application/source/user_interface/menuDisplayOptions.c:109:14:menuDisplayOptions	122

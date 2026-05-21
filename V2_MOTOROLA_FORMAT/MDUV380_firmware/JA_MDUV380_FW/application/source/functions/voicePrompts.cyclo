@@ -1,0 +1,16 @@
+../application/source/functions/voicePrompts.c:141:13:voicePromptsTerminateOptionalTail	2
+../application/source/functions/voicePrompts.c:126:6:voicePromptsCheckMagicAndVersion	2
+../application/source/functions/voicePrompts.c:91:6:voicePromptsCacheInit	7
+../application/source/functions/voicePrompts.c:159:6:voicePromptsTick	13
+../application/source/functions/voicePrompts.c:217:6:voicePromptsTerminate	1
+../application/source/functions/voicePrompts.c:222:6:voicePromptsTerminateNoTail	1
+../application/source/functions/voicePrompts.c:227:6:voicePromptsInit	4
+../application/source/functions/voicePrompts.c:243:6:voicePromptsInitWithOverride	1
+../application/source/functions/voicePrompts.c:249:6:voicePromptsAppendPrompt	5
+../application/source/functions/voicePrompts.c:268:6:voicePromptsAppendString	18
+../application/source/functions/voicePrompts.c:332:6:voicePromptsAppendInteger	1
+../application/source/functions/voicePrompts.c:339:6:voicePromptsAppendLanguageString	4
+../application/source/functions/voicePrompts.c:355:6:voicePromptsPlay	12
+../application/source/functions/voicePrompts.c:403:13:voicePromptsIsPlaying	2
+../application/source/functions/voicePrompts.c:408:6:voicePromptsHasDataToPlay	1
+../application/source/functions/voicePrompts.c:413:6:voicePromptsDoesItContainPrompt	2

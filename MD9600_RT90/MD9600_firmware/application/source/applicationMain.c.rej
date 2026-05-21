@@ -1,0 +1,17 @@
+--- source/applicationMain.c
++++ source/applicationMain.c
+@@ -51,12 +51,14 @@
+ #include "interfaces/settingsStorage.h"
+ #include "interfaces/adc.h"
+ #include "functions/rxPowerSaving.h"
++#include "functions/sms.h"
+ 
+ #if defined(USING_EXTERNAL_DEBUGGER)
+ #include "SeggerRTT/RTT/SEGGER_RTT.h"
+ #endif
+ 
+ #define VOLUME_UPDATE_TIMEOUT      5U
++#define NOTIFICATION_ID_SMS_TX     ((uiNotificationID_t)(NOTIFICATION_ID_USER + 1))
+ 
+ // Couldn't declare into aprs.h, due to header cross-dependence.
+ void aprsBeaconingTick(uiEvent_t *ev);

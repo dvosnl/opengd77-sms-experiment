@@ -1,0 +1,8 @@
+../application/source/io/keyboard.c:151:6:buttonsFrontPanelInit	1
+../application/source/io/keyboard.c:159:10:buttonsFrontPanelRead	7
+../application/source/io/keyboard.c:199:6:keyboardInit	1
+../application/source/io/keyboard.c:213:6:keyboardReset	1
+../application/source/io/keyboard.c:222:6:keyboardKeyIsDTMFKey	3
+../application/source/io/keyboard.c:287:9:micButtonsRead	6
+../application/source/io/keyboard.c:303:6:rotaryEncoderISR	3
+../application/source/io/keyboard.c:319:6:keyboardCheckKeyEvent	34

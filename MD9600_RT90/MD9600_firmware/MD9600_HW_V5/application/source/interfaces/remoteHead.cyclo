@@ -1,0 +1,14 @@
+../application/source/interfaces/remoteHead.c:153:13:remoteAddCommand	1
+../application/source/interfaces/remoteHead.c:92:13:remoteStartTx	1
+../application/source/interfaces/remoteHead.c:55:13:processRemoteInput	7
+../application/source/interfaces/remoteHead.c:98:6:remoteHead_UART_RxHalfCpltCallback	1
+../application/source/interfaces/remoteHead.c:103:6:remoteHead_UART_RxCpltCallback	1
+../application/source/interfaces/remoteHead.c:109:6:HAL_UART_TxCpltCallback	1
+../application/source/interfaces/remoteHead.c:114:6:remoteHeadInit	2
+../application/source/interfaces/remoteHead.c:129:6:remoteHeadRestartIP	2
+../application/source/interfaces/remoteHead.c:144:6:remoteHeadTransferCommand	1
+../application/source/interfaces/remoteHead.c:167:6:remoteHeadRenderRows	3
+../application/source/interfaces/remoteHead.c:195:6:remoteHeadGpsPower	2
+../application/source/interfaces/remoteHead.c:210:6:remoteHeadGpsDataInputStartStop	2
+../application/source/interfaces/remoteHead.c:225:6:remoteHeadDim	5
+../application/source/interfaces/remoteHead.c:262:6:remoteHeadPowerDown	2

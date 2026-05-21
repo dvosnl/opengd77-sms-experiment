@@ -1,0 +1,14 @@
+../application/source/interfaces/remoteHead.c:153:13:remoteAddCommand	8	static
+../application/source/interfaces/remoteHead.c:92:13:remoteStartTx	0	static
+../application/source/interfaces/remoteHead.c:55:13:processRemoteInput	8	static
+../application/source/interfaces/remoteHead.c:98:6:remoteHead_UART_RxHalfCpltCallback	0	static
+../application/source/interfaces/remoteHead.c:103:6:remoteHead_UART_RxCpltCallback	0	static
+../application/source/interfaces/remoteHead.c:109:6:HAL_UART_TxCpltCallback	0	static
+../application/source/interfaces/remoteHead.c:114:6:remoteHeadInit	8	static
+../application/source/interfaces/remoteHead.c:129:6:remoteHeadRestartIP	8	static
+../application/source/interfaces/remoteHead.c:144:6:remoteHeadTransferCommand	16	static
+../application/source/interfaces/remoteHead.c:167:6:remoteHeadRenderRows	32	static
+../application/source/interfaces/remoteHead.c:195:6:remoteHeadGpsPower	16	static
+../application/source/interfaces/remoteHead.c:210:6:remoteHeadGpsDataInputStartStop	16	static
+../application/source/interfaces/remoteHead.c:225:6:remoteHeadDim	16	static
+../application/source/interfaces/remoteHead.c:262:6:remoteHeadPowerDown	8	static

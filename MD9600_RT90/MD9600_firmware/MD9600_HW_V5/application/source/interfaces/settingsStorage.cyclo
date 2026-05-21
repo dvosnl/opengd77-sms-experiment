@@ -1,0 +1,2 @@
+../application/source/interfaces/settingsStorage.c:37:6:settingsStorageRead	2
+../application/source/interfaces/settingsStorage.c:49:6:settingsStorageWrite	2

@@ -1,0 +1,5 @@
+../application/source/user_interface/menuRadioInfos.c:1432:13:updateVoicePrompts	72	static
+../application/source/user_interface/menuRadioInfos.c:231:13:updateScreen.isra	96	static
+../application/source/user_interface/menuRadioInfos.c:186:14:menuRadioInfos	96	static
+../application/source/user_interface/menuRadioInfos.c:1402:6:menuRadioInfosInit	8	static
+../application/source/user_interface/menuRadioInfos.c:1415:6:menuRadioInfosPushBackVoltage	16	static

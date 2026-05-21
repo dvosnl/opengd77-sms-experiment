@@ -1,0 +1,2 @@
+../application/source/interfaces/clockManager.c:37:6:clockManagerSetRunMode	0	static
+../application/source/interfaces/clockManager.c:41:6:clockManagerInit	0	static

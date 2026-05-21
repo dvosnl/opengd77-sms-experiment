@@ -1,0 +1,13 @@
+../application/source/interfaces/spi.c:38:6:SPIInit	1
+../application/source/interfaces/spi.c:43:6:SPI0Setup	1
+../application/source/interfaces/spi.c:48:6:SPI1Setup	1
+../application/source/interfaces/spi.c:205:6:SPI0Write	3
+../application/source/interfaces/spi.c:53:5:SPI0WritePageRegByte	2
+../application/source/interfaces/spi.c:76:5:SPI0WritePageRegByteExtended	2
+../application/source/interfaces/spi.c:141:5:SPI0WritePageRegByteArray	3
+../application/source/interfaces/spi.c:227:6:SPI0Read	3
+../application/source/interfaces/spi.c:101:5:SPI0ReadPageRegByte	2
+../application/source/interfaces/spi.c:125:5:SPI0ClearPageRegByteWithMask	2
+../application/source/interfaces/spi.c:171:5:SPI0ReadPageRegByteArray	4
+../application/source/interfaces/spi.c:256:5:SPI1WritePageRegByteArray	3
+../application/source/interfaces/spi.c:287:5:SPI1ReadPageRegByteArray	5

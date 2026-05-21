@@ -925,6 +925,8 @@ static void smsInboxRender(void)
 {
 	char line[SCREEN_LINE_BUFFER_SIZE];
 	uint8_t count = smsGetInboxCount();
+	int firstIndex = 0;
+	int visibleEntries = (MENU_END_ITERATION_VALUE - MENU_START_ITERATION_VALUE + 1);
 
 	displayClearBuf();
 	menuDisplayTitle("SMS Inbox");
@@ -940,15 +942,21 @@ static void smsInboxRender(void)
 		return;
 	}
 
+	if (menuDataGlobal.currentItemIndex >= count)
+	{
+		menuDataGlobal.currentItemIndex = (count - 1U);
+	}
+
+	if (menuDataGlobal.currentItemIndex >= (uint8_t)(visibleEntries - 1))
+	{
+		firstIndex = (int)menuDataGlobal.currentItemIndex - (visibleEntries - 1);
+	}
+
 	for (int i = MENU_START_ITERATION_VALUE; i < MENU_END_ITERATION_VALUE; i++)
 	{
-		int mNum = menuGetMenuOffset(count, i);
+		int mNum = firstIndex + (i - MENU_START_ITERATION_VALUE);
 
-		if (mNum == MENU_OFFSET_BEFORE_FIRST_ENTRY)
-		{
-			continue;
-		}
-		else if (mNum == MENU_OFFSET_AFTER_LAST_ENTRY)
+		if (mNum >= count)
 		{
 			break;
 		}
@@ -981,6 +989,8 @@ static void smsSentRender(void)
 {
 	char line[SCREEN_LINE_BUFFER_SIZE];
 	uint8_t count = smsGetSentCount();
+	int firstIndex = 0;
+	int visibleEntries = (MENU_END_ITERATION_VALUE - MENU_START_ITERATION_VALUE + 1);
 
 	displayClearBuf();
 	menuDisplayTitle("SMS Sent");
@@ -996,15 +1006,21 @@ static void smsSentRender(void)
 		return;
 	}
 
+	if (menuDataGlobal.currentItemIndex >= count)
+	{
+		menuDataGlobal.currentItemIndex = (count - 1U);
+	}
+
+	if (menuDataGlobal.currentItemIndex >= (uint8_t)(visibleEntries - 1))
+	{
+		firstIndex = (int)menuDataGlobal.currentItemIndex - (visibleEntries - 1);
+	}
+
 	for (int i = MENU_START_ITERATION_VALUE; i < MENU_END_ITERATION_VALUE; i++)
 	{
-		int mNum = menuGetMenuOffset(count, i);
+		int mNum = firstIndex + (i - MENU_START_ITERATION_VALUE);
 
-		if (mNum == MENU_OFFSET_BEFORE_FIRST_ENTRY)
-		{
-			continue;
-		}
-		else if (mNum == MENU_OFFSET_AFTER_LAST_ENTRY)
+		if (mNum >= count)
 		{
 			break;
 		}
@@ -1736,14 +1752,20 @@ menuStatus_t menuSMSInbox(uiEvent_t *ev, bool isFirstRun)
 
 	if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
 	{
-		menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, count);
+		if (menuDataGlobal.currentItemIndex < (count - 1U))
+		{
+			menuDataGlobal.currentItemIndex++;
+		}
 		smsInboxRender();
 		return MENU_STATUS_SUCCESS;
 	}
 
 	if (KEYCHECK_PRESS(ev->keys, KEY_UP))
 	{
-		menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, count);
+		if (menuDataGlobal.currentItemIndex > 0U)
+		{
+			menuDataGlobal.currentItemIndex--;
+		}
 		smsInboxRender();
 		return MENU_STATUS_SUCCESS;
 	}
@@ -1817,14 +1839,20 @@ menuStatus_t menuSMSSent(uiEvent_t *ev, bool isFirstRun)
 
 	if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
 	{
-		menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, count);
+		if (menuDataGlobal.currentItemIndex < (count - 1U))
+		{
+			menuDataGlobal.currentItemIndex++;
+		}
 		smsSentRender();
 		return MENU_STATUS_SUCCESS;
 	}
 
 	if (KEYCHECK_PRESS(ev->keys, KEY_UP))
 	{
-		menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, count);
+		if (menuDataGlobal.currentItemIndex > 0U)
+		{
+			menuDataGlobal.currentItemIndex--;
+		}
 		smsSentRender();
 		return MENU_STATUS_SUCCESS;
 	}
@@ -2449,6 +2477,12 @@ menuStatus_t menuSMSOptions(uiEvent_t *ev, bool isFirstRun)
 	{
 		menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, menuDataGlobal.numItems);
 		smsOptionsRender();
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
+	{
+		menuSystemPopAllAndDisplayRootMenu();
 		return MENU_STATUS_SUCCESS;
 	}
 

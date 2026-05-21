@@ -1,0 +1,13 @@
+../application/source/interfaces/batteryAndPowerManagement.c:74:6:showLowBattery	0	static
+../application/source/interfaces/batteryAndPowerManagement.c:79:6:batteryIsLowWarning	0	static
+../application/source/interfaces/batteryAndPowerManagement.c:84:6:batteryIsLowVoltageWarning	0	static
+../application/source/interfaces/batteryAndPowerManagement.c:89:6:batteryIsLowCriticalVoltage	0	static
+../application/source/interfaces/batteryAndPowerManagement.c:94:6:batteryLastReadingIsCritical	8	static
+../application/source/interfaces/batteryAndPowerManagement.c:203:6:batteryUpdate	16	static
+../application/source/interfaces/batteryAndPowerManagement.c:226:6:powerOff	0	static
+../application/source/interfaces/batteryAndPowerManagement.c:237:6:powerDown	16	static,ignoring_inline_asm
+../application/source/interfaces/batteryAndPowerManagement.c:538:6:wakeFromSleep	8	static
+../application/source/interfaces/batteryAndPowerManagement.c:287:6:die	32	static
+../application/source/interfaces/batteryAndPowerManagement.c:597:6:powerOffFinalStage	16	static
+../application/source/interfaces/batteryAndPowerManagement.c:99:6:batteryChecking	16	static
+../application/source/interfaces/batteryAndPowerManagement.c:665:6:apoTick	24	static

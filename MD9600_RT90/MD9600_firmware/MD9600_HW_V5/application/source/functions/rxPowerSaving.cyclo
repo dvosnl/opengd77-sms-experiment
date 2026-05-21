@@ -1,0 +1,5 @@
+../application/source/functions/rxPowerSaving.c:41:6:rxPowerSavingIsRxOn	1
+../application/source/functions/rxPowerSaving.c:59:5:rxPowerSavingGetLevel	1
+../application/source/functions/rxPowerSaving.c:64:6:rxPowerSavingSetState	4
+../application/source/functions/rxPowerSaving.c:46:6:rxPowerSavingSetLevel	3
+../application/source/functions/rxPowerSaving.c:83:6:rxPowerSavingTick	22

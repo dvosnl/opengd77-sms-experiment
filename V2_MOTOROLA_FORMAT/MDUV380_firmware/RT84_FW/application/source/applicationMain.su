@@ -1,0 +1,8 @@
+../application/source/applicationMain.c:201:13:rxBeepsCarrierEndCallback	0	static
+../application/source/applicationMain.c:194:13:rxBeepsMustPlayMelody	8	static
+../application/source/applicationMain.c:288:13:validateSmsTimeoutCallback	16	static
+../application/source/applicationMain.c:206:13:rxBeepsHandler	16	static
+../application/source/applicationMain.c:310:13:settingsUpdateAudioAlert	8	static
+../application/source/applicationMain.c:276:13:validateUpdateCallback	8	static
+../application/source/applicationMain.c:324:13:updateVolumeGain	24	static
+../application/source/applicationMain.c:340:6:applicationMainTask	128	static

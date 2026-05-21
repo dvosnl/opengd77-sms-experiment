@@ -1,0 +1,48 @@
+DMR SMS ACK MECHANISME – COMPLEET OVERZICHT
+
+ACK in DMR SMS bestaat uit meerdere lagen die tegelijk actief zijn. Het is dus geen enkel mechanisme, maar een combinatie van transport-, protocol- en applicatielaag bevestigingen.
+
+Laag 1 is de ETSI transport ACK. Deze bevestigt de ontvangst van individuele datablocks (meestal 12 bytes per block). Deze ACK herken je typisch aan bytes zoals “01 40” in een T=06 frame. De functie hiervan is puur technisch: bevestigen dat een fragment correct is ontvangen. Als deze ACK ontbreekt, worden datablocks opnieuw verzonden. Dit mechanisme is essentieel voor reassembly, maar zegt niets over of een SMS inhoudelijk verwerkt is.
+
+Laag 2 is ETSI confirmed data. Dit zit niet als losse ASCII-achtige ACK in de stream, maar in header flags van de DMR data. Hierbij verwacht de zender een bevestiging dat een complete datatransfer is aangekomen. Dit is een hogere betrouwbaarheid bovenop block-level ACK, maar wordt minder expliciet zichtbaar in dumps.
+
+Laag 3 is de Motorola TMS ACK (de belangrijkste voor SMS-functionaliteit). Deze zit ook in T=06 frames, maar is herkenbaar aan ASCII bytes. De belangrijkste varianten zijn:
+
+“43 4B” → “CK” → bericht geaccepteerd (OK)
+“43 46” → “CF” → fail, reject of einde van verwerking
+“43 4C” → “CL” → continue, meer data of flow control
+
+Deze ACK werkt op SMS-niveau (applicatielaag). Dit betekent dat hiermee bevestigd wordt dat het bericht logisch verwerkt is, niet alleen technisch ontvangen. Dit is wat systemen zoals BrandMeister gebruiken om te bepalen of een SMS “aangekomen” is.
+
+Daarnaast bestaat er een Motorola extended ACK, zichtbaar als bijvoorbeeld “02 4B”. Dit lijkt een session-level of extended confirm te zijn. Het wordt gebruikt voor afsluiten van communicatie, statusbevestiging of flow control. Het is niet officieel goed gedocumenteerd, maar komt consistent terug in werkende dumps.
+
+Op payloadniveau (binnen de IP/UDP data) kunnen ook bevestigingsmechanismen zitten, zoals sequence numbers en flags in de Motorola header. Deze zorgen voor end-to-end consistentie binnen de applicatie zelf, maar zijn minder zichtbaar als losse ACK-frames.
+
+Op netwerkniveau speelt BrandMeister een actieve rol. Dit systeem verwacht dat zowel ETSI transport ACK als Motorola SMS ACK correct verlopen. Als een van beide ontbreekt, zal BrandMeister:
+
+datablocks opnieuw sturen
+berichten opnieuw proberen af te leveren
+of het bericht laten falen
+
+Een volledige SMS-flow ziet er als volgt uit:
+De zender stuurt een SMS via ETSI datablocks. De ontvanger (bijv. BrandMeister) stuurt eerst een Motorola ACK (“CK”) om te bevestigen dat het bericht geaccepteerd is. Tegelijkertijd of daarna volgen ETSI ACKs (“01 40”) voor de ontvangen datablocks. Vervolgens stuurt de ontvanger een response (bijv. echo of statusbericht) via gefragmenteerde data (T=08 + T=03) of als compleet packet (T=07). Tijdens en na deze overdracht volgen opnieuw ACKs, zoals “CL” voor flow control en “CF” voor afsluiting. Tot slot kunnen extended ACKs zoals “02 xx” voorkomen om de sessie af te ronden.
+
+Belangrijk is dat T=06 frames niet altijd ETSI betekenen. De inhoud bepaalt het type ACK. Bijvoorbeeld:
+
+begint met 01 → ETSI transport ACK
+begint met 43 → Motorola ACK (ASCII)
+begint met 02 → extended ACK
+
+De grootste misvatting is dat ACK één mechanisme is. In werkelijkheid werken meerdere ACK-systemen parallel:
+ETSI zorgt dat data aankomt, Motorola zorgt dat de SMS logisch verwerkt wordt, en BrandMeister gebruikt beide om betrouwbaarheid te garanderen.
+
+Voor implementatie betekent dit:
+
+behandel T=06 altijd als control frame
+onderscheid ETSI en Motorola ACK op basis van payload
+gebruik ETSI ACK voor transportlogica
+gebruik Motorola ACK voor SMS-status
+ondersteun retransmissions en duplicate blocks
+decodeer pas een SMS als alle datablocks compleet zijn
+
+Conclusie: een werkende DMR SMS implementatie vereist correcte handling van meerdere ACK-lagen tegelijk. Alleen ETSI implementeren is niet voldoende; Motorola ACK is essentieel voor compatibiliteit met BrandMeister en andere netwerken.

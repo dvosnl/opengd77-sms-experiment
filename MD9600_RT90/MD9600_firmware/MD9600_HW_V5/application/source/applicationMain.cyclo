@@ -1,0 +1,9 @@
+../application/source/applicationMain.c:196:13:rxBeepsCarrierEndCallback	1
+../application/source/applicationMain.c:189:13:rxBeepsMustPlayMelody	6
+../application/source/applicationMain.c:290:13:validateSmsTimeoutCallback	3
+../application/source/applicationMain.c:201:13:rxBeepsHandler	16
+../application/source/applicationMain.c:326:13:latchedSk2Callback	2
+../application/source/applicationMain.c:312:13:settingsUpdateAudioAlert	2
+../application/source/applicationMain.c:271:13:validateUpdateCallback	3
+../application/source/applicationMain.c:335:6:applicationMainTask	253
+../application/source/applicationMain.c:1461:6:applicationStandbyPowerLoop	5

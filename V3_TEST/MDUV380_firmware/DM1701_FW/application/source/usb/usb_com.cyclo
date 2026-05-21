@@ -1,0 +1,6 @@
+../Drivers/CMSIS/Include/core_cm4.h:1938:34:__NVIC_SystemReset	1
+../application/source/usb/usb_com.c:634:13:cpsStopGPSNMEA	2
+../application/source/usb/usb_com.c:120:6:tick_com_request	108
+../application/source/usb/usb_com.c:1047:6:USB_DEBUG_PRINT	1
+../application/source/usb/usb_com.c:1055:6:USB_DEBUG_printf	1
+../application/source/usb/usb_com.c:1069:6:USB_DeviceIsResetting	3

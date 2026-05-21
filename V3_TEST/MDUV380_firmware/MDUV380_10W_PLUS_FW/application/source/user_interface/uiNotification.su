@@ -1,0 +1,7 @@
+../application/source/user_interface/uiNotification.c:162:6:uiNotificationRefresh	112	static
+../application/source/user_interface/uiNotification.c:101:6:uiNotificationShow	32	static
+../application/source/user_interface/uiNotification.c:156:6:uiNotificationBearingShow	32	static
+../application/source/user_interface/uiNotification.c:328:6:uiNotificationHasTimedOut	0	static
+../application/source/user_interface/uiNotification.c:333:6:uiNotificationIsVisible	0	static
+../application/source/user_interface/uiNotification.c:338:6:uiNotificationHide	0	static
+../application/source/user_interface/uiNotification.c:349:20:uiNotificationGetId	0	static

@@ -1,0 +1,2 @@
+../application/source/interfaces/clockManager.c:37:6:clockManagerSetRunMode	1
+../application/source/interfaces/clockManager.c:41:6:clockManagerInit	1

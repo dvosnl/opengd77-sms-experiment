@@ -1,0 +1,10 @@
+../application/source/interfaces/adc.c:71:6:HAL_ADC_ConvCpltCallback	24	static
+../application/source/interfaces/adc.c:111:5:adcGetMicRow	0	static
+../application/source/interfaces/adc.c:116:5:adcGetMicCol	0	static
+../application/source/interfaces/adc.c:121:5:adcGetBatteryVoltage	0	static
+../application/source/interfaces/adc.c:127:5:adcGetVOX	0	static
+../application/source/interfaces/adc.c:133:5:adcGetVHFRSSI	0	static
+../application/source/interfaces/adc.c:145:5:adcGetUHFRSSI	0	static
+../application/source/interfaces/adc.c:157:5:adcGetVHFNoise	0	static
+../application/source/interfaces/adc.c:169:5:adcGetUHFNoise	0	static
+../application/source/interfaces/adc.c:181:5:getTemperature	0	static

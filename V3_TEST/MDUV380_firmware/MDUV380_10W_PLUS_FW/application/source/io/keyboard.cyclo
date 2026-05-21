@@ -1,0 +1,6 @@
+../application/source/io/keyboard.c:258:6:keyboardInit	1
+../application/source/io/keyboard.c:275:6:keyboardReset	1
+../application/source/io/keyboard.c:287:10:keyboardRead	8
+../application/source/io/keyboard.c:364:6:keyboardKeyIsDTMFKey	3
+../application/source/io/keyboard.c:435:6:rotaryEncoderISR	2
+../application/source/io/keyboard.c:449:6:keyboardCheckKeyEvent	26

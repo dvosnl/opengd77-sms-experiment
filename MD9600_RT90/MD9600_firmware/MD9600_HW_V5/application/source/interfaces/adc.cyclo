@@ -1,0 +1,10 @@
+../application/source/interfaces/adc.c:71:6:HAL_ADC_ConvCpltCallback	6
+../application/source/interfaces/adc.c:111:5:adcGetMicRow	1
+../application/source/interfaces/adc.c:116:5:adcGetMicCol	1
+../application/source/interfaces/adc.c:121:5:adcGetBatteryVoltage	1
+../application/source/interfaces/adc.c:127:5:adcGetVOX	2
+../application/source/interfaces/adc.c:133:5:adcGetVHFRSSI	3
+../application/source/interfaces/adc.c:145:5:adcGetUHFRSSI	3
+../application/source/interfaces/adc.c:157:5:adcGetVHFNoise	3
+../application/source/interfaces/adc.c:169:5:adcGetUHFNoise	3
+../application/source/interfaces/adc.c:181:5:getTemperature	1

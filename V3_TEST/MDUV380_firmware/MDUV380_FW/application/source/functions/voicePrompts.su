@@ -1,0 +1,12 @@
+../application/source/functions/voicePrompts.c:30:6:voicePromptsInit	0	static
+../application/source/functions/voicePrompts.c:34:6:voicePromptsAppendPrompt	0	static
+../application/source/functions/voicePrompts.c:39:6:voicePromptsAppendString	0	static
+../application/source/functions/voicePrompts.c:44:6:voicePromptsAppendInteger	0	static
+../application/source/functions/voicePrompts.c:49:6:voicePromptsAppendLanguageString	0	static
+../application/source/functions/voicePrompts.c:54:6:voicePromptsPlay	0	static
+../application/source/functions/voicePrompts.c:58:6:voicePromptsIsPlaying	0	static
+../application/source/functions/voicePrompts.c:63:6:voicePromptsHasDataToPlay	0	static
+../application/source/functions/voicePrompts.c:68:6:voicePromptsDoesItContainPrompt	0	static
+../application/source/functions/voicePrompts.c:74:6:voicePromptsTerminate	0	static
+../application/source/functions/voicePrompts.c:78:6:voicePromptsTerminateNoTail	0	static
+../application/source/functions/voicePrompts.c:82:6:voicePromptsInitWithOverride	0	static
