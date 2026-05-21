@@ -88,7 +88,7 @@
 
 // OEM/hotspot control ACK bursts are typically longer than normal SMS send preambles.
 // Use a longer preamble only for header-only response PDUs to improve interoperability.
-#define SMS_ACK_PREAMBLE_CSBKS              16U
+#define SMS_ACK_PREAMBLE_CSBKS              24U
 
 
 Task_t hrc6000Task;
