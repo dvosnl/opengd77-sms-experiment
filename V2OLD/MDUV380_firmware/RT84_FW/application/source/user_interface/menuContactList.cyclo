@@ -1,6 +1,0 @@
-../application/source/user_interface/menuContactList.c:66:13:overrideWithSelectedContact	3
-../application/source/user_interface/menuContactList.c:479:13:updateSubMenuScreen	11
-../application/source/user_interface/menuContactList.c:79:13:reloadContactList	5
-../application/source/user_interface/menuContactList.c:201:13:updateScreen.isra	14
-../application/source/user_interface/menuContactList.c:99:14:menuContactList	61
-../application/source/user_interface/menuContactList.c:655:14:menuContactListSubMenu	33

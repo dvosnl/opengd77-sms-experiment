@@ -1,4 +1,0 @@
-../application/source/user_interface/uiTxScreen.c:384:13:updateScreen	4
-../application/source/user_interface/uiTxScreen.c:379:6:menuTxScreenDisplaysLastHeard	1
-../application/source/user_interface/uiTxScreen.c:664:6:menuTxScreenHandleTxTermination	7
-../application/source/user_interface/uiTxScreen.c:61:14:menuTxScreen	122

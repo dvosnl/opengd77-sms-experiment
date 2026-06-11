@@ -1,7 +1,0 @@
-../application/source/interfaces/i2s.c:40:13:clearI2SBuffersAndFlags	1
-../application/source/interfaces/i2s.c:53:6:HAL_I2SEx_TxRxHalfCpltCallback	4
-../application/source/interfaces/i2s.c:72:6:HAL_I2SEx_TxRxCpltCallback	4
-../application/source/interfaces/i2s.c:91:6:I2SStartDMA	4
-../application/source/interfaces/i2s.c:101:6:I2SReset	1
-../application/source/interfaces/i2s.c:106:6:I2STerminateTransfers	1
-../application/source/interfaces/i2s.c:111:6:init_I2S	1

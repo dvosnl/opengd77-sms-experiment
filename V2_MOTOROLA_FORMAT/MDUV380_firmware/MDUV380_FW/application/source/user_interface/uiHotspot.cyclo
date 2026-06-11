@@ -1,6 +1,0 @@
-../application/source/user_interface/uiHotspot.c:619:17:getBatteryAverageInMillivolts	1
-../application/source/user_interface/uiHotspot.c:258:13:displayContactInfo.isra	4
-../application/source/user_interface/uiHotspot.c:232:6:menuHotspotRestoreSettings	3
-../application/source/user_interface/uiHotspot.c:331:6:uiHotspotUpdateScreen	37
-../application/source/user_interface/uiHotspot.c:584:6:hotspotExit	4
-../application/source/user_interface/uiHotspot.c:136:14:menuHotspotMode	21

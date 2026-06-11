@@ -1,4 +1,0 @@
-../application/source/user_interface/uiSplashScreen.c:222:13:validatePinCodeCallback	4
-../application/source/user_interface/uiSplashScreen.c:126:13:updateScreen	4
-../application/source/user_interface/uiSplashScreen.c:240:13:pincodeAudioAlert	2
-../application/source/user_interface/uiSplashScreen.c:50:14:uiSplashScreen	17

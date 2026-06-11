@@ -1,10 +1,26 @@
-.github/
-.headless-workspace/
-.metadata/
-.stm32cubeide-buid/
-.vscode/
+# Build output (Makefile-driven)
+MDUV380_firmware/build/
+MDUV380_firmware/dist/
 
-.headless_ws/
-.headless-workspace-rebuild/
-*.log
-TEST_MDC1200_BUILD/
+# Codec placeholder produced by `codec_cleaner -C`
+MDUV380_firmware/application/source/linkerdata/codec_bin_section_1.bin
+
+# Compiler outputs
+*.o
+*.d
+*.elf
+*.map
+*.lst
+*.su
+
+# STM32CubeIDE workspace state
+.metadata/
+Debug/
+Release/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc

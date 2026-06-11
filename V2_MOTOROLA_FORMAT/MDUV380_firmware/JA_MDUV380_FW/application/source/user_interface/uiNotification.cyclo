@@ -1,7 +1,0 @@
-../application/source/user_interface/uiNotification.c:162:6:uiNotificationRefresh	21
-../application/source/user_interface/uiNotification.c:101:6:uiNotificationShow	8
-../application/source/user_interface/uiNotification.c:156:6:uiNotificationBearingShow	2
-../application/source/user_interface/uiNotification.c:328:6:uiNotificationHasTimedOut	2
-../application/source/user_interface/uiNotification.c:333:6:uiNotificationIsVisible	1
-../application/source/user_interface/uiNotification.c:338:6:uiNotificationHide	2
-../application/source/user_interface/uiNotification.c:349:20:uiNotificationGetId	1

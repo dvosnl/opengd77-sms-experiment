@@ -1,4 +1,0 @@
-../application/source/io/Leds.c:63:9:LedRead	1
-../application/source/io/Leds.c:72:6:LedWriteDirect	2
-../application/source/io/Leds.c:51:6:LedWrite	2
-../application/source/io/Leds.c:37:6:LEDsInit	1

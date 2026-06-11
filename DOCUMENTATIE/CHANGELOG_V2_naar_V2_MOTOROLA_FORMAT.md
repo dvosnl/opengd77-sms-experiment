@@ -96,7 +96,7 @@ Bestand:
 - `MDUV380_firmware/application/source/user_interface/menuFirmwareInfoScreen.c`
 
 Wijziging:
-- Credittekst aangepast van `PD1FR - SMS` naar `PD0FR - SMS`.
+- Credittekst aangepast van `PD0FR - SMS` naar `PD0FR - SMS`.
 
 ## Niet-functionele/structurele wijzigingen
 - Toegevoegd in `MDUV380_firmware`: `prepare` en `prepare.bat`.

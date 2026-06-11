@@ -1,4 +1,0 @@
-../application/source/user_interface/uiLockScreen.c:75:13:redrawScreen	9
-../application/source/user_interface/uiLockScreen.c:178:13:updateScreen	12
-../application/source/user_interface/uiLockScreen.c:43:14:menuLockScreen	21
-../application/source/user_interface/uiLockScreen.c:288:6:menuLockScreenPop	2

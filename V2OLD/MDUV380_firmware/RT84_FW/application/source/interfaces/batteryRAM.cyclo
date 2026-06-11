@@ -1,3 +1,0 @@
-../application/source/interfaces/batteryRAM.c:36:6:batteryRAM_Read	3
-../application/source/interfaces/batteryRAM.c:55:6:batteryRAM_Write	3
-../application/source/interfaces/batteryRAM.c:70:6:batteryRAM_Init	2
