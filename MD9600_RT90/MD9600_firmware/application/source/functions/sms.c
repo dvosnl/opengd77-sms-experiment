@@ -894,7 +894,16 @@ static void smsStoreInboxMessage(uint32_t sourceId, const char *text)
 		inboxUnreadNotification = true;
 		smsStorageDirty = false;
 		smsStorageDirtySinceTick = 0U;
+#if SMS_DEBUG_USB_SERIAL
+		USB_DEBUG_printf("SMS inbox store OK: writeIndex=%u inboxCount=%u\r\n", writeIndex, inboxCount);
+#endif
 	}
+#if SMS_DEBUG_USB_SERIAL
+	else
+	{
+		USB_DEBUG_printf("SMS inbox store FAILED (EEPROM write chain)\r\n");
+	}
+#endif
 }
 
 static void smsStoreSentMessageInternal(uint32_t destinationId, const char *text)
@@ -2293,6 +2302,11 @@ static bool smsDecodeMotorolaPayload(const uint8_t *payload, uint16_t totalLengt
 		return false;
 	}
 
+	if (ipPacketLength > sizeof(packetCopy))
+	{
+		return false;
+	}
+
 	if (((payload[0] & 0xF0U) != 0x40U) || ((payload[0] & 0x0FU) != 0x05U) || (payload[9] != SMS_MOTOROLA_IPV4_PROTOCOL))
 	{
 		return false;
@@ -2400,6 +2414,11 @@ static bool smsDecodeStandardPayload(const uint8_t *payload, uint16_t totalLengt
 	if ((ipPacketLength < SMS_STANDARD_TEXT_OFFSET) ||
 		(ipPacketLength > (totalLength - SMS_STANDARD_CRC32_BYTES)) ||
 		((uint16_t)(ipPacketLength + padOctets + SMS_STANDARD_CRC32_BYTES) != totalLength))
+	{
+		return false;
+	}
+
+	if (ipPacketLength > sizeof(packetCopy))
 	{
 		return false;
 	}
@@ -2897,36 +2916,68 @@ static bool smsDecodeCurrentRxBuffers(const uint8_t *payload, uint16_t totalLeng
 	// Stage 2: direct decode in likely text windows (no brute-force raw replay).
 	if ((decodedText[0] == 0) || (smsCountCharOccurrence(decodedText, '?') > 0U))
 	{
+		// Trusted primary read: a clean, in-bounds UTF-16 decode at the mathematically correct
+		// expected offset for this wire format is fundamentally more reliable evidence than any
+		// of the scan-based fallbacks below, even when very short -- e.g. "CK", a real two-
+		// character Motorola SMS-ACK convention. The shared quality gate below requires at least
+		// 3 characters before trusting a *candidate* (to protect the scan/merge fallbacks from
+		// coincidental noise matches), which wrongly also rejects short-but-correct primary
+		// reads, letting them fall through to the neighborhood/UDP-offset scans and hit the same
+		// redundant-rescan/merge duplication bug fixed above, just from a different entry point.
+		uint16_t primaryOffset = 0U;
+		uint16_t primaryWindowLength = 0U;
+
+		if ((hasMotorolaSignature || hasMotorolaPort) && (motorolaTextOffsetLength > 0U))
+		{
+			primaryOffset = SMS_MOTOROLA_TEXT_OFFSET;
+			primaryWindowLength = motorolaTextOffsetLength;
+		}
+		else if (hasStandardPort && (standardTextOffsetLength > 0U))
+		{
+			primaryOffset = SMS_STANDARD_TEXT_OFFSET;
+			primaryWindowLength = standardTextOffsetLength;
+		}
+
+		if (primaryWindowLength > 0U)
+		{
+			uint16_t boundedLength = primaryWindowLength;
+
+			if (boundedLength > SMS_MAX_UTF16_PAYLOAD_BYTES)
+			{
+				boundedLength = SMS_MAX_UTF16_PAYLOAD_BYTES;
+			}
+
+			uint16_t utf16Length = (uint16_t)(boundedLength & 0xFFFEU);
+
+			if ((utf16Length >= 2U) &&
+				smsDecodeUtf16Payload(&payload[primaryOffset], utf16Length, scratchText) &&
+				(scratchText[0] != 0))
+			{
+				strncpy(decodedText, scratchText, SMS_MAX_TEXT_LENGTH);
+				decodedText[SMS_MAX_TEXT_LENGTH] = 0;
+			}
+		}
+	}
+
+	if (smsDecodedTextIsPoor(decodedText))
+	{
 		if ((hasMotorolaSignature || hasMotorolaPort) && (motorolaTextOffsetLength > 0U))
 		{
 			smsTryDecodeWindowDirect(&payload[SMS_MOTOROLA_TEXT_OFFSET], motorolaTextOffsetLength, true, decodedText, scratchText);
-			smsTryDecodeWindowNeighborhood(payload,
-				textDecodeLength,
-				SMS_MOTOROLA_TEXT_OFFSET,
-				SMS_WINDOW_NEIGHBORHOOD_RADIUS,
-				SMS_WINDOW_NEIGHBORHOOD_STEP,
-				true,
-				decodedText,
-				scratchText);
-		}
 
-		if ((hasStandardPort || hasMotorolaPort) && (standardTextOffsetLength > 0U))
-		{
-			bool allowStandardWindow = true;
-
-			// For Motorola-style packets we prefer offset 38 and only try offset 32 as fallback
-			// when nothing useful was decoded yet.
-			if ((hasMotorolaSignature || hasMotorolaPort) && (decodedText[0] != 0))
+			// Only fall back to nearby offsets if the direct read at the expected offset didn't
+			// already produce a good result. The neighborhood scan exists for messages that are
+			// genuinely misaligned; running it unconditionally after an already-successful direct
+			// decode re-reads the same short message at shifted byte offsets, which (since UTF-16
+			// characters are 2 bytes) can still decode a valid-looking truncated suffix of the
+			// *same* text. smsMergeDecodedCandidate() then appends that suffix instead of
+			// recognising it as redundant, producing exactly this kind of duplication -- confirmed
+			// via a real capture where "MW0AXD" came back as "MW0AXDW0AXDAXD".
+			if (smsDecodedTextIsPoor(decodedText))
 			{
-				allowStandardWindow = false;
-			}
-
-			if (allowStandardWindow)
-			{
-				smsTryDecodeWindowDirect(&payload[SMS_STANDARD_TEXT_OFFSET], standardTextOffsetLength, true, decodedText, scratchText);
 				smsTryDecodeWindowNeighborhood(payload,
 					textDecodeLength,
-					SMS_STANDARD_TEXT_OFFSET,
+					SMS_MOTOROLA_TEXT_OFFSET,
 					SMS_WINDOW_NEIGHBORHOOD_RADIUS,
 					SMS_WINDOW_NEIGHBORHOOD_STEP,
 					true,
@@ -2935,17 +2986,55 @@ static bool smsDecodeCurrentRxBuffers(const uint8_t *payload, uint16_t totalLeng
 			}
 		}
 
-		if ((hasMotorolaPort || hasStandardPort) && (udpPayloadLength > 0U))
+		if ((hasStandardPort || hasMotorolaPort) && (standardTextOffsetLength > 0U))
+		{
+			// Only try this window if nothing good has been decoded yet -- whether from the
+			// Motorola window just above, or (also possible) a clean Stage 1 decode via
+			// smsDecodeStandardPayload() before Stage 2 even started. Re-reading an
+			// already-successfully-decoded message from a different nearby offset risks the
+			// same redundant-rescan/merge duplication bug covered above.
+			bool allowStandardWindow = smsDecodedTextIsPoor(decodedText);
+
+			if (allowStandardWindow)
+			{
+				smsTryDecodeWindowDirect(&payload[SMS_STANDARD_TEXT_OFFSET], standardTextOffsetLength, true, decodedText, scratchText);
+
+				// See the neighborhood-scan comment above -- same reasoning applies here.
+				if (smsDecodedTextIsPoor(decodedText))
+				{
+					smsTryDecodeWindowNeighborhood(payload,
+						textDecodeLength,
+						SMS_STANDARD_TEXT_OFFSET,
+						SMS_WINDOW_NEIGHBORHOOD_RADIUS,
+						SMS_WINDOW_NEIGHBORHOOD_STEP,
+						true,
+						decodedText,
+						scratchText);
+				}
+			}
+		}
+
+		// This window starts at the raw UDP payload offset (upstream of the Motorola/Standard
+		// text offsets), so for a message that already decoded cleanly above, re-reading from
+		// here would re-include the Motorola/Standard header bytes as leading "characters"
+		// followed by the same real text -- the identical redundant-rescan/merge bug as the
+		// neighborhood scans above, just via a different starting offset. Only attempt this
+		// window (direct or neighborhood) if nothing good has been decoded yet.
+		if ((hasMotorolaPort || hasStandardPort) && (udpPayloadLength > 0U) && smsDecodedTextIsPoor(decodedText))
 		{
 			smsTryDecodeWindowDirect(&payload[udpPayloadOffset], udpPayloadLength, false, decodedText, scratchText);
-			smsTryDecodeWindowNeighborhood(payload,
-				textDecodeLength,
-				udpPayloadOffset,
-				8U,
-				2U,
-				false,
-				decodedText,
-				scratchText);
+
+			if (smsDecodedTextIsPoor(decodedText))
+			{
+				smsTryDecodeWindowNeighborhood(payload,
+					textDecodeLength,
+					udpPayloadOffset,
+					8U,
+					2U,
+					false,
+					decodedText,
+					scratchText);
+			}
 		}
 	}
 

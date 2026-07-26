@@ -232,7 +232,13 @@ static void updateScreen(uiEvent_t *ev, bool forceRedraw)
 {
 	static bool blink = false;
 	bool renderArrowOnly = true;
-	char buffer[SCREEN_LINE_BUFFER_SIZE];
+	// RADIO_INFOS_LOCATION writes a full "__.____N ___.____E"-style string (19 bytes) into this
+	// buffer, both directly (sprintf below) and via buildLocationAndMaidenheadStrings(), which
+	// internally bounds its snprintf to LOCATION_TEXT_BUFFER_SIZE regardless of the buffer this
+	// caller actually supplies. SCREEN_LINE_BUFFER_SIZE (17) is too small for that; every other
+	// caller of buildLocationAndMaidenheadStrings() already sizes its buffer as
+	// LOCATION_TEXT_BUFFER_SIZE for exactly this reason.
+	char buffer[LOCATION_TEXT_BUFFER_SIZE];
 #if defined(HAS_COLOURS)
 	bool dblHeight = settingsIsOptionBitSet(BIT_UI_USES_DOUBLE_HEIGHT);
 #else

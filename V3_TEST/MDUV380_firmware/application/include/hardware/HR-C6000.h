@@ -44,6 +44,11 @@ extern Task_t hrc6000Task;
 
 #define AMBE_AUDIO_LENGTH         27
 #define LC_DATA_LENGTH            12
+// Rate 3/4 DMR data bursts (used for Confirmed Data / Defined Short Data, dataType 0x08) carry
+// more payload per block than the rate 1/2 bursts LC_DATA_LENGTH was sized for -- confirmed
+// against a real on-air capture cross-referenced with MMDVMHost's own block-level log. Read this
+// many bytes from the HR-C6000 for that burst type instead.
+#define SMS_RATE34_DATA_LENGTH    18
 
 
 #define TG_CALL_FLAG            0x00

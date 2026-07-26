@@ -56,6 +56,15 @@ typedef enum
 	SMS_PACK_ERROR_INVALID_INDEX
 } smsPackResult_t;
 
+// Which wire format to encode an outbound message as. Motorola Compatible Format is this
+// firmware's original/default; Standard Compatible Format is the one Anytone radios identify
+// as "DMR_Standard" in their own menus.
+typedef enum
+{
+	SMS_ENCODER_MOTOROLA = 0,
+	SMS_ENCODER_STANDARD
+} smsEncoderFormat_t;
+
 typedef enum
 {
 	SMS_TX_EVENT_NONE = 0,
@@ -100,12 +109,12 @@ typedef struct
 } smsQuickTextMessage_t;
 
 void smsInit(void);
-smsPackResult_t smsPackMessage(uint32_t destinationId, uint32_t sourceId, const char *text, smsPreparedMessage_t *message);
-smsPackResult_t smsQueueMessage(uint32_t destinationId, uint32_t sourceId, const char *text);
+smsPackResult_t smsPackMessage(uint32_t destinationId, uint32_t sourceId, const char *text, smsEncoderFormat_t format, smsPreparedMessage_t *message);
+smsPackResult_t smsQueueMessage(uint32_t destinationId, uint32_t sourceId, const char *text, smsEncoderFormat_t format);
 bool smsHasQueuedMessage(void);
 const smsPreparedMessage_t *smsGetQueuedMessage(void);
 void smsClearQueuedMessage(void);
-bool smsHandleReceivedDataFrame(uint8_t dataType, const uint8_t *frame);
+bool smsHandleReceivedDataFrame(uint8_t dataType, const uint8_t *frame, uint8_t frameLength);
 uint8_t smsGetInboxCount(void);
 bool smsGetInboxMessage(uint8_t index, smsInboxMessage_t *message);
 bool smsDeleteInboxMessage(uint8_t index);
@@ -123,7 +132,7 @@ bool smsUpdateQuickTextMessage(uint8_t index, const char *title, const char *tex
 bool smsDeleteQuickTextMessage(uint8_t index);
 bool smsHasRxNotification(void);
 bool smsConsumeRxNotification(void);
-bool smsScheduleQueuedMessageTransmission(uint32_t destinationId, uint32_t sourceId, const char *text, bool waitForAck, bool storeSent);
+bool smsScheduleQueuedMessageTransmission(uint32_t destinationId, uint32_t sourceId, const char *text, smsEncoderFormat_t format, bool waitForAck, bool storeSent);
 void smsNotifyOutgoingAckReceived(void);
 void smsNotifyOutgoingRejected(void);
 void smsNotifyOutgoingNoRepeater(void);

@@ -1714,6 +1714,11 @@ static bool smsDecodeMotorolaPayload(const uint8_t *payload, uint16_t totalLengt
 		return false;
 	}
 
+	if (ipPacketLength > sizeof(packetCopy))
+	{
+		return false;
+	}
+
 	if (((payload[0] & 0xF0U) != 0x40U) || ((payload[0] & 0x0FU) != 0x05U) || (payload[9] != SMS_MOTOROLA_IPV4_PROTOCOL))
 	{
 		return false;
@@ -1821,6 +1826,11 @@ static bool smsDecodeStandardPayload(const uint8_t *payload, uint16_t totalLengt
 	if ((ipPacketLength < SMS_STANDARD_TEXT_OFFSET) ||
 		(ipPacketLength > (totalLength - SMS_STANDARD_CRC32_BYTES)) ||
 		((uint16_t)(ipPacketLength + padOctets + SMS_STANDARD_CRC32_BYTES) != totalLength))
+	{
+		return false;
+	}
+
+	if (ipPacketLength > sizeof(packetCopy))
 	{
 		return false;
 	}

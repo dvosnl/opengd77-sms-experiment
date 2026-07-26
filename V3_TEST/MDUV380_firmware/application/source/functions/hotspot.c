@@ -1315,9 +1315,17 @@ static uint8_t setQSOInfo(const uint8_t *data, uint8_t length)
 		char buf[26]; // MMDVMHost use an array of 25
 		char *pBuf = buf;
 		char *pIface;
+		uint8_t copyLength = (uint8_t)(length - MMDVM_HEADER_LENGTH);
 
-		memcpy(&buf, (char *)(data + MMDVM_HEADER_LENGTH), (length - MMDVM_HEADER_LENGTH));
-		buf[(length - MMDVM_HEADER_LENGTH)] = 0;
+		// currentFrame (the caller's buffer) can be up to 255 bytes; buf is only sized for
+		// MMDVMHost's 25-byte CAST payload, so clamp instead of trusting the wire length.
+		if (copyLength > (sizeof(buf) - 1U))
+		{
+			copyLength = (uint8_t)(sizeof(buf) - 1U);
+		}
+
+		memcpy(&buf, (char *)(data + MMDVM_HEADER_LENGTH), copyLength);
+		buf[copyLength] = 0;
 
 		// Get rid of the interface name as it could be too large to fit in the screen.
 		if ((pIface = strchr(pBuf, ':')) != NULL)

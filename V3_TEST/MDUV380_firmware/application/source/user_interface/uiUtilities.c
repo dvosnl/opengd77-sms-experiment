@@ -1121,8 +1121,10 @@ void dmrIDCacheInit(void)
 	}
 
 	dmrIDsCache.contactLength = (uint8_t)headerBuf[3] - 0x4a;
-	// Check that data in DMR ID DB does not have a larger record size than the code has
-	if (dmrIDsCache.contactLength > sizeof(dmrIdDataStruct_t))
+	// Check that data in DMR ID DB does not have a larger record size than the code has, and
+	// that it isn't zero (headerBuf[3] == 0x4a) -- contactLength is used as a divisor below, and
+	// a corrupted/crafted DB header must not be able to trigger a division by zero.
+	if ((dmrIDsCache.contactLength == 0) || (dmrIDsCache.contactLength > sizeof(dmrIdDataStruct_t)))
 	{
 		return;
 	}

@@ -84,7 +84,8 @@ typedef enum
 	SMS_COMPOSE_MODE_EDIT = 0,
 	SMS_COMPOSE_MODE_DESTINATION_SELECT,
 	SMS_COMPOSE_MODE_CONTACT_SELECT,
-	SMS_COMPOSE_MODE_MANUAL_ID
+	SMS_COMPOSE_MODE_MANUAL_ID,
+	SMS_COMPOSE_MODE_FORMAT_SELECT
 } smsComposeMode_t;
 
 typedef enum
@@ -93,6 +94,13 @@ typedef enum
 	SMS_DESTINATION_OPTION_MANUAL_ID,
 	SMS_DESTINATION_OPTION_COUNT
 } smsDestinationOption_t;
+
+typedef enum
+{
+	SMS_FORMAT_OPTION_MOTOROLA = 0,
+	SMS_FORMAT_OPTION_STANDARD,
+	SMS_FORMAT_OPTION_COUNT
+} smsFormatOption_t;
 
 typedef enum
 {
@@ -131,6 +139,9 @@ static uint8_t smsComposeDestinationOptionIndex = 0U;
 static char smsComposeManualIdBuffer[11] = { 0 };
 static bool smsRxRespondMode = false;
 static uint8_t smsRxRespondOptionIndex = 0U;
+static uint32_t smsComposePendingDestinationId = 0U;
+static uint8_t smsComposeFormatOptionIndex = 0U;
+static smsComposeMode_t smsComposeFormatSelectReturnMode = SMS_COMPOSE_MODE_EDIT;
 
 #define SMS_QUICKTEXT_DRAFT_TEXT  smsViewInboxMessage.text
 #define SMS_QUICKTEXT_DRAFT_TITLE smsPopupSource
@@ -141,6 +152,7 @@ static void smsComposeSetPreset(const char *text);
 static void smsComposeRenderDestinationSelect(void);
 static void smsComposeRenderContactSelect(void);
 static void smsComposeRenderManualIdEntry(void);
+static void smsComposeRenderFormatSelect(void);
 static bool smsComposeGetPrivateContactAt(uint16_t listIndex, CodeplugContact_t *contact);
 static void smsQuickTextRender(void);
 static void smsQuickTextEditRender(bool fullRedraw, bool cursorMoved);
@@ -518,7 +530,7 @@ static bool smsTryResendSelectedSentMessage(void)
 		return false;
 	}
 
-	if (smsScheduleQueuedMessageTransmission(message.destinationId, trxDMRID, message.text, waitForAckEnabled, false) == false)
+	if (smsScheduleQueuedMessageTransmission(message.destinationId, trxDMRID, message.text, SMS_ENCODER_MOTOROLA, waitForAckEnabled, false) == false)
 	{
 		smsClearQueuedMessage();
 		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 2000, "SMS busy", true);
@@ -1234,6 +1246,42 @@ static void smsComposeRenderDestinationSelect(void)
 	displayRender();
 }
 
+static void smsComposeRenderFormatSelect(void)
+{
+	const char *options[SMS_FORMAT_OPTION_COUNT] = { "Motorola", "DMR_Standard" };
+
+	menuDataGlobal.numItems = SMS_FORMAT_OPTION_COUNT;
+	if (smsComposeFormatOptionIndex >= SMS_FORMAT_OPTION_COUNT)
+	{
+		smsComposeFormatOptionIndex = 0U;
+	}
+	menuDataGlobal.currentItemIndex = smsComposeFormatOptionIndex;
+
+	displayClearBuf();
+	menuDisplayTitle("Send as");
+
+	for (int i = MENU_START_ITERATION_VALUE; i < MENU_END_ITERATION_VALUE; i++)
+	{
+		int mNum = menuGetMenuOffset(SMS_FORMAT_OPTION_COUNT, i);
+
+		if (mNum == MENU_OFFSET_BEFORE_FIRST_ENTRY)
+		{
+			continue;
+		}
+		else if (mNum == MENU_OFFSET_AFTER_LAST_ENTRY)
+		{
+			break;
+		}
+
+		menuDisplayEntry(i, mNum, options[mNum], 0, THEME_ITEM_FG_MENU_ITEM, THEME_ITEM_COLOUR_NONE, THEME_ITEM_BG);
+	}
+
+	displayThemeApply(THEME_ITEM_FG_OPTIONS_VALUE, THEME_ITEM_BG);
+	displayPrintAt(DISPLAY_X_POS_MENU_TEXT_OFFSET, DISPLAY_SIZE_Y - FONT_SIZE_1_HEIGHT, "Green send  Red back", FONT_SIZE_1);
+	displayThemeResetToDefault();
+	displayRender();
+}
+
 static void smsComposeRenderManualIdEntry(void)
 {
 	char line[SCREEN_LINE_BUFFER_SIZE];
@@ -1283,7 +1331,7 @@ static void smsComposeInsertChar(char c, bool advance, int maxLen)
 	}
 }
 
-static bool smsSendBuffer(uint32_t destinationId)
+static bool smsSendBuffer(uint32_t destinationId, smsEncoderFormat_t format)
 {
 	smsPackResult_t result;
 	bool waitForAckEnabled = settingsIsOptionBitSet(BIT_SMS_ACK_WAIT);
@@ -1294,14 +1342,14 @@ static bool smsSendBuffer(uint32_t destinationId)
 		return false;
 	}
 
-	result = smsQueueMessage(destinationId, trxDMRID, smsBuffer);
+	result = smsQueueMessage(destinationId, trxDMRID, smsBuffer, format);
 	if (result != SMS_PACK_OK)
 	{
 		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 2000, smsPackResultMessage(result), true);
 		return false;
 	}
 
-	if (smsScheduleQueuedMessageTransmission(destinationId, trxDMRID, smsBuffer, waitForAckEnabled, true) == false)
+	if (smsScheduleQueuedMessageTransmission(destinationId, trxDMRID, smsBuffer, format, waitForAckEnabled, true) == false)
 	{
 		smsClearQueuedMessage();
 		uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_USER, 2000, "SMS busy", true);
@@ -1405,6 +1453,10 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 		{
 			smsComposeRenderManualIdEntry();
 		}
+		else if (smsComposeMode == SMS_COMPOSE_MODE_FORMAT_SELECT)
+		{
+			smsComposeRenderFormatSelect();
+		}
 		else
 		{
 			smsComposeRender(true, false);
@@ -1414,6 +1466,21 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 
 	if (KEYCHECK_SHORTUP(ev->keys, KEY_RED))
 	{
+		if (smsComposeMode == SMS_COMPOSE_MODE_FORMAT_SELECT)
+		{
+			smsComposeMode = smsComposeFormatSelectReturnMode;
+			if (smsComposeMode == SMS_COMPOSE_MODE_EDIT)
+			{
+				smsComposeRender(true, false);
+			}
+			else
+			{
+				menuDataGlobal.currentItemIndex = 0;
+				smsComposeRenderDestinationSelect();
+			}
+			return MENU_STATUS_SUCCESS;
+		}
+
 		if (smsComposeMode == SMS_COMPOSE_MODE_MANUAL_ID)
 		{
 			smsComposeMode = SMS_COMPOSE_MODE_DESTINATION_SELECT;
@@ -1485,15 +1552,12 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 				return MENU_STATUS_SUCCESS;
 			}
 
-			if (smsSendBuffer(selectedContact.tgNumber))
-			{
-				smsReplyDestinationEnabled = false;
-				smsReplyDestinationId = 0U;
-				smsComposeMode = SMS_COMPOSE_MODE_EDIT;
-				keypadAlphaEnable = false;
-				menuSystemPopAllAndDisplayRootMenu();
-			}
-
+			smsComposePendingDestinationId = selectedContact.tgNumber;
+			smsComposeFormatSelectReturnMode = SMS_COMPOSE_MODE_DESTINATION_SELECT;
+			smsComposeFormatOptionIndex = SMS_FORMAT_OPTION_MOTOROLA;
+			smsComposeMode = SMS_COMPOSE_MODE_FORMAT_SELECT;
+			menuDataGlobal.currentItemIndex = 0;
+			smsComposeRenderFormatSelect();
 			return MENU_STATUS_SUCCESS;
 		}
 
@@ -1509,7 +1573,20 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 				return MENU_STATUS_SUCCESS;
 			}
 
-			if (smsSendBuffer((uint32_t)parsedId))
+			smsComposePendingDestinationId = (uint32_t)parsedId;
+			smsComposeFormatSelectReturnMode = SMS_COMPOSE_MODE_DESTINATION_SELECT;
+			smsComposeFormatOptionIndex = SMS_FORMAT_OPTION_MOTOROLA;
+			smsComposeMode = SMS_COMPOSE_MODE_FORMAT_SELECT;
+			menuDataGlobal.currentItemIndex = 0;
+			smsComposeRenderFormatSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (smsComposeMode == SMS_COMPOSE_MODE_FORMAT_SELECT)
+		{
+			smsEncoderFormat_t format = (smsComposeFormatOptionIndex == SMS_FORMAT_OPTION_STANDARD) ? SMS_ENCODER_STANDARD : SMS_ENCODER_MOTOROLA;
+
+			if (smsSendBuffer(smsComposePendingDestinationId, format))
 			{
 				smsReplyDestinationEnabled = false;
 				smsReplyDestinationId = 0U;
@@ -1529,14 +1606,12 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 		{
 			if (smsReplyDestinationEnabled && (smsReplyDestinationId != 0U))
 			{
-				if (smsSendBuffer(smsReplyDestinationId))
-				{
-					smsReplyDestinationEnabled = false;
-					smsReplyDestinationId = 0U;
-					smsComposeMode = SMS_COMPOSE_MODE_EDIT;
-					keypadAlphaEnable = false;
-					menuSystemPopAllAndDisplayRootMenu();
-				}
+				smsComposePendingDestinationId = smsReplyDestinationId;
+				smsComposeFormatSelectReturnMode = SMS_COMPOSE_MODE_EDIT;
+				smsComposeFormatOptionIndex = SMS_FORMAT_OPTION_MOTOROLA;
+				smsComposeMode = SMS_COMPOSE_MODE_FORMAT_SELECT;
+				menuDataGlobal.currentItemIndex = 0;
+				smsComposeRenderFormatSelect();
 			}
 			else
 			{
@@ -1601,6 +1676,27 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 			menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, SMS_DESTINATION_OPTION_COUNT);
 			smsComposeDestinationOptionIndex = (uint8_t)menuDataGlobal.currentItemIndex;
 			smsComposeRenderDestinationSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		return MENU_STATUS_SUCCESS;
+	}
+
+	if (smsComposeMode == SMS_COMPOSE_MODE_FORMAT_SELECT)
+	{
+		if (KEYCHECK_PRESS(ev->keys, KEY_DOWN))
+		{
+			menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, SMS_FORMAT_OPTION_COUNT);
+			smsComposeFormatOptionIndex = (uint8_t)menuDataGlobal.currentItemIndex;
+			smsComposeRenderFormatSelect();
+			return MENU_STATUS_SUCCESS;
+		}
+
+		if (KEYCHECK_PRESS(ev->keys, KEY_UP))
+		{
+			menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, SMS_FORMAT_OPTION_COUNT);
+			smsComposeFormatOptionIndex = (uint8_t)menuDataGlobal.currentItemIndex;
+			smsComposeRenderFormatSelect();
 			return MENU_STATUS_SUCCESS;
 		}
 

@@ -979,7 +979,8 @@ static inline void hrc6000SysReceivedDataInt(void)
 	bool isDataSyncFrame = false;
 	bool isSmsDataFrame = false;
 	bool dataSyncReadOk = false;
-	uint8_t dataSyncBuf[LC_DATA_LENGTH];
+	uint8_t dataSyncReadLength = LC_DATA_LENGTH;
+	uint8_t dataSyncBuf[SMS_RATE34_DATA_LENGTH];
 
 
 	if (SPI0ReadPageRegByte(0x04, 0x51, &reg_0x51) != kStatus_Success)
@@ -999,7 +1000,10 @@ static inline void hrc6000SysReceivedDataInt(void)
 
 	if (isDataSyncFrame)
 	{
-		dataSyncReadOk = (SPI0ReadPageRegByteArray(0x02, 0x00, dataSyncBuf, LC_DATA_LENGTH) == kStatus_Success);
+		// Rate 3/4 data bursts (dataType 0x08) carry more payload than the rate 1/2 bursts
+		// LC_DATA_LENGTH covers -- see SMS_RATE34_DATA_LENGTH.
+		dataSyncReadLength = (rxDataType == 0x08) ? SMS_RATE34_DATA_LENGTH : LC_DATA_LENGTH;
+		dataSyncReadOk = (SPI0ReadPageRegByteArray(0x02, 0x00, dataSyncBuf, dataSyncReadLength) == kStatus_Success);
 	}
 
 	if (SPI0ReadPageRegByte(0x04, 0x5f, &reg_0x5F) != kStatus_Success)
@@ -1071,7 +1075,7 @@ static inline void hrc6000SysReceivedDataInt(void)
 
 	if (hrc6000CrcIsValid() && isSmsDataFrame && dataSyncReadOk)
 	{
-		(void)smsHandleReceivedDataFrame((uint8_t)rxDataType, dataSyncBuf);
+		(void)smsHandleReceivedDataFrame((uint8_t)rxDataType, dataSyncBuf, dataSyncReadLength);
 	}
 
 	if (hrc6000CrcIsValid() && (slotState != DMR_STATE_IDLE) && (hrc.skipCount > 0) && (rxSyncClass != SYNC_CLASS_DATA) && ((rxDataType & 0x07) == 0x01))

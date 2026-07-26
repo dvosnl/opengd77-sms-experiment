@@ -357,12 +357,10 @@ static void displayMessage(void)
 		{
 			count = SAFE_MIN((uint16_t)(pe - pb), (decoration ? 14U : 16U));
 
-			p++;
-
 			// Looking for another new line
 			if ((p = strchr(pb, '\n')) != NULL)
 			{
-				count = (uint16_t)(p - pb);
+				count = SAFE_MIN((uint16_t)(p - pb), (decoration ? 14U : 16U));
 			}
 
 			memcpy(msg, pb, count);

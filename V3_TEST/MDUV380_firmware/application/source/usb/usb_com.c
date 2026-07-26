@@ -114,7 +114,18 @@ static void hexDump2(uint8_t *ptr, int len,char *msg)
 
 static bool addressInSegment(uint32_t address, uint32_t length, uint32_t segmentStart, uint32_t segmentSize)
 {
-	return ((address >= segmentStart) && ((address + length) <= (segmentStart + segmentSize)));
+	uint32_t offset;
+
+	// Computed without "address + length" so a wire-supplied address near UINT32_MAX can't wrap
+	// the sum back into range.
+	if (address < segmentStart)
+	{
+		return false;
+	}
+
+	offset = address - segmentStart;
+
+	return ((offset <= segmentSize) && (length <= (segmentSize - offset)));
 }
 
 void tick_com_request(void)
@@ -216,9 +227,14 @@ static void cpsHandleReadCommand(void)
 			break;
 
 		case CPS_ACCESS_MCU_ROM:
-			// Base address of MCU ROM on the STM32 is 0x8000000 not 0x00000000
-			memcpy((uint8_t *)&usbComSendBuf[3], (uint8_t *)address + 0x8000000, length);
-			result = true;
+			// Base address of MCU ROM on the STM32 is 0x8000000 not 0x00000000.
+			// STM32F405VG has 1024K of flash; reject anything that would read past it
+			// instead of walking off into unmapped/peripheral address space.
+			if (addressInSegment(address, length, 0U, 0x100000U))
+			{
+				memcpy((uint8_t *)&usbComSendBuf[3], (uint8_t *)address + 0x8000000, length);
+				result = true;
+			}
 			break;
 
 		case CPS_ACCESS_DISPLAY_BUFFER:
@@ -227,20 +243,28 @@ static void cpsHandleReadCommand(void)
 			if (address < (DISPLAY_Y_OFFSET * DISPLAY_SIZE_X * 2))
 			{
 				memset((uint8_t *)&usbComSendBuf[3], 0xFF, length);// send white for blank area
+				result = true;
 			}
-			else
+			else if (addressInSegment(address, length, (DISPLAY_Y_OFFSET * DISPLAY_SIZE_X * 2), (DISPLAY_SIZE_X * DISPLAY_SIZE_Y * sizeof(uint16_t))))
 			{
 				memcpy((uint8_t *)&usbComSendBuf[3], (uint8_t *)displayGetPrimaryScreenBuffer() + address - (DISPLAY_Y_OFFSET * DISPLAY_SIZE_X * 2), length);
+				result = true;
 			}
 #else
-			memcpy((uint8_t *)&usbComSendBuf[3], (uint8_t *)displayGetPrimaryScreenBuffer() + address, length);
+			if (addressInSegment(address, length, 0U, (DISPLAY_SIZE_X * DISPLAY_SIZE_Y * sizeof(uint16_t))))
+			{
+				memcpy((uint8_t *)&usbComSendBuf[3], (uint8_t *)displayGetPrimaryScreenBuffer() + address, length);
+				result = true;
+			}
 #endif
-			result = true;
 			break;
 
 		case CPS_ACCESS_WAV_BUFFER:
-			memcpy((uint8_t *)&usbComSendBuf[3], (uint8_t *)&audioAndHotspotDataBuffer.rawBuffer[address], length);
-			result = true;
+			if (addressInSegment(address, length, 0U, sizeof(audioAndHotspotDataBuffer.rawBuffer)))
+			{
+				memcpy((uint8_t *)&usbComSendBuf[3], (uint8_t *)&audioAndHotspotDataBuffer.rawBuffer[address], length);
+				result = true;
+			}
 			break;
 
 		case CPS_COMPRESS_AND_ACCESS_AMBE_BUFFER:// read from ambe audio buffer
@@ -560,9 +584,17 @@ static void cpsHandleWriteCommand(void)
 				uint32_t address = (com_requestbuffer[2] << 24) + (com_requestbuffer[3] << 16) + (com_requestbuffer[4] << 8) + (com_requestbuffer[5] << 0);
 				uint32_t length = (com_requestbuffer[6] << 8) + (com_requestbuffer[7] << 0);
 
-				wavbuffer_count = (address + length) / WAV_BUFFER_SIZE;
-				memcpy((uint8_t *)&audioAndHotspotDataBuffer.rawBuffer[address], (uint8_t *)&com_requestbuffer[8], length);
-				ok = true;
+				if (length > (COM_REQUESTBUFFER_SIZE - 8))
+				{
+					length = (COM_REQUESTBUFFER_SIZE - 8);
+				}
+
+				if (addressInSegment(address, length, 0U, sizeof(audioAndHotspotDataBuffer.rawBuffer)))
+				{
+					wavbuffer_count = (address + length) / WAV_BUFFER_SIZE;
+					memcpy((uint8_t *)&audioAndHotspotDataBuffer.rawBuffer[address], (uint8_t *)&com_requestbuffer[8], length);
+					ok = true;
+				}
 			}
 			break;
 
